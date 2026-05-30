@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\Contracts\PasskeyUser;
@@ -20,6 +21,10 @@ class User extends Authenticatable implements PasskeyUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
+    protected $primaryKey = 'username';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     /**
      * Get the attributes that should be cast.
      *
@@ -32,5 +37,17 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    protected $appends = ['name'];
+
+    public function mahasiswa(): HasOne
+    {
+        return $this->hasOne(Mahasiswa::class, 'username', 'username');
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->mahasiswa?->nama_lengkap;
     }
 }
