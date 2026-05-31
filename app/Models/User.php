@@ -46,8 +46,23 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasOne(Mahasiswa::class, 'username', 'username');
     }
 
+    public function pembinaOrganisasi(): HasOne
+    {
+        return $this->hasOne(PembinaOrganisasi::class, 'username', 'username');
+    }
+
+    public function adminKemahasiswaan(): HasOne
+    {
+        return $this->hasOne(AdminKemahasiswaan::class, 'username', 'username');
+    }
+
     public function getNameAttribute()
     {
-        return $this->mahasiswa?->nama_lengkap;
+        return match ($this->role) {
+            'Mahasiswa' => $this->mahasiswa?->nama_lengkap,
+            'Pembina Organisasi' => $this->pembinaOrganisasi?->nama_lengkap,
+            'Admin Kemahasiswaan' => $this->adminKemahasiswaan?->nama_lengkap,
+            default => null,
+        };
     }
 }
