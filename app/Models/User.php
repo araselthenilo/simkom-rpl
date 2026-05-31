@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -25,11 +26,8 @@ class User extends Authenticatable implements PasskeyUser
     public $incrementing = false;
     protected $keyType = 'string';
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected $appends = ['name'];
+
     protected function casts(): array
     {
         return [
@@ -39,30 +37,39 @@ class User extends Authenticatable implements PasskeyUser
         ];
     }
 
-    protected $appends = ['name'];
-
-    public function mahasiswa(): HasOne
+    public function pribadiPengguna(): HasOne
     {
-        return $this->hasOne(Mahasiswa::class, 'username', 'username');
+        return match ($this->role) {
+            'Mahasiswa' => $this->hasOne(Mahasiswa::class, 'username', 'username'),
+            'Pembina Organisasi' => $this->hasOne(PembinaOrganisasi::class, 'username', 'username'),
+            'Admin Kemahasiswaan' => $this->hasOne(AdminKemahasiswaan::class, 'username', 'username'),
+            default => null,
+        };
     }
 
-    public function pembinaOrganisasi(): HasOne
+    public function kegiatan(): HasMany
     {
-        return $this->hasOne(PembinaOrganisasi::class, 'username', 'username');
+        return $this->hasMany(Kegiatan::class, 'username_petugas', 'username');
     }
 
-    public function adminKemahasiswaan(): HasOne
+    public function catatanRevisi(): HasMany
     {
-        return $this->hasOne(AdminKemahasiswaan::class, 'username', 'username');
+        return $this->hasMany(CatatanRevisi::class, 'username_petugas', 'username');
     }
+
+    public function pengajuanProfilOrganisasi(): HasMany
+    {
+        return $this->hasMany(PengajuanProfilOrganisasi::class, 'username_petugas', 'username');
+    }
+
+    public function arsipLaporan(): HasMany
+    {
+        return $this->hasMany(ArsipLaporan::class, 'username_petugas', 'username');
+    }
+
 
     public function getNameAttribute()
     {
-        return match ($this->role) {
-            'Mahasiswa' => $this->mahasiswa?->nama_lengkap,
-            'Pembina Organisasi' => $this->pembinaOrganisasi?->nama_lengkap,
-            'Admin Kemahasiswaan' => $this->adminKemahasiswaan?->nama_lengkap,
-            default => null,
-        };
+        return $this->pribadiPengguna?->nama_lengkap;
     }
 }
