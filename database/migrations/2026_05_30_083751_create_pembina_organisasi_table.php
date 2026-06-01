@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('nama_lengkap', 150);
             $table->string('nomor_telepon', 15);
             $table->timestamps();
+
             $table->foreign('username')
                 ->references('username')
                 ->on('users')

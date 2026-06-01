@@ -12,8 +12,6 @@ return new class extends Migration
             $table->increments('id_peserta');
             $table->string('nim', 9);
             $table->unsignedInteger('id_kegiatan');
-            // Nullable to support free events (biaya_pendaftaran = 0)
-            // where no payment transaction needs to be created — cardinality 0..1:0..1
             $table->unsignedInteger('id_transaksi')->nullable();
             $table->dateTime('waktu_daftar')->useCurrent();
 
@@ -32,7 +30,6 @@ return new class extends Migration
                 ->on('transaksi_keuangan')
                 ->onDelete('restrict');
 
-            // One mahasiswa can only register once per kegiatan
             $table->unique(['nim', 'id_kegiatan']);
         });
     }

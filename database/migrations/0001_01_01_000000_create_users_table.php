@@ -15,13 +15,11 @@ return new class extends Migration
             $table->string('username', 30)->primary();
             $table->string('email', 100)->unique();
             $table->string('password');
-
             $table->enum('role', [
                 'Mahasiswa',
                 'Pembina Organisasi',
                 'Admin Kemahasiswaan',
             ]);
-
             $table->rememberToken();
             $table->timestamps();
         });

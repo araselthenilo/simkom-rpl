@@ -2,33 +2,42 @@
 
 namespace App\Providers;
 
+use App\Models\Kegiatan;
+use App\Models\PengurusOrganisasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         $this->configureDefaults();
+
+        Gate::define('is-petugas', function ($user) {
+            return in_array($user->role, ['Admin Kemahasiswaan', 'Pembina Organisasi']);
+        });
+
+        Gate::define('is-pengurus', function ($user) {
+            return PengurusOrganisasi::whereHas('anggotaOrganisasi.mahasiswa', function ($query) use ($user) {
+                $query->where('username', $user->username);
+            })->exists();
+        });
+
+        Gate::define('is-pengurus-kegiatan', function ($user, Kegiatan $kegiatan) {
+            return PengurusOrganisasi::whereHas('anggotaOrganisasi.mahasiswa', function ($query) use ($user) {
+                $query->where('username', $user->username);
+            })
+                ->whereHas('profilOrganisasi', function ($query) use ($kegiatan) {
+                    $query->where('id_profil', $kegiatan->id_profil);
+                })
+                ->exists();
+        });
     }
 
-    /**
-     * Configure default behaviors for production-ready applications.
-     */
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);
@@ -37,14 +46,15 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
+                ? Password::min(12)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
-            : null,
+                : null,
         );
     }
 }
