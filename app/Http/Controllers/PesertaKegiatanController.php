@@ -124,7 +124,7 @@ class PesertaKegiatanController extends Controller
                 'Mahasiswa hanya dapat mendaftarkan diri sendiri sebagai peserta.'
             );
         } else {
-            Gate::authorize('manage-peserta-kegiatan');
+            abort(403, 'Pendaftaran kegiatan hanya bisa dilakukan oleh mahasiswa saja!');
         }
 
         $sudahTerdaftar = PesertaKegiatan::where('nim', $validated['nim'])
