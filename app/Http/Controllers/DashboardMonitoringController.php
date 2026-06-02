@@ -16,10 +16,10 @@ class DashboardMonitoringController extends Controller
 {
     public function index(?Organisasi $organisasi = null): Response
     {
-        abort_unless(
-            Gate::check('is-pengurus') || Gate::check('is-petugas'),
-            403
-        );
+        // abort_unless(
+        //     Gate::check('is-pengurus') || Gate::check('is-petugas'),
+        //     403
+        // );
 
         if (! $organisasi && Gate::check('is-pengurus')) {
             $organisasi = PengurusOrganisasi::whereHas('anggotaOrganisasi.mahasiswa', function ($query) {
