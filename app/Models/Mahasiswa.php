@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 
+#[Fillable(['nim', 'username', 'nama_lengkap', 'program_studi', 'nomor_telepon'])]
 class Mahasiswa extends Model
 {
     protected $table = 'mahasiswa';

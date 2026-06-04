@@ -44,7 +44,7 @@ export default function TopNavbar({
                 <div className="mx-auto flex h-16 w-full max-w-container-max items-center justify-between px-4 md:px-margin-desktop">
                     <div className="flex min-w-0 items-center gap-unit-md">
                         <span className="dark:text-primary-fixed text-title-md truncate font-bold text-primary md:text-headline-md">
-                            SIMKOM STIKOM Bali
+                            SIMKOM ITB STIKOM Bali
                         </span>
                     </div>
 

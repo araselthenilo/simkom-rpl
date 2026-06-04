@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('profil_organisasi', function (Blueprint $table) {
@@ -17,6 +16,7 @@ return new class extends Migration
             $table->text('visi_organisasi');
             $table->text('misi_organisasi');
             $table->boolean('status_aktif');
+            $table->timestamps();
 
             $table->foreign('id_organisasi')
                 ->references('id_organisasi')

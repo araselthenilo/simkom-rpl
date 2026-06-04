@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('arsip_laporan', function (Blueprint $table) {
@@ -17,7 +16,7 @@ return new class extends Migration
                 'Keuangan',
             ]);
             $table->string('file_laporan', 500);
-            $table->dateTime('waktu_dibuat')->useCurrent();
+            $table->timestamps();
 
             $table->foreign('id_organisasi')
                 ->references('id_organisasi')

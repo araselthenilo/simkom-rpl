@@ -1,8 +1,15 @@
 export type User = {
-    id: number;
+    username: string;
     name: string;
     email: string;
     avatar?: string;
+    role?: string;
+    is_active_organization_staff: boolean;
+    active_organization_eras: {
+        periode_kepengurusan: string;
+        nama_organisasi: string;
+        jabatan: string;
+    }[];
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     created_at: string;

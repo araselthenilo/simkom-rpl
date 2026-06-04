@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('dokumentasi_kegiatan', function (Blueprint $table) {
@@ -19,7 +18,7 @@ return new class extends Migration
                 'Butuh Revisi',
                 'Diterima',
             ])->default('Diproses');
-            $table->dateTime('waktu_terakhir_diubah')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
 
             $table->foreign('id_kegiatan')
                 ->references('id_kegiatan')

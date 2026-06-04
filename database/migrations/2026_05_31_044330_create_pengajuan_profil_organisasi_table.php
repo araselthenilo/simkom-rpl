@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('pengajuan_profil_organisasi', function (Blueprint $table) {
@@ -22,8 +21,7 @@ return new class extends Migration
                 'Ditolak',
                 'Diterima',
             ])->default('Diproses');
-            $table->dateTime('waktu_pengajuan')->useCurrent();
-            $table->dateTime('waktu_diproses')->nullable();
+            $table->timestamps();
 
             $table->foreign('id_pengurus')
                 ->references('id_pengurus')

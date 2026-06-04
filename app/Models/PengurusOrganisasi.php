@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 
+#[Fillable(['id_profil', 'id_keanggotaan', 'jabatan', 'status_aktif'])]
 class PengurusOrganisasi extends Model
 {
     protected $table = 'pengurus_organisasi';

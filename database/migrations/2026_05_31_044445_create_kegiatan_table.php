@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('kegiatan', function (Blueprint $table) {
@@ -31,6 +30,7 @@ return new class extends Migration
                 'Dibatalkan',
             ])->default('Mendatang');
             $table->string('alasan_pembatalan', 500)->nullable();
+            $table->timestamps();
 
             $table->foreign('id_profil')
                 ->references('id_profil')
