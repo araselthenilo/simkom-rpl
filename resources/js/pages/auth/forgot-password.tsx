@@ -31,7 +31,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                 />
                             </div>
                             <h2 className="font-headline-md text-headline-md tracking-tight text-primary">
-                                SIMKOM STIKOM Bali
+                                ITB SIMKOM STIKOM Bali
                             </h2>
                         </div>
                         {/* <!-- Recovery Card --> */}
@@ -84,7 +84,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                             </div>
                                             <InputError
                                                 message={errors.email}
-                                                className="mt-1 text-xs text-error"
+                                                className="mt-1 text-xs"
                                             />
                                         </div>
                                         {/* <!-- Action Button --> */}
@@ -167,8 +167,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                         {/* Right Column: Copyright */}
                         <div className="w-full md:text-left">
                             <p className="font-body-sm text-body-sm text-on-surface-variant">
-                                © 2026 SIMKOM ITB STIKOM Bali. All Rights
-                                Reserved.
+                                © 2026 ITB STIKOM Bali. All Rights Reserved.
                             </p>
                         </div>
                     </div>

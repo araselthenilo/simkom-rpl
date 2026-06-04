@@ -87,7 +87,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 </div>
                             </div>
                             <h2 className="font-headline-md text-headline-md text-primary">
-                                SIMKOM STIKOM Bali
+                                SIMKOM ITB STIKOM Bali
                             </h2>
                             <p className="font-body-sm text-body-sm text-on-surface-variant">
                                 Silakan masuk menggunakan akun institusi Anda
@@ -131,7 +131,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                                 />
                                             </div>
                                             <InputError
-                                                className="mt-1 text-xs text-error"
+                                                className="mt-1 text-xs"
                                                 message={errors.username}
                                             />
                                         </div>
@@ -161,7 +161,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                                 />
                                             </div>
                                             <InputError
-                                                className="mt-1 text-xs text-error"
+                                                className="mt-1 text-xs"
                                                 message={errors.password}
                                             />
                                         </div>
