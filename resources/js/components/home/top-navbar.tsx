@@ -1,15 +1,36 @@
-import { Head } from '@inertiajs/react';
-import { Bell, Menu } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Bell, LogOut, Menu, Settings } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useInitials } from '@/hooks/use-initials';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { logout } from '@/routes';
+import { edit } from '@/routes/profile';
 
 export default function TopNavbar({
     notificationsCount = 0,
 }: {
     notificationsCount?: number;
 }) {
+    const { auth } = usePage().props;
+    const getInitials = useInitials();
+    const cleanup = useMobileNavigation();
     const [isHidden, setIsHidden] = useState(false);
     const lastScrollY = useRef(0);
     const count = notificationsCount;
+
+    const handleLogout = () => {
+        cleanup();
+        router.flushAll();
+    };
+
+    const initials = auth.user ? getInitials(auth.user.name) : 'U';
 
     useEffect(() => {
         const handleScroll = () => {
@@ -79,13 +100,39 @@ export default function TopNavbar({
                                 </span>
                             )}
                         </button>
-                        <div className="h-10 w-10 overflow-hidden rounded-full border border-outline-variant">
-                            <img
-                                alt="User Profile Avatar"
-                                className="h-full w-full object-cover"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWfe2W7lMso6eT2GVarQ48jLGdzbtOcfr2j9UcriGpf-cutBQ_E_bR5qwHpswsd2URt2GoKVNSMcVzoajAp7ts0gidDniu-nKH04sJH_xpm5wmMCWCuQ_jm72PJIdOCiMjEnu9BfO6kR8eozhTzQ-ENJSP69_WGXEaVljldtM5uMfNqL3NryO3u6PY0PMDuYZE06UtEKbwmgJQiPy-joGGVdHlCdv8M7GvS16gz8xTKWl7-T_wabL6_4hmoHSGGw3cVQCB1ciYtRM"
-                            />
-                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-outline-variant bg-primary-container text-sm font-semibold text-on-primary-container transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
+                                    {initials}
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end">
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        className="block w-full cursor-pointer"
+                                        href={edit()}
+                                        prefetch
+                                        onClick={cleanup}
+                                    >
+                                        <Settings className="mr-2" />
+                                        Settings
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem variant="destructive" asChild>
+                                    <Link
+                                        className="block w-full cursor-pointer"
+                                        href={logout()}
+                                        as="button"
+                                        onClick={handleLogout}
+                                        data-test="logout-button"
+                                    >
+                                        <LogOut className="mr-2" />
+                                        Log out
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <button className="text-primary md:hidden">
                             <Menu />
                         </button>

@@ -13,10 +13,7 @@ export default function Home({ auth }: { auth: Auth }) {
                 <HeaderSambutan user={user} />
                 <KegiatanMendatang />
                 <OrganisasiSaya />
-                {/* Header sambutan kepada mahasiswa
-                Kegiatan Mendatang
-                Organisasi Saya
-                Brief Data Pencapaian Mahasiswa */}
+                {/* Brief Data Pencapaian Mahasiswa */}
             </HomeLayout>
         </>
     );
