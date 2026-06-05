@@ -36,7 +36,7 @@ class PesertaKegiatanController extends Controller
 
         return Inertia::render('PesertaKegiatan/Index', [
             'kegiatan' => $kegiatan,
-            'peserta'  => $peserta,
+            'peserta' => $peserta,
         ]);
     }
 
@@ -50,7 +50,7 @@ class PesertaKegiatanController extends Controller
             'Hanya mahasiswa yang dapat mengakses riwayat kegiatan ini.'
         );
 
-        $mahasiswa = $user->pribadiPengguna;
+        $mahasiswa = $user->profilPengguna;
 
         abort_if(
             !$mahasiswa,
@@ -65,7 +65,7 @@ class PesertaKegiatanController extends Controller
             ->withQueryString();
 
         return Inertia::render('PesertaKegiatan/Riwayat', [
-            'peserta'   => $peserta,
+            'peserta' => $peserta,
             'mahasiswa' => $mahasiswa,
         ]);
     }
@@ -110,7 +110,7 @@ class PesertaKegiatanController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'Mahasiswa') {
-            $mahasiswa = $user->pribadiPengguna;
+            $mahasiswa = $user->profilPengguna;
 
             abort_if(
                 !$mahasiswa,
@@ -182,7 +182,7 @@ class PesertaKegiatanController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'Mahasiswa') {
-            $mahasiswa = $user->pribadiPengguna;
+            $mahasiswa = $user->profilPengguna;
 
             abort_if(
                 $mahasiswa->nim !== $peserta->nim,

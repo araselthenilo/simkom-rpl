@@ -73,7 +73,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                                 </span> */}
                                                 <MailIcon className="absolute top-1/2 left-3 -translate-y-1/2 text-[20px] text-outline" />
                                                 <Input
-                                                    className="bg-surface-container-low w-full rounded-lg border border-outline-variant py-6 pr-4 pl-11 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                    className="bg-surface-container w-full rounded-lg border border-outline-variant py-6 pr-4 pl-11 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     id="email"
                                                     name="email"
                                                     placeholder="nama@stikom-bali.ac.id"
@@ -102,7 +102,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                             {/* <!-- Footer Link --> */}
                             <div className="mt-unit-lg flex justify-center border-t border-outline-variant pt-unit-lg">
                                 <a
-                                    className="flex items-center gap-2 font-label-lg text-label-lg text-primary transition-all hover:scale-105 hover:text-sky-900 active:scale-95"
+                                    className="flex items-center gap-2 font-label-lg text-label-lg text-primary transition-all hover:scale-105 hover:text-primary-container active:scale-95"
                                     href={login().url}
                                 >
                                     <ArrowLeft className="text-[18px]" />
@@ -125,7 +125,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     </div>
                 </main>
                 {/* <!-- Footer Component (Shared) --> */}
-                <footer className="bg-surface-container-low z-10 w-full border-t border-outline-variant py-unit-lg">
+                <footer className="bg-surface-container z-10 w-full border-t border-outline-variant py-unit-lg">
                     <div className="mx-auto grid w-full max-w-container-max grid-cols-1 items-center justify-items-center gap-unit-md px-margin-desktop text-center md:grid-cols-3">
                         {/* Left Column: Brand Name */}
                         <div className="w-full md:text-right">

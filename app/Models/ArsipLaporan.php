@@ -12,7 +12,7 @@ class ArsipLaporan extends Model
     protected $primaryKey = 'id_laporan';
     protected $appends = ['nip_petugas'];
     protected $with = [
-        'penggunaPetugas.pribadiPengguna',
+        'penggunaPetugas.profilPengguna',
     ];
 
     public function organisasi(): BelongsTo
@@ -28,7 +28,7 @@ class ArsipLaporan extends Model
     public function nipPetugas(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->penggunaPetugas?->pribadiPengguna?->getKey
+            get: fn() => $this->penggunaPetugas?->profilPengguna?->getKey
         );
     }
 }

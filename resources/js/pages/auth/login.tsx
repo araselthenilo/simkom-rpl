@@ -125,7 +125,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                                     tabIndex={1}
                                                     autoComplete="username"
                                                     autoFocus
-                                                    className="bg-surface-container-low w-full rounded-lg border border-outline-variant py-6 pr-4 pl-10 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                    className="bg-surface-container w-full rounded-lg border border-outline-variant py-6 pr-4 pl-10 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     placeholder="Masukkan username Anda"
                                                     required
                                                 />
@@ -155,7 +155,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                                     name="password"
                                                     autoComplete="current-password"
                                                     tabIndex={2}
-                                                    className="bg-surface-container-low w-full rounded-lg border border-outline-variant py-6 pr-12 pl-10 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                    className="bg-surface-container w-full rounded-lg border border-outline-variant py-6 pr-12 pl-10 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                                                     placeholder="••••••••"
                                                     required
                                                 />
@@ -256,8 +256,8 @@ export default function Login({ status, canResetPassword }: Props) {
                     </div>
 
                     {/* Decorative Background */}
-                    <div className="bg-secondary-fixed-dim/10 pointer-events-none absolute -right-16 -bottom-16 h-64 w-64 rounded-full blur-3xl"></div>
-                    <div className="bg-primary-fixed/10 pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full blur-3xl"></div>
+                    <div className="bg-secondary-fixed/10 pointer-events-none absolute -right-16 -bottom-16 h-64 w-64 rounded-full blur-3xl"></div>
+                    <div className="bg-primary-fixed-dim/10 pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full blur-3xl"></div>
                 </section>
             </main>
         </>

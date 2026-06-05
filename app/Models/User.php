@@ -32,7 +32,7 @@ class User extends Authenticatable
         ];
     }
 
-    public function pribadiPengguna(): ?HasOne
+    public function profilPengguna(): ?HasOne
     {
         return match ($this->role) {
             'Mahasiswa' => $this->hasOne(Mahasiswa::class, 'username', 'username'),
@@ -70,7 +70,7 @@ class User extends Authenticatable
     public function name(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->pribadiPengguna?->nama_lengkap
+            get: fn() => $this->profilPengguna?->nama_lengkap
         );
     }
 
@@ -78,7 +78,7 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: fn() => $this->role === 'Mahasiswa' &&
-            ($this->pribadiPengguna?->anggotaOrganisasi()
+            ($this->profilPengguna?->anggotaOrganisasi()
                 ->whereHas('pengurusOrganisasi', fn($q) => $q->where('status_aktif', true))
                 ->exists() ?? false)
         );
@@ -88,11 +88,11 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function () {
-                if ($this->role !== 'Mahasiswa' || !$this->pribadiPengguna) {
+                if ($this->role !== 'Mahasiswa' || !$this->profilPengguna) {
                     return [];
                 }
 
-                $nim = $this->pribadiPengguna->nim;
+                $nim = $this->profilPengguna->nim;
 
                 return PengurusOrganisasi::with(['profilOrganisasi.organisasi'])
                     ->where('status_aktif', true)

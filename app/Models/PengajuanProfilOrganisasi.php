@@ -12,7 +12,7 @@ class PengajuanProfilOrganisasi extends Model
     protected $primaryKey = 'id_pengajuan';
     protected $appends = ['nip_petugas', 'organisasi'];
     protected $with = [
-        'penggunaPetugas.pribadiPengguna',
+        'penggunaPetugas.profilPengguna',
         'pengurusOrganisasi.profilOrganisasi',
     ];
 
@@ -29,7 +29,7 @@ class PengajuanProfilOrganisasi extends Model
     public function nipPetugas(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->penggunaPetugas?->pribadiPengguna?->getKey
+            get: fn() => $this->penggunaPetugas?->profilPengguna?->getKey
         );
     }
 
