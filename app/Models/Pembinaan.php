@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Pembinaan extends Model
 {
     protected $table = 'pembinaan';
+
     protected $primaryKey = 'id_pembinaan';
 
     public function pembinaOrganisasi(): BelongsTo

@@ -41,34 +41,34 @@ class ProfilOrganisasiController extends Controller
         Gate::authorize('is-petugas');
 
         $validated = $request->validate([
-            'id_organisasi'        => ['required', 'integer', 'exists:organisasi,id_organisasi'],
+            'id_organisasi' => ['required', 'integer', 'exists:organisasi,id_organisasi'],
             'periode_kepengurusan' => [
                 'required',
                 'string',
                 'size:9',
                 'regex:/^\d{4}\/\d{4}$/',
                 Rule::unique('profil_organisasi')->where(
-                    fn($query) => $query->where('id_organisasi', $request->id_organisasi)
+                    fn ($query) => $query->where('id_organisasi', $request->id_organisasi)
                 ),
             ],
-            'logo_organisasi'      => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'logo_organisasi' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'deskripsi_organisasi' => ['required', 'string'],
-            'visi_organisasi'      => ['required', 'string'],
-            'misi_organisasi'      => ['required', 'string'],
-            'status_aktif'         => ['required', 'boolean'],
+            'visi_organisasi' => ['required', 'string'],
+            'misi_organisasi' => ['required', 'string'],
+            'status_aktif' => ['required', 'boolean'],
         ]);
 
         $logoPath = $request->file('logo_organisasi')
             ->store('logo_organisasi', 'public');
 
         ProfilOrganisasi::create([
-            'id_organisasi'        => $validated['id_organisasi'],
+            'id_organisasi' => $validated['id_organisasi'],
             'periode_kepengurusan' => $validated['periode_kepengurusan'],
-            'logo_organisasi'      => $logoPath,
+            'logo_organisasi' => $logoPath,
             'deskripsi_organisasi' => $validated['deskripsi_organisasi'],
-            'visi_organisasi'      => $validated['visi_organisasi'],
-            'misi_organisasi'      => $validated['misi_organisasi'],
-            'status_aktif'         => $validated['status_aktif'],
+            'visi_organisasi' => $validated['visi_organisasi'],
+            'misi_organisasi' => $validated['misi_organisasi'],
+            'status_aktif' => $validated['status_aktif'],
         ]);
 
         return redirect()
@@ -97,7 +97,7 @@ class ProfilOrganisasiController extends Controller
 
         return Inertia::render('ProfilOrganisasi/Edit', [
             'profilOrganisasi' => $profilOrganisasi,
-            'organisasi'       => $organisasi,
+            'organisasi' => $organisasi,
         ]);
     }
 
@@ -106,21 +106,21 @@ class ProfilOrganisasiController extends Controller
         Gate::authorize('is-petugas');
 
         $validated = $request->validate([
-            'id_organisasi'        => ['required', 'integer', 'exists:organisasi,id_organisasi'],
+            'id_organisasi' => ['required', 'integer', 'exists:organisasi,id_organisasi'],
             'periode_kepengurusan' => [
                 'required',
                 'string',
                 'size:9',
                 'regex:/^\d{4}\/\d{4}$/',
                 Rule::unique('profil_organisasi')
-                    ->where(fn($query) => $query->where('id_organisasi', $request->id_organisasi))
+                    ->where(fn ($query) => $query->where('id_organisasi', $request->id_organisasi))
                     ->ignore($profilOrganisasi->id_profil, 'id_profil'),
             ],
-            'logo_organisasi'      => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'logo_organisasi' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'deskripsi_organisasi' => ['required', 'string'],
-            'visi_organisasi'      => ['required', 'string'],
-            'misi_organisasi'      => ['required', 'string'],
-            'status_aktif'         => ['required', 'boolean'],
+            'visi_organisasi' => ['required', 'string'],
+            'misi_organisasi' => ['required', 'string'],
+            'status_aktif' => ['required', 'boolean'],
         ]);
 
         if ($request->hasFile('logo_organisasi')) {
@@ -151,7 +151,7 @@ class ProfilOrganisasiController extends Controller
                 ->route('profil-organisasi.show', $profilOrganisasi)
                 ->with(
                     'error',
-                    'Profil tidak dapat dihapus karena masih memiliki data kegiatan atau ' .
+                    'Profil tidak dapat dihapus karena masih memiliki data kegiatan atau '.
                         'pengurus terkait. Nonaktifkan profil sebagai gantinya.'
                 );
         }

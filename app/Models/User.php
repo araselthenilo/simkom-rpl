@@ -5,8 +5,8 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,7 +20,9 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $primaryKey = 'username';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $appends = ['name', 'is_active_organization_staff', 'active_organization_eras'];
@@ -70,16 +72,16 @@ class User extends Authenticatable
     public function name(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->profilPengguna?->nama_lengkap
+            get: fn () => $this->profilPengguna?->nama_lengkap
         );
     }
 
     public function isActiveOrganizationStaff(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->role === 'Mahasiswa' &&
+            get: fn () => $this->role === 'Mahasiswa' &&
             ($this->profilPengguna?->anggotaOrganisasi()
-                ->whereHas('pengurusOrganisasi', fn($q) => $q->where('status_aktif', true))
+                ->whereHas('pengurusOrganisasi', fn ($q) => $q->where('status_aktif', true))
                 ->exists() ?? false)
         );
     }
@@ -88,7 +90,7 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function () {
-                if ($this->role !== 'Mahasiswa' || !$this->profilPengguna) {
+                if ($this->role !== 'Mahasiswa' || ! $this->profilPengguna) {
                     return [];
                 }
 
@@ -112,4 +114,3 @@ class User extends Authenticatable
         );
     }
 }
-

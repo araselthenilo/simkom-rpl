@@ -40,6 +40,7 @@ const getStoredAppearance = (): Appearance => {
     }
 
     let stored: Appearance | null = null;
+
     try {
         stored = localStorage.getItem('appearance') as Appearance | null;
     } catch (e) {
@@ -53,8 +54,10 @@ const getStoredAppearance = (): Appearance => {
     // Fallback: read from cookie
     try {
         const match = document.cookie.match(/(^|;)\s*appearance\s*=\s*([^;]+)/);
+
         if (match) {
             const cookieVal = decodeURIComponent(match[2]) as Appearance;
+
             if (cookieVal === 'light' || cookieVal === 'dark' || cookieVal === 'system') {
                 return cookieVal;
             }
@@ -105,6 +108,7 @@ export function initializeTheme(): void {
     }
 
     let hasStored = false;
+
     try {
         hasStored = !!localStorage.getItem('appearance');
     } catch (e) {
@@ -113,11 +117,13 @@ export function initializeTheme(): void {
 
     if (!hasStored) {
         const fallback = getStoredAppearance();
+
         try {
             localStorage.setItem('appearance', fallback);
         } catch (e) {
             // ignore
         }
+
         setCookie('appearance', fallback);
     }
 

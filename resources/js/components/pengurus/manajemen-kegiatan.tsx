@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
     Calendar,
     Search,
@@ -20,8 +19,9 @@ import {
     Info,
     RefreshCw
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface Activity {
     id_kegiatan: number;
@@ -158,7 +158,10 @@ export default function ManajemenKegiatan() {
 
     // Currency Formatter
     const formatRupiah = (value: number) => {
-        if (value === 0) return 'Gratis';
+        if (value === 0) {
+return 'Gratis';
+}
+
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
@@ -193,8 +196,10 @@ export default function ManajemenKegiatan() {
 
     const handleCreateActivity = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!formData.nama_kegiatan || !formData.lokasi_kegiatan || !formData.deskripsi_kegiatan) {
             alert('Harap isi semua kolom wajib!');
+
             return;
         }
 
@@ -233,7 +238,10 @@ export default function ManajemenKegiatan() {
 
     const handleEditActivity = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!activeActivity) return;
+
+        if (!activeActivity) {
+return;
+}
 
         setActivities(prev =>
             prev.map(item =>
@@ -263,9 +271,14 @@ export default function ManajemenKegiatan() {
 
     const handleCancelActivity = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!activeActivity) return;
+
+        if (!activeActivity) {
+return;
+}
+
         if (!cancellationReasonInput.trim()) {
             alert('Harap isi alasan pembatalan!');
+
             return;
         }
 
@@ -292,6 +305,7 @@ export default function ManajemenKegiatan() {
 
     const handleStatusTransition = (id: number, currentStatus: Activity['status_kegiatan']) => {
         let nextStatus: Activity['status_kegiatan'] = 'Mendatang';
+
         if (currentStatus === 'Mendatang') {
             nextStatus = 'Sedang berlangsung';
         } else if (currentStatus === 'Sedang berlangsung') {

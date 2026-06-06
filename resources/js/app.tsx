@@ -5,8 +5,8 @@ import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import PengurusLayout from '@/layouts/pengurus-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import HomeLayout from './layouts/home-layout';
 import AdminLayout from './layouts/admin-layout';
+import HomeLayout from './layouts/home-layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

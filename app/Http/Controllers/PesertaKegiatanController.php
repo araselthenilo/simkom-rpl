@@ -53,7 +53,7 @@ class PesertaKegiatanController extends Controller
         $mahasiswa = $user->profilPengguna;
 
         abort_if(
-            !$mahasiswa,
+            ! $mahasiswa,
             404,
             'Data mahasiswa tidak ditemukan'
         );
@@ -75,7 +75,7 @@ class PesertaKegiatanController extends Controller
         $kegiatan = Kegiatan::where('id_kegiatan', $id_kegiatan)->firstOrFail();
 
         abort_if(
-            !$kegiatan,
+            ! $kegiatan,
             404,
             'Kegiatan tidak ditemukan'
         );
@@ -102,7 +102,7 @@ class PesertaKegiatanController extends Controller
             ->firstOrFail();
 
         abort_if(
-            !$transaksi,
+            ! $transaksi,
             403,
             'Transaksi tidak sesuai kegiatan'
         );
@@ -113,7 +113,7 @@ class PesertaKegiatanController extends Controller
             $mahasiswa = $user->profilPengguna;
 
             abort_if(
-                !$mahasiswa,
+                ! $mahasiswa,
                 404,
                 'Data mahasiswa tidak ditemukan.'
             );

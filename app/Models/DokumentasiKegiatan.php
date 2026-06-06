@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class DokumentasiKegiatan extends Model
 {
     protected $table = 'dokumentasi_kegiatan';
+
     protected $primaryKey = 'id_dokumentasi';
 
     public function kegiatan(): BelongsTo

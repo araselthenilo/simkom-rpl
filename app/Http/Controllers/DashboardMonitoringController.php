@@ -34,7 +34,7 @@ class DashboardMonitoringController extends Controller
         if ($organisasi) {
             $kegiatanIds = Kegiatan::whereHas(
                 'profilOrganisasi',
-                fn($q) => $q->where('id_organisasi', $organisasi->id_organisasi)
+                fn ($q) => $q->where('id_organisasi', $organisasi->id_organisasi)
             )->pluck('id_kegiatan');
 
             $jumlahAnggotaAktif = AnggotaOrganisasi::where('id_organisasi', $organisasi->id_organisasi)
@@ -76,20 +76,20 @@ class DashboardMonitoringController extends Controller
             $kegiatanMendatang = collect();
         }
 
-        $totalPemasukan   = (float) ($keuanganAgregat->get('Pemasukan', 0));
+        $totalPemasukan = (float) ($keuanganAgregat->get('Pemasukan', 0));
         $totalPengeluaran = (float) ($keuanganAgregat->get('Pengeluaran', 0));
 
         return Inertia::render('dashboard', [
-            'organisasi'          => $organisasi?->only('id_organisasi', 'nama_organisasi', 'status_aktif'),
-            'jumlahAnggotaAktif'  => $jumlahAnggotaAktif,
+            'organisasi' => $organisasi?->only('id_organisasi', 'nama_organisasi', 'status_aktif'),
+            'jumlahAnggotaAktif' => $jumlahAnggotaAktif,
             'jumlahKegiatanAktif' => $jumlahKegiatanAktif,
-            'keuangan'            => [
-                'total_pemasukan'   => $totalPemasukan,
+            'keuangan' => [
+                'total_pemasukan' => $totalPemasukan,
                 'total_pengeluaran' => $totalPengeluaran,
-                'saldo'             => $totalPemasukan - $totalPengeluaran,
+                'saldo' => $totalPemasukan - $totalPengeluaran,
             ],
-            'distribusiStatus'    => $distribusiStatus,
-            'kegiatanMendatang'   => $kegiatanMendatang,
+            'distribusiStatus' => $distribusiStatus,
+            'kegiatanMendatang' => $kegiatanMendatang,
         ]);
     }
 }

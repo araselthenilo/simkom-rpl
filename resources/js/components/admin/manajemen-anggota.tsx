@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
     Download,
     Users,
@@ -12,8 +11,9 @@ import {
     HelpCircle,
     IdCard
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface Member {
     nim: string;
@@ -97,8 +97,10 @@ export default function ManajemenAnggota() {
                             total: prev.total + 1
                         }));
                     }
+
                     return { ...member, status: 'Aktif' };
                 }
+
                 return member;
             })
         );
@@ -122,8 +124,10 @@ export default function ManajemenAnggota() {
                             rejected: prev.rejected + 1
                         }));
                     }
+
                     return { ...member, status: 'Ditolak' };
                 }
+
                 return member;
             })
         );
@@ -133,7 +137,10 @@ export default function ManajemenAnggota() {
         const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             member.nim.includes(searchQuery);
 
-        if (activeTab === 'Semua') return matchesSearch;
+        if (activeTab === 'Semua') {
+return matchesSearch;
+}
+
         return matchesSearch && member.status === activeTab;
     });
 

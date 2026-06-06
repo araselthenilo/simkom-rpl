@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     return route('home');
                 }
             }
+
             return '/home';
         });
 

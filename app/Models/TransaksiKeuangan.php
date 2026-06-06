@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class TransaksiKeuangan extends Model
 {
     protected $table = 'transaksi_keuangan';
+
     protected $primaryKey = 'id_transaksi';
 
     public function kegiatan(): BelongsTo

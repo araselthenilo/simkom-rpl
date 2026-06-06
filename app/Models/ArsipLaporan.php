@@ -9,8 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ArsipLaporan extends Model
 {
     protected $table = 'arsip_laporan';
+
     protected $primaryKey = 'id_laporan';
+
     protected $appends = ['nip_petugas'];
+
     protected $with = [
         'penggunaPetugas.profilPengguna',
     ];
@@ -28,7 +31,7 @@ class ArsipLaporan extends Model
     public function nipPetugas(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->penggunaPetugas?->profilPengguna?->getKey
+            get: fn () => $this->penggunaPetugas?->profilPengguna?->getKey
         );
     }
 }

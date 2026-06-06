@@ -9,8 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PengajuanProfilOrganisasi extends Model
 {
     protected $table = 'pengajuan_profil_organisasi';
+
     protected $primaryKey = 'id_pengajuan';
+
     protected $appends = ['nip_petugas', 'organisasi'];
+
     protected $with = [
         'penggunaPetugas.profilPengguna',
         'pengurusOrganisasi.profilOrganisasi',
@@ -29,14 +32,14 @@ class PengajuanProfilOrganisasi extends Model
     public function nipPetugas(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->penggunaPetugas?->profilPengguna?->getKey
+            get: fn () => $this->penggunaPetugas?->profilPengguna?->getKey
         );
     }
 
     public function organisasi(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->pengurusOrganisasi?->profilOrganisasi?->organisasi
+            get: fn () => $this->pengurusOrganisasi?->profilOrganisasi?->organisasi
         );
     }
 }

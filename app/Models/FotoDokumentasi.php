@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FotoDokumentasi extends Model
 {
     protected $table = 'foto_dokumentasi';
+
     protected $primaryKey = 'id_foto';
 
     public function dokumentasiKegiatan(): BelongsTo

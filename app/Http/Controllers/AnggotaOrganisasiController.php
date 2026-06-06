@@ -26,7 +26,7 @@ class AnggotaOrganisasiController extends Controller
 
         return Inertia::render('AnggotaOrganisasi/Index', [
             'organisasi' => $organisasi->only('id_organisasi', 'nama_organisasi'),
-            'anggota'    => $anggota,
+            'anggota' => $anggota,
         ]);
     }
 
@@ -34,7 +34,7 @@ class AnggotaOrganisasiController extends Controller
     {
         $validated = $request->validate([
             'id_organisasi' => ['required', 'integer', 'exists:organisasi,id_organisasi'],
-            'nim'           => ['required', 'string', 'size:9', 'exists:mahasiswa,nim'],
+            'nim' => ['required', 'string', 'size:9', 'exists:mahasiswa,nim'],
         ]);
 
         $sudahTerdaftar = AnggotaOrganisasi::where('id_organisasi', $validated['id_organisasi'])
@@ -48,10 +48,10 @@ class AnggotaOrganisasiController extends Controller
         }
 
         AnggotaOrganisasi::create([
-            'id_organisasi'      => $validated['id_organisasi'],
-            'nim'                => $validated['nim'],
+            'id_organisasi' => $validated['id_organisasi'],
+            'nim' => $validated['nim'],
             // Diisi sementara; akan ditimpa saat disetujui (status --> Aktif)
-            'tanggal_bergabung'  => now()->toDateString(),
+            'tanggal_bergabung' => now()->toDateString(),
             'status_keanggotaan' => 'Diproses',
         ]);
 
@@ -73,7 +73,7 @@ class AnggotaOrganisasiController extends Controller
                 'required',
                 Rule::in(['Diproses', 'Ditolak', 'Aktif', 'Tidak Aktif']),
             ],
-            'alasan_penolakan'   => [
+            'alasan_penolakan' => [
                 'nullable',
                 'string',
                 'max:500',
@@ -84,11 +84,11 @@ class AnggotaOrganisasiController extends Controller
         $anggotaOrganisasi->update([
             'status_keanggotaan' => $validated['status_keanggotaan'],
             // Stamp tanggal resmi bergabung saat disetujui
-            'tanggal_bergabung'  => $validated['status_keanggotaan'] === 'Aktif'
+            'tanggal_bergabung' => $validated['status_keanggotaan'] === 'Aktif'
                 ? now()->toDateString()
                 : $anggotaOrganisasi->tanggal_bergabung,
             // Kosongkan alasan jika status bukan 'Ditolak'
-            'alasan_penolakan'   => $validated['status_keanggotaan'] === 'Ditolak'
+            'alasan_penolakan' => $validated['status_keanggotaan'] === 'Ditolak'
                 ? $validated['alasan_penolakan']
                 : null,
         ]);

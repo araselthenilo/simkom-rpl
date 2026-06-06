@@ -1,8 +1,7 @@
+import { Link } from '@inertiajs/react';
 import {
     Plus,
     Clock,
-    MoreVertical,
-    Bell,
     Building2,
     Calendar,
     FileText,
@@ -12,10 +11,19 @@ import {
     BookOpen,
     Download
 } from 'lucide-react';
-import React from 'react';
 import { Button } from '@/components/ui/button';
 
-export default function Dashboard() {
+interface DashboardProps {
+    totalOrganisasiAktif: number;
+    totalMahasiswaAktif: number;
+    totalAnggotaAktif: number;
+}
+
+export default function Dashboard({
+    totalOrganisasiAktif = 0,
+    totalMahasiswaAktif = 0,
+    totalAnggotaAktif = 0
+}: DashboardProps) {
     return (
         <div className="p-margin-desktop max-w-container-max mx-auto space-y-unit-lg">
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-unit-md">
@@ -40,7 +48,7 @@ export default function Dashboard() {
                                 Total Organisasi Aktif
                             </p>
                             <h3 className="font-headline-lg text-headline-lg text-primary mt-2">
-                                42{' '}
+                                {totalOrganisasiAktif}{' '}
                                 <span className="text-body-sm font-normal text-on-surface-variant">
                                     Unit Kegiatan Mahasiswa
                                 </span>
@@ -53,16 +61,19 @@ export default function Dashboard() {
                     <div className="mt-8 flex gap-4">
                         <div className="flex-1 bg-surface-container-low rounded-lg p-3 border border-outline-variant/30">
                             <p className="font-label-md text-label-md text-on-surface-variant">Total Mahasiswa Aktif</p>
-                            <p className="font-headline-sm text-headline-sm text-primary">28</p>
+                            <p className="font-headline-sm text-headline-sm text-primary">{totalMahasiswaAktif}</p>
                         </div>
                         <div className="flex-1 bg-surface-container-low rounded-lg p-3 border border-outline-variant/30">
                             <p className="font-label-md text-label-md text-on-surface-variant">Total Anggota Aktif</p>
-                            <p className="font-headline-sm text-headline-sm text-primary">14</p>
+                            <p className="font-headline-sm text-headline-sm text-primary">{totalAnggotaAktif}</p>
                         </div>
-                        <div className="flex-1 bg-primary text-on-primary rounded-lg p-3 flex items-center justify-center cursor-pointer hover:bg-primary-container hover:scale-105 active:scale-95 transition-all duration-100">
+                        <Link
+                            href="/admin/organisasi/create"
+                            className="flex-1 bg-primary text-on-primary rounded-lg p-3 flex items-center justify-center cursor-pointer hover:bg-primary-container hover:scale-105 active:scale-95 transition-all duration-100 decoration-none"
+                        >
                             <Plus className="h-6 w-6" />
-                            <p className="text-on-primary font-label-lg text-label-lg cursor-pointer">Tambah UKM</p>
-                        </div>
+                            <span className="text-on-primary font-label-lg text-label-lg">Tambah UKM</span>
+                        </Link>
                     </div>
                 </div>
                 <div className="bg-primary-container rounded-xl p-unit-lg shadow-lg relative overflow-hidden text-on-primary flex flex-col justify-between">

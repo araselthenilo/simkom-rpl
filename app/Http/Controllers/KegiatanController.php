@@ -18,14 +18,14 @@ class KegiatanController extends Controller
         $isPrivileged = Gate::check('is-petugas') || Gate::check('is-pengurus-organisasi');
 
         $kegiatan = Kegiatan::where('id_profil', $profil->id_profil)
-            ->when(! $isPrivileged, fn($q) => $q->where('status_kegiatan', '!=', 'Dibatalkan'))
+            ->when(! $isPrivileged, fn ($q) => $q->where('status_kegiatan', '!=', 'Dibatalkan'))
             ->orderByDesc('tanggal_pelaksanaan')
             ->paginate(10);
 
         return Inertia::render('Kegiatan/Index', [
-            'profil'        => $profil->only('id_profil', 'nama_organisasi'),
-            'kegiatan'      => $kegiatan->through(
-                fn($k) => $isPrivileged
+            'profil' => $profil->only('id_profil', 'nama_organisasi'),
+            'kegiatan' => $kegiatan->through(
+                fn ($k) => $isPrivileged
                     ? $k
                     : $k->only(
                         'id_kegiatan',
@@ -38,7 +38,7 @@ class KegiatanController extends Controller
                         'status_kegiatan'
                     )
             ),
-            'isPrivileged'  => $isPrivileged,
+            'isPrivileged' => $isPrivileged,
         ]);
     }
 
@@ -77,14 +77,14 @@ class KegiatanController extends Controller
         Gate::authorize('is-pengurus-organisasi');
 
         $validated = $request->validate([
-            'id_profil'           => ['required', 'integer', 'exists:profil_organisasi,id_profil'],
-            'nama_kegiatan'       => ['required', 'string', 'max:200'],
-            'jenis_kegiatan'      => ['required', 'in:Seminar,Pelatihan,Lomba,Pengabdian Masyarakat'],
-            'deskripsi_kegiatan'  => ['required', 'string'],
-            'biaya_pendaftaran'   => ['required', 'numeric', 'min:0'],
+            'id_profil' => ['required', 'integer', 'exists:profil_organisasi,id_profil'],
+            'nama_kegiatan' => ['required', 'string', 'max:200'],
+            'jenis_kegiatan' => ['required', 'in:Seminar,Pelatihan,Lomba,Pengabdian Masyarakat'],
+            'deskripsi_kegiatan' => ['required', 'string'],
+            'biaya_pendaftaran' => ['required', 'numeric', 'min:0'],
             'tanggal_pelaksanaan' => ['required', 'date'],
-            'lokasi_kegiatan'     => ['required', 'string', 'max:200'],
-            'kuota_peserta'       => ['required', 'integer', 'min:1'],
+            'lokasi_kegiatan' => ['required', 'string', 'max:200'],
+            'kuota_peserta' => ['required', 'integer', 'min:1'],
         ]);
 
         Kegiatan::create($validated);
@@ -99,7 +99,7 @@ class KegiatanController extends Controller
         Gate::authorize('is-petugas');
 
         $validated = request()->validate([
-            'status_kegiatan'   => ['required', 'in:Mendatang,Sedang berlangsung,Selesai,Dibatalkan'],
+            'status_kegiatan' => ['required', 'in:Mendatang,Sedang berlangsung,Selesai,Dibatalkan'],
             'alasan_pembatalan' => [
                 'nullable',
                 'required_if:status_kegiatan,Dibatalkan',
@@ -121,13 +121,13 @@ class KegiatanController extends Controller
         Gate::authorize('is-pengurus-organisasi');
 
         $validated = $request->validate([
-            'nama_kegiatan'       => ['required', 'string', 'max:200'],
-            'jenis_kegiatan'      => ['required', 'in:Seminar,Pelatihan,Lomba,Pengabdian Masyarakat'],
-            'deskripsi_kegiatan'  => ['required', 'string'],
-            'biaya_pendaftaran'   => ['required', 'numeric', 'min:0'],
+            'nama_kegiatan' => ['required', 'string', 'max:200'],
+            'jenis_kegiatan' => ['required', 'in:Seminar,Pelatihan,Lomba,Pengabdian Masyarakat'],
+            'deskripsi_kegiatan' => ['required', 'string'],
+            'biaya_pendaftaran' => ['required', 'numeric', 'min:0'],
             'tanggal_pelaksanaan' => ['required', 'date'],
-            'lokasi_kegiatan'     => ['required', 'string', 'max:200'],
-            'kuota_peserta'       => ['required', 'integer', 'min:1'],
+            'lokasi_kegiatan' => ['required', 'string', 'max:200'],
+            'kuota_peserta' => ['required', 'integer', 'min:1'],
         ]);
 
         $kegiatan->update($validated);

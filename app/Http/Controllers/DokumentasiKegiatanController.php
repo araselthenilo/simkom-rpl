@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DokumentasiKegiatan;
 use App\Models\Kegiatan;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,7 +20,7 @@ class DokumentasiKegiatanController extends Controller
 
     private const DOC_TYPES = [
         'proposal' => 'dokumen_proposal',
-        'lpj'      => 'dokumen_lpj',
+        'lpj' => 'dokumen_lpj',
         'evaluasi' => 'hasil_evaluasi',
     ];
 
@@ -33,13 +34,13 @@ class DokumentasiKegiatanController extends Controller
         $dok = $kegiatan->dokumentasiKegiatan;
 
         return Inertia::render('DokumentasiKegiatan/Show', [
-            'kegiatan'    => $kegiatan,
+            'kegiatan' => $kegiatan,
             'dokumentasi' => $dok ? [
-                'id_dokumentasi'        => $dok->id_dokumentasi,
-                'has_proposal'          => (bool) $dok->dokumen_proposal,
-                'has_lpj'               => (bool) $dok->dokumen_lpj,
-                'has_hasil_evaluasi'    => (bool) $dok->hasil_evaluasi,
-                'status_dokumentasi'    => $dok->status_dokumentasi,
+                'id_dokumentasi' => $dok->id_dokumentasi,
+                'has_proposal' => (bool) $dok->dokumen_proposal,
+                'has_lpj' => (bool) $dok->dokumen_lpj,
+                'has_hasil_evaluasi' => (bool) $dok->hasil_evaluasi,
+                'status_dokumentasi' => $dok->status_dokumentasi,
                 'waktu_terakhir_diubah' => $dok->waktu_terakhir_diubah,
             ] : null,
         ]);
@@ -102,7 +103,7 @@ class DokumentasiKegiatanController extends Controller
 
         $validated = $request->validate([
             'status_dokumentasi' => ['required', Rule::in(['Diproses', 'Butuh Revisi', 'Diterima'])],
-            'hasil_evaluasi'     => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'hasil_evaluasi' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
         ]);
 
         $data = ['status_dokumentasi' => $validated['status_dokumentasi']];
@@ -134,12 +135,13 @@ class DokumentasiKegiatanController extends Controller
         abort_if($dok === null, 404);
 
         $path = $dok->{self::DOC_TYPES[$type]};
-        abort_if($path === null || !Storage::disk(self::DISK)->exists($path), 404);
+        abort_if($path === null || ! Storage::disk(self::DISK)->exists($path), 404);
 
-        $filename = "{$type}_{$kegiatan->id_kegiatan}." . pathinfo($path, PATHINFO_EXTENSION);
+        $filename = "{$type}_{$kegiatan->id_kegiatan}.".pathinfo($path, PATHINFO_EXTENSION);
 
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        /** @var FilesystemAdapter $disk */
         $disk = Storage::disk(self::DISK);
+
         return $disk->download($path, $filename);
     }
 }

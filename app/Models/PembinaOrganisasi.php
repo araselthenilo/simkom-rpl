@@ -11,8 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PembinaOrganisasi extends Model
 {
     protected $table = 'pembina_organisasi';
+
     protected $primaryKey = 'nip_pembina';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     public function organisasi(): BelongsTo
