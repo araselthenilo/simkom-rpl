@@ -9,7 +9,8 @@ interface DashboardPageProps {
 }
 
 export default function AdminDashboardPage() {
-    const { totalOrganisasiAktif, totalMahasiswaAktif, totalAnggotaAktif } = usePage<DashboardPageProps>().props;
+    const { totalOrganisasiAktif, totalMahasiswaAktif, totalAnggotaAktif } =
+        usePage<DashboardPageProps>().props;
 
     return (
         <Dashboard
@@ -19,4 +20,3 @@ export default function AdminDashboardPage() {
         />
     );
 }
-

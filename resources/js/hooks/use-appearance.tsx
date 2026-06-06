@@ -58,7 +58,11 @@ const getStoredAppearance = (): Appearance => {
         if (match) {
             const cookieVal = decodeURIComponent(match[2]) as Appearance;
 
-            if (cookieVal === 'light' || cookieVal === 'dark' || cookieVal === 'system') {
+            if (
+                cookieVal === 'light' ||
+                cookieVal === 'dark' ||
+                cookieVal === 'system'
+            ) {
                 return cookieVal;
             }
         }

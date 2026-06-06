@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organisasi;
+use App\Models\Pembinaan;
+use App\Models\PembinaOrganisasi;
 use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -86,9 +90,9 @@ class OrganisasiController extends Controller
         $organisasi = Organisasi::with(['profilOrganisasi' => function ($query) {
             $query->orderBy('periode_kepengurusan', 'desc');
         }])
-        ->withCount('anggotaOrganisasi')
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->withCount('anggotaOrganisasi')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('admin/manajemen-organisasi', [
             'organisasi' => $organisasi,
@@ -103,7 +107,7 @@ class OrganisasiController extends Controller
         Gate::authorize('is-admin');
 
         $organisasi->update([
-            'status_aktif' => !$organisasi->status_aktif,
+            'status_aktif' => ! $organisasi->status_aktif,
         ]);
 
         Inertia::flash('toast', [
@@ -150,10 +154,18 @@ class OrganisasiController extends Controller
             $profil->pembina = $pembinaans->filter(function ($pembinaan) use ($profil) {
                 return $pembinaan->periode_pembinaan === $profil->periode_kepengurusan;
             })->map(function ($pembinaan) {
-                return $pembinaan->pembinaOrganisasi;
-            })->values();
+                $p = $pembinaan->pembinaOrganisasi;
+                if ($p) {
+                    $p->id_pembinaan = $pembinaan->id_pembinaan;
+                }
+
+                return $p;
+            })->filter()->values();
+
             return $profil;
         });
+
+        $allPembina = PembinaOrganisasi::orderBy('nama_lengkap', 'asc')->get();
 
         return Inertia::render('admin/riwayat-profil', [
             'organisasi' => [
@@ -162,6 +174,198 @@ class OrganisasiController extends Controller
                 'status_aktif' => $organisasi->status_aktif,
             ],
             'profils' => $profils,
+            'allPembina' => $allPembina,
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new organization profile.
+     */
+    public function createProfil(Organisasi $organisasi): Response
+    {
+        Gate::authorize('is-admin');
+
+        return Inertia::render('admin/tambah-profil-organisasi', [
+            'organisasi' => [
+                'id_organisasi' => $organisasi->id_organisasi,
+                'nama_organisasi' => $organisasi->nama_organisasi,
+            ],
+        ]);
+    }
+
+    /**
+     * Store a newly created organization profile.
+     */
+    public function storeProfil(Request $request, Organisasi $organisasi): RedirectResponse
+    {
+        Gate::authorize('is-admin');
+
+        $validated = $request->validate([
+            'periode_kepengurusan' => [
+                'required',
+                'string',
+                'size:9',
+                'regex:/^\d{4}\/\d{4}$/',
+                Rule::unique('profil_organisasi')
+                    ->where(fn ($query) => $query->where('id_organisasi', $organisasi->id_organisasi)),
+            ],
+            'logo_organisasi' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'deskripsi_organisasi' => ['required', 'string'],
+            'visi_organisasi' => ['required', 'string'],
+            'misi_organisasi' => ['required', 'string'],
+            'status_aktif' => ['required', 'boolean'],
+        ]);
+
+        $logoPath = $request->file('logo_organisasi')
+            ->store('logo_organisasi', 'public');
+
+        ProfilOrganisasi::create([
+            'id_organisasi' => $organisasi->id_organisasi,
+            'periode_kepengurusan' => $validated['periode_kepengurusan'],
+            'logo_organisasi' => $logoPath,
+            'deskripsi_organisasi' => $validated['deskripsi_organisasi'],
+            'visi_organisasi' => $validated['visi_organisasi'],
+            'misi_organisasi' => $validated['misi_organisasi'],
+            'status_aktif' => $validated['status_aktif'],
+        ]);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Profil organisasi baru berhasil ditambahkan.',
+        ]);
+
+        return to_route('admin.organisasi.profil', ['organisasi' => $organisasi->id_organisasi]);
+    }
+
+    /**
+     * Show the form for editing an organization profile.
+     */
+    public function editProfil(ProfilOrganisasi $profilOrganisasi): Response
+    {
+        Gate::authorize('is-admin');
+
+        $profilOrganisasi->load('organisasi');
+
+        return Inertia::render('admin/edit-profil-organisasi', [
+            'profilOrganisasi' => $profilOrganisasi,
+        ]);
+    }
+
+    /**
+     * Update an organization profile.
+     */
+    public function updateProfil(Request $request, ProfilOrganisasi $profilOrganisasi): RedirectResponse
+    {
+        Gate::authorize('is-admin');
+
+        $validated = $request->validate([
+            'periode_kepengurusan' => [
+                'required',
+                'string',
+                'size:9',
+                'regex:/^\d{4}\/\d{4}$/',
+                Rule::unique('profil_organisasi')
+                    ->where(fn ($query) => $query->where('id_organisasi', $profilOrganisasi->id_organisasi))
+                    ->ignore($profilOrganisasi->id_profil, 'id_profil'),
+            ],
+            'logo_organisasi' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'deskripsi_organisasi' => ['required', 'string'],
+            'visi_organisasi' => ['required', 'string'],
+            'misi_organisasi' => ['required', 'string'],
+            'status_aktif' => ['required', 'boolean'],
+        ]);
+
+        if ($request->hasFile('logo_organisasi')) {
+            if ($profilOrganisasi->logo_organisasi) {
+                Storage::disk('public')->delete($profilOrganisasi->logo_organisasi);
+            }
+
+            $validated['logo_organisasi'] = $request->file('logo_organisasi')
+                ->store('logo_organisasi', 'public');
+        } else {
+            unset($validated['logo_organisasi']);
+        }
+
+        $profilOrganisasi->update($validated);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Profil organisasi berhasil diperbarui.',
+        ]);
+
+        return to_route('admin.organisasi.profil', ['organisasi' => $profilOrganisasi->id_organisasi]);
+    }
+
+    /**
+     * Store a new pembinaan association.
+     */
+    public function storePembinaan(Request $request, Organisasi $organisasi): RedirectResponse
+    {
+        Gate::authorize('is-admin');
+
+        $validated = $request->validate([
+            'nip_pembina' => ['required', 'string', 'exists:pembina_organisasi,nip_pembina'],
+            'periode_pembinaan' => ['required', 'string', 'size:9', 'regex:/^\d{4}\/\d{4}$/'],
+        ]);
+
+        // Check unique constraint
+        $exists = Pembinaan::where([
+            'id_organisasi' => $organisasi->id_organisasi,
+            'nip_pembina' => $validated['nip_pembina'],
+            'periode_pembinaan' => $validated['periode_pembinaan'],
+        ])->exists();
+
+        if ($exists) {
+            return back()->withErrors([
+                'nip_pembina' => 'Pembina ini sudah ditugaskan pada periode kepengurusan tersebut.',
+            ]);
+        }
+
+        $pembinaan = new Pembinaan;
+        $pembinaan->id_organisasi = $organisasi->id_organisasi;
+        $pembinaan->nip_pembina = $validated['nip_pembina'];
+        $pembinaan->periode_pembinaan = $validated['periode_pembinaan'];
+        $pembinaan->save();
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Pembina organisasi berhasil ditambahkan.',
+        ]);
+
+        return back();
+    }
+
+    /**
+     * Remove a pembinaan association.
+     */
+    public function destroyPembinaan(Pembinaan $pembinaan): RedirectResponse
+    {
+        Gate::authorize('is-admin');
+
+        $pembinaan->delete();
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Pembina organisasi berhasil dihapus.',
+        ]);
+
+        return back();
+    }
+
+    /**
+     * Display the officers (Pengurus Organisasi) for a specific profile period.
+     */
+    public function showPengurus(ProfilOrganisasi $profilOrganisasi): Response
+    {
+        Gate::authorize('is-admin');
+
+        $profilOrganisasi->load([
+            'organisasi',
+            'pengurusOrganisasi.anggotaOrganisasi.mahasiswa',
+        ]);
+
+        return Inertia::render('admin/pengurus-periode', [
+            'profilOrganisasi' => $profilOrganisasi,
         ]);
     }
 }

@@ -17,7 +17,7 @@ import {
     Users,
     AlertCircle,
     Info,
-    RefreshCw
+    RefreshCw,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -34,13 +34,19 @@ interface Activity {
     tanggal_pelaksanaan: string;
     lokasi_kegiatan: string;
     kuota_peserta: number;
-    status_kegiatan: 'Mendatang' | 'Sedang berlangsung' | 'Selesai' | 'Dibatalkan';
+    status_kegiatan:
+        | 'Mendatang'
+        | 'Sedang berlangsung'
+        | 'Selesai'
+        | 'Dibatalkan';
     alasan_pembatalan: string | null;
 }
 
 export default function ManajemenKegiatan() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState<'Semua' | 'Mendatang' | 'Sedang berlangsung' | 'Selesai' | 'Dibatalkan'>('Semua');
+    const [activeTab, setActiveTab] = useState<
+        'Semua' | 'Mendatang' | 'Sedang berlangsung' | 'Selesai' | 'Dibatalkan'
+    >('Semua');
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
     // Sample database-backed kegiatan data state
@@ -51,7 +57,8 @@ export default function ManajemenKegiatan() {
             username_petugas: 'admin_budi',
             nama_kegiatan: 'Seminar IT Nasional: Masa Depan Web Modern & AI',
             jenis_kegiatan: 'Seminar',
-            deskripsi_kegiatan: 'Seminar nasional yang membahas perkembangan teknologi web terbaru dan integrasi kecerdasan buatan dalam pengembangan aplikasi masa kini.',
+            deskripsi_kegiatan:
+                'Seminar nasional yang membahas perkembangan teknologi web terbaru dan integrasi kecerdasan buatan dalam pengembangan aplikasi masa kini.',
             biaya_pendaftaran: 50000,
             tanggal_pelaksanaan: '2026-06-15',
             lokasi_kegiatan: 'Aula Kampus Renon',
@@ -63,9 +70,11 @@ export default function ManajemenKegiatan() {
             id_kegiatan: 2,
             id_profil: 101,
             username_petugas: 'admin_budi',
-            nama_kegiatan: 'Pelatihan UI/UX: Menguasai Auto-Layout & Design System',
+            nama_kegiatan:
+                'Pelatihan UI/UX: Menguasai Auto-Layout & Design System',
             jenis_kegiatan: 'Pelatihan',
-            deskripsi_kegiatan: 'Workshop mendalam tentang pembuatan design system berskala besar di Figma dan taktik optimal auto-layout.',
+            deskripsi_kegiatan:
+                'Workshop mendalam tentang pembuatan design system berskala besar di Figma dan taktik optimal auto-layout.',
             biaya_pendaftaran: 25000,
             tanggal_pelaksanaan: '2026-06-08',
             lokasi_kegiatan: 'Lab Komputer 3',
@@ -79,7 +88,8 @@ export default function ManajemenKegiatan() {
             username_petugas: 'admin_sari',
             nama_kegiatan: 'Lomba Hackathon: Solusi Cerdas untuk Lingkungan',
             jenis_kegiatan: 'Lomba',
-            deskripsi_kegiatan: 'Kompetisi coding 24 jam untuk merancang solusi digital ramah lingkungan dan keberlanjutan energi.',
+            deskripsi_kegiatan:
+                'Kompetisi coding 24 jam untuk merancang solusi digital ramah lingkungan dan keberlanjutan energi.',
             biaya_pendaftaran: 150000,
             tanggal_pelaksanaan: '2026-05-20',
             lokasi_kegiatan: 'Gedung IT Center STIKOM',
@@ -93,7 +103,8 @@ export default function ManajemenKegiatan() {
             username_petugas: 'admin_budi',
             nama_kegiatan: 'Pengabdian Masyarakat: Hijaukan Pantai Serangan',
             jenis_kegiatan: 'Pengabdian Masyarakat',
-            deskripsi_kegiatan: 'Kegiatan sosial penanaman bibit pohon mangrove bersama komunitas pecinta alam Bali.',
+            deskripsi_kegiatan:
+                'Kegiatan sosial penanaman bibit pohon mangrove bersama komunitas pecinta alam Bali.',
             biaya_pendaftaran: 0,
             tanggal_pelaksanaan: '2026-04-10',
             lokasi_kegiatan: 'Pantai Melasti Serangan',
@@ -105,9 +116,11 @@ export default function ManajemenKegiatan() {
             id_kegiatan: 5,
             id_profil: 103,
             username_petugas: 'admin_budi',
-            nama_kegiatan: 'Seminar Cyber Security: Melindungi Aset Digital Organisasi',
+            nama_kegiatan:
+                'Seminar Cyber Security: Melindungi Aset Digital Organisasi',
             jenis_kegiatan: 'Seminar',
-            deskripsi_kegiatan: 'Pengenalan konsep dasar keamanan informasi dan ancaman cyber terkini di era transformasi digital.',
+            deskripsi_kegiatan:
+                'Pengenalan konsep dasar keamanan informasi dan ancaman cyber terkini di era transformasi digital.',
             biaya_pendaftaran: 0,
             tanggal_pelaksanaan: '2026-06-05',
             lokasi_kegiatan: 'Online via Zoom',
@@ -121,14 +134,16 @@ export default function ManajemenKegiatan() {
             username_petugas: 'admin_budi',
             nama_kegiatan: 'Lomba DevFest STIKOM 2026',
             jenis_kegiatan: 'Lomba',
-            deskripsi_kegiatan: 'Festival kompetisi teknologi tingkat regional.',
+            deskripsi_kegiatan:
+                'Festival kompetisi teknologi tingkat regional.',
             biaya_pendaftaran: 75000,
             tanggal_pelaksanaan: '2026-06-25',
             lokasi_kegiatan: 'Gedung Aula Kampus STIKOM',
             kuota_peserta: 150,
             status_kegiatan: 'Dibatalkan',
-            alasan_pembatalan: 'Kurangnya alokasi dana dan bentrok dengan jadwal ujian akhir semester.',
-        }
+            alasan_pembatalan:
+                'Kurangnya alokasi dana dan bentrok dengan jadwal ujian akhir semester.',
+        },
     ]);
 
     // Modal state controllers
@@ -152,30 +167,48 @@ export default function ManajemenKegiatan() {
 
     // Metrics calculations
     const totalActivities = activities.length;
-    const totalUpcoming = activities.filter(a => a.status_kegiatan === 'Mendatang').length;
-    const totalActiveOrFinished = activities.filter(a => a.status_kegiatan === 'Sedang berlangsung' || a.status_kegiatan === 'Selesai').length;
-    const totalCancelled = activities.filter(a => a.status_kegiatan === 'Dibatalkan').length;
+    const totalUpcoming = activities.filter(
+        (a) => a.status_kegiatan === 'Mendatang',
+    ).length;
+    const totalActiveOrFinished = activities.filter(
+        (a) =>
+            a.status_kegiatan === 'Sedang berlangsung' ||
+            a.status_kegiatan === 'Selesai',
+    ).length;
+    const totalCancelled = activities.filter(
+        (a) => a.status_kegiatan === 'Dibatalkan',
+    ).length;
 
     // Currency Formatter
     const formatRupiah = (value: number) => {
         if (value === 0) {
-return 'Gratis';
-}
+            return 'Gratis';
+        }
 
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(value).replace('IDR', 'Rp');
+            minimumFractionDigits: 0,
+        })
+            .format(value)
+            .replace('IDR', 'Rp');
     };
 
     // Filter and search activities list
-    const filteredActivities = activities.filter(activity => {
-        const matchesSearch = activity.nama_kegiatan.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            activity.lokasi_kegiatan.toLowerCase().includes(searchQuery.toLowerCase());
+    const filteredActivities = activities.filter((activity) => {
+        const matchesSearch =
+            activity.nama_kegiatan
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+            activity.lokasi_kegiatan
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
 
-        const matchesStatus = activeTab === 'Semua' || activity.status_kegiatan === activeTab;
-        const matchesCategory = selectedCategory === 'Semua' || activity.jenis_kegiatan === selectedCategory;
+        const matchesStatus =
+            activeTab === 'Semua' || activity.status_kegiatan === activeTab;
+        const matchesCategory =
+            selectedCategory === 'Semua' ||
+            activity.jenis_kegiatan === selectedCategory;
 
         return matchesSearch && matchesStatus && matchesCategory;
     });
@@ -197,7 +230,11 @@ return 'Gratis';
     const handleCreateActivity = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.nama_kegiatan || !formData.lokasi_kegiatan || !formData.deskripsi_kegiatan) {
+        if (
+            !formData.nama_kegiatan ||
+            !formData.lokasi_kegiatan ||
+            !formData.deskripsi_kegiatan
+        ) {
             alert('Harap isi semua kolom wajib!');
 
             return;
@@ -218,7 +255,7 @@ return 'Gratis';
             alasan_pembatalan: null,
         };
 
-        setActivities(prev => [newActivity, ...prev]);
+        setActivities((prev) => [newActivity, ...prev]);
         setIsCreateModalOpen(false);
     };
 
@@ -240,24 +277,24 @@ return 'Gratis';
         e.preventDefault();
 
         if (!activeActivity) {
-return;
-}
+            return;
+        }
 
-        setActivities(prev =>
-            prev.map(item =>
+        setActivities((prev) =>
+            prev.map((item) =>
                 item.id_kegiatan === activeActivity.id_kegiatan
                     ? {
-                        ...item,
-                        nama_kegiatan: formData.nama_kegiatan,
-                        jenis_kegiatan: formData.jenis_kegiatan,
-                        deskripsi_kegiatan: formData.deskripsi_kegiatan,
-                        biaya_pendaftaran: Number(formData.biaya_pendaftaran),
-                        tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
-                        lokasi_kegiatan: formData.lokasi_kegiatan,
-                        kuota_peserta: Number(formData.kuota_peserta),
-                    }
-                    : item
-            )
+                          ...item,
+                          nama_kegiatan: formData.nama_kegiatan,
+                          jenis_kegiatan: formData.jenis_kegiatan,
+                          deskripsi_kegiatan: formData.deskripsi_kegiatan,
+                          biaya_pendaftaran: Number(formData.biaya_pendaftaran),
+                          tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
+                          lokasi_kegiatan: formData.lokasi_kegiatan,
+                          kuota_peserta: Number(formData.kuota_peserta),
+                      }
+                    : item,
+            ),
         );
         setIsEditModalOpen(false);
         setActiveActivity(null);
@@ -273,8 +310,8 @@ return;
         e.preventDefault();
 
         if (!activeActivity) {
-return;
-}
+            return;
+        }
 
         if (!cancellationReasonInput.trim()) {
             alert('Harap isi alasan pembatalan!');
@@ -282,16 +319,16 @@ return;
             return;
         }
 
-        setActivities(prev =>
-            prev.map(item =>
+        setActivities((prev) =>
+            prev.map((item) =>
                 item.id_kegiatan === activeActivity.id_kegiatan
                     ? {
-                        ...item,
-                        status_kegiatan: 'Dibatalkan',
-                        alasan_pembatalan: cancellationReasonInput,
-                    }
-                    : item
-            )
+                          ...item,
+                          status_kegiatan: 'Dibatalkan',
+                          alasan_pembatalan: cancellationReasonInput,
+                      }
+                    : item,
+            ),
         );
         setIsCancelModalOpen(false);
         setActiveActivity(null);
@@ -299,11 +336,16 @@ return;
 
     const handleDeleteActivity = (id: number) => {
         if (confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
-            setActivities(prev => prev.filter(item => item.id_kegiatan !== id));
+            setActivities((prev) =>
+                prev.filter((item) => item.id_kegiatan !== id),
+            );
         }
     };
 
-    const handleStatusTransition = (id: number, currentStatus: Activity['status_kegiatan']) => {
+    const handleStatusTransition = (
+        id: number,
+        currentStatus: Activity['status_kegiatan'],
+    ) => {
         let nextStatus: Activity['status_kegiatan'] = 'Mendatang';
 
         if (currentStatus === 'Mendatang') {
@@ -314,29 +356,36 @@ return;
             nextStatus = 'Mendatang';
         }
 
-        setActivities(prev =>
-            prev.map(item =>
+        setActivities((prev) =>
+            prev.map((item) =>
                 item.id_kegiatan === id
-                    ? { ...item, status_kegiatan: nextStatus, alasan_pembatalan: null }
-                    : item
-            )
+                    ? {
+                          ...item,
+                          status_kegiatan: nextStatus,
+                          alasan_pembatalan: null,
+                      }
+                    : item,
+            ),
         );
     };
 
     return (
-        <main className="p-margin-desktop max-w-container-max mx-auto w-full space-y-gutter">
+        <main className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
             {/* Header */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-unit-md mb-unit-xl">
+            <header className="mb-unit-xl flex flex-col items-start justify-between gap-unit-md md:flex-row md:items-end">
                 <div>
-                    <h2 className="font-headline-lg text-headline-lg text-primary">Manajemen Kegiatan</h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant mt-1">
-                        Kelola pendaftaran, lokasi, biaya, dan status pelaksanaan kegiatan organisasi.
+                    <h2 className="font-headline-lg text-headline-lg text-primary">
+                        Manajemen Kegiatan
+                    </h2>
+                    <p className="mt-1 font-body-md text-body-md text-on-surface-variant">
+                        Kelola pendaftaran, lokasi, biaya, dan status
+                        pelaksanaan kegiatan organisasi.
                     </p>
                 </div>
-                <div className="flex gap-unit-sm w-full md:w-auto">
+                <div className="flex w-full gap-unit-sm md:w-auto">
                     <Button
                         onClick={openCreateModal}
-                        className="bg-primary text-on-primary px-6 py-3 h-auto rounded-lg font-label-lg flex items-center justify-center gap-2 shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer border-none w-full md:w-auto"
+                        className="flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"
                     >
                         <PlusCircle className="h-[18px] w-[18px]" />
                         Kegiatan Baru
@@ -345,56 +394,73 @@ return;
             </header>
 
             {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-unit-xl">
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-primary/70 font-label-md">Total Kegiatan</span>
-                        <Calendar className="text-primary/40 h-5 w-5" />
+            <div className="mb-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-4">
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-primary/70">
+                            Total Kegiatan
+                        </span>
+                        <Calendar className="h-5 w-5 text-primary/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-primary font-bold">
+                    <div className="font-headline-md text-headline-md font-bold text-primary">
                         {totalActivities}
                     </div>
                 </Card>
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-secondary font-label-md">Kegiatan Mendatang</span>
-                        <Info className="text-secondary/40 h-5 w-5" />
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-secondary">
+                            Kegiatan Mendatang
+                        </span>
+                        <Info className="h-5 w-5 text-secondary/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-secondary font-bold">
+                    <div className="font-headline-md text-headline-md font-bold text-secondary">
                         {totalUpcoming}
                     </div>
                 </Card>
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-green-700 font-label-md">Aktif / Selesai</span>
-                        <CheckCircle2 className="text-green-700/40 h-5 w-5" />
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-green-700">
+                            Aktif / Selesai
+                        </span>
+                        <CheckCircle2 className="h-5 w-5 text-green-700/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-green-700 font-bold">
+                    <div className="font-headline-md text-headline-md font-bold text-green-700">
                         {totalActiveOrFinished}
                     </div>
                 </Card>
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-error font-label-md">Dibatalkan</span>
-                        <XCircle className="text-error/40 h-5 w-5" />
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-error">
+                            Dibatalkan
+                        </span>
+                        <XCircle className="h-5 w-5 text-error/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-error font-bold">
+                    <div className="font-headline-md text-headline-md font-bold text-error">
                         {totalCancelled}
                     </div>
                 </Card>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="bg-surface-container-lowest rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant p-unit-md mb-unit-lg flex flex-col lg:flex-row justify-between items-center gap-unit-md">
+            <div className="mb-unit-lg flex flex-col items-center justify-between gap-unit-md rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-md shadow-[0px_2px_4px_rgba(26,54,93,0.05)] lg:flex-row">
                 {/* Status Tab Filters */}
-                <div className="flex p-1 bg-surface-container-low rounded-lg w-full lg:w-auto overflow-x-auto">
-                    {(['Semua', 'Mendatang', 'Sedang berlangsung', 'Selesai', 'Dibatalkan'] as const).map((tab) => (
+                <div className="flex w-full overflow-x-auto rounded-lg bg-surface-container-low p-1 lg:w-auto">
+                    {(
+                        [
+                            'Semua',
+                            'Mendatang',
+                            'Sedang berlangsung',
+                            'Selesai',
+                            'Dibatalkan',
+                        ] as const
+                    ).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2 rounded-md font-label-lg transition-all text-nowrap cursor-pointer ${activeTab === tab
-                                ? 'bg-white shadow-sm text-primary font-semibold'
-                                : 'text-on-surface-variant hover:text-primary'
+                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${
+                                activeTab === tab
+                                    ? 'bg-white font-semibold text-primary shadow-sm'
+                                    : 'text-on-surface-variant hover:text-primary'
                             }`}
                         >
                             {tab}
@@ -403,28 +469,32 @@ return;
                 </div>
 
                 {/* Search & Category Filter */}
-                <div className="flex flex-col sm:flex-row gap-unit-md w-full lg:w-auto items-stretch sm:items-center">
+                <div className="flex w-full flex-col items-stretch gap-unit-md sm:flex-row sm:items-center lg:w-auto">
                     {/* Category Select */}
                     <div className="relative w-full sm:w-48">
                         <select
                             value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-sm text-on-background appearance-none cursor-pointer pr-10"
+                            onChange={(e) =>
+                                setSelectedCategory(e.target.value)
+                            }
+                            className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 pr-10 font-body-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                         >
                             <option value="Semua">Semua Kategori</option>
                             <option value="Seminar">Seminar</option>
                             <option value="Pelatihan">Pelatihan</option>
                             <option value="Lomba">Lomba</option>
-                            <option value="Pengabdian Masyarakat">Pengabdian</option>
+                            <option value="Pengabdian Masyarakat">
+                                Pengabdian
+                            </option>
                         </select>
-                        <Tag className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60 h-4 w-4 pointer-events-none" />
+                        <Tag className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-on-surface-variant/60" />
                     </div>
 
                     {/* Search Input */}
                     <div className="relative w-full sm:w-72">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant h-4 w-4" />
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
                         <input
-                            className="w-full pl-10 pr-4 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-sm text-on-background"
+                            className="w-full rounded-lg border border-outline-variant bg-background py-2 pr-4 pl-10 font-body-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                             placeholder="Cari kegiatan atau lokasi..."
                             type="text"
                             value={searchQuery}
@@ -435,21 +505,34 @@ return;
             </div>
 
             {/* Activities Table */}
-            <Card className="bg-surface-container-lowest rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant overflow-hidden ring-0">
+            <Card className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-surface-container-low border-b border-outline-variant">
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Nama & Kategori</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Pelaksanaan & Tempat</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Biaya & Kuota</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Status</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider text-right">Aksi</th>
+                            <tr className="border-b border-outline-variant bg-surface-container-low">
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Nama & Kategori
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Pelaksanaan & Tempat
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Biaya & Kuota
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Status
+                                </th>
+                                <th className="px-unit-lg py-4 text-right font-label-lg tracking-wider text-primary uppercase">
+                                    Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/50">
                             {filteredActivities.map((activity) => (
-                                <tr key={activity.id_kegiatan} className="hover:bg-primary/[0.02] transition-colors group">
+                                <tr
+                                    key={activity.id_kegiatan}
+                                    className="group transition-colors hover:bg-primary/[0.02]"
+                                >
                                     {/* Name & Category */}
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col gap-1">
@@ -457,7 +540,7 @@ return;
                                                 {activity.nama_kegiatan}
                                             </span>
                                             <div className="flex items-center gap-2">
-                                                <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-primary-fixed text-primary border border-primary/10">
+                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
                                                     {activity.jenis_kegiatan}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">
@@ -472,11 +555,17 @@ return;
                                         <div className="flex flex-col text-on-surface-variant">
                                             <div className="flex items-center gap-1.5 font-body-sm">
                                                 <Calendar className="h-3.5 w-3.5 text-primary/60" />
-                                                <span>{activity.tanggal_pelaksanaan}</span>
+                                                <span>
+                                                    {
+                                                        activity.tanggal_pelaksanaan
+                                                    }
+                                                </span>
                                             </div>
-                                            <div className="flex items-center gap-1.5 font-label-md mt-1 opacity-80">
+                                            <div className="mt-1 flex items-center gap-1.5 font-label-md opacity-80">
                                                 <MapPin className="h-3.5 w-3.5 text-error/60" />
-                                                <span className="truncate max-w-[150px]">{activity.lokasi_kegiatan}</span>
+                                                <span className="max-w-[150px] truncate">
+                                                    {activity.lokasi_kegiatan}
+                                                </span>
                                             </div>
                                         </div>
                                     </td>
@@ -486,11 +575,19 @@ return;
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-1 font-body-md font-medium text-on-background">
                                                 <DollarSign className="h-3.5 w-3.5 text-green-600" />
-                                                <span>{formatRupiah(activity.biaya_pendaftaran)}</span>
+                                                <span>
+                                                    {formatRupiah(
+                                                        activity.biaya_pendaftaran,
+                                                    )}
+                                                </span>
                                             </div>
-                                            <div className="flex items-center gap-1 font-label-md text-on-surface-variant/80 mt-1">
+                                            <div className="mt-1 flex items-center gap-1 font-label-md text-on-surface-variant/80">
                                                 <Users className="h-3.5 w-3.5 text-primary/60" />
-                                                <span>Kuota: {activity.kuota_peserta} Orang</span>
+                                                <span>
+                                                    Kuota:{' '}
+                                                    {activity.kuota_peserta}{' '}
+                                                    Orang
+                                                </span>
                                             </div>
                                         </div>
                                     </td>
@@ -499,22 +596,36 @@ return;
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col items-start gap-1">
                                             <span
-                                                className={`px-3 py-1 rounded-full text-[12px] font-semibold flex items-center gap-1.5 ${activity.status_kegiatan === 'Selesai'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : activity.status_kegiatan === 'Sedang berlangsung'
-                                                        ? 'bg-amber-100 text-amber-800'
-                                                        : activity.status_kegiatan === 'Mendatang'
+                                                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${
+                                                    activity.status_kegiatan ===
+                                                    'Selesai'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : activity.status_kegiatan ===
+                                                            'Sedang berlangsung'
+                                                          ? 'bg-amber-100 text-amber-800'
+                                                          : activity.status_kegiatan ===
+                                                              'Mendatang'
                                                             ? 'bg-blue-100 text-blue-700'
                                                             : 'bg-red-100 text-red-700'
                                                 }`}
                                             >
                                                 {activity.status_kegiatan}
                                             </span>
-                                            {activity.status_kegiatan === 'Dibatalkan' && activity.alasan_pembatalan && (
-                                                <span className="text-[11px] text-red-600/90 font-label-md italic max-w-[160px] truncate" title={activity.alasan_pembatalan}>
-                                                    Ket: {activity.alasan_pembatalan}
-                                                </span>
-                                            )}
+                                            {activity.status_kegiatan ===
+                                                'Dibatalkan' &&
+                                                activity.alasan_pembatalan && (
+                                                    <span
+                                                        className="max-w-[160px] truncate font-label-md text-[11px] text-red-600/90 italic"
+                                                        title={
+                                                            activity.alasan_pembatalan
+                                                        }
+                                                    >
+                                                        Ket:{' '}
+                                                        {
+                                                            activity.alasan_pembatalan
+                                                        }
+                                                    </span>
+                                                )}
                                         </div>
                                     </td>
 
@@ -522,10 +633,16 @@ return;
                                     <td className="px-unit-lg py-4 text-right">
                                         <div className="flex justify-end gap-1.5">
                                             {/* Change Status Switcher */}
-                                            {activity.status_kegiatan !== 'Dibatalkan' && (
+                                            {activity.status_kegiatan !==
+                                                'Dibatalkan' && (
                                                 <button
-                                                    onClick={() => handleStatusTransition(activity.id_kegiatan, activity.status_kegiatan)}
-                                                    className="p-2 text-secondary hover:bg-secondary-fixed rounded-lg transition-colors cursor-pointer"
+                                                    onClick={() =>
+                                                        handleStatusTransition(
+                                                            activity.id_kegiatan,
+                                                            activity.status_kegiatan,
+                                                        )
+                                                    }
+                                                    className="cursor-pointer rounded-lg p-2 text-secondary transition-colors hover:bg-secondary-fixed"
                                                     title="Maju ke Tahap Selanjutnya"
                                                 >
                                                     <RefreshCw className="h-4 w-4" />
@@ -534,18 +651,25 @@ return;
 
                                             {/* Edit Button */}
                                             <button
-                                                onClick={() => openEditModal(activity)}
-                                                className="p-2 text-primary hover:bg-primary-fixed rounded-lg transition-colors cursor-pointer"
+                                                onClick={() =>
+                                                    openEditModal(activity)
+                                                }
+                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
                                                 title="Edit Detail Kegiatan"
                                             >
                                                 <Edit2 className="h-4 w-4" />
                                             </button>
 
                                             {/* Cancel Button */}
-                                            {activity.status_kegiatan !== 'Dibatalkan' && (
+                                            {activity.status_kegiatan !==
+                                                'Dibatalkan' && (
                                                 <button
-                                                    onClick={() => openCancelModal(activity)}
-                                                    className="p-2 text-error hover:bg-error-container rounded-lg transition-colors cursor-pointer"
+                                                    onClick={() =>
+                                                        openCancelModal(
+                                                            activity,
+                                                        )
+                                                    }
+                                                    className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
                                                     title="Batalkan Kegiatan"
                                                 >
                                                     <XCircle className="h-4 w-4" />
@@ -554,8 +678,12 @@ return;
 
                                             {/* Delete Button */}
                                             <button
-                                                onClick={() => handleDeleteActivity(activity.id_kegiatan)}
-                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                                onClick={() =>
+                                                    handleDeleteActivity(
+                                                        activity.id_kegiatan,
+                                                    )
+                                                }
+                                                className="cursor-pointer rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50"
                                                 title="Hapus Kegiatan"
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -566,7 +694,10 @@ return;
                             ))}
                             {filteredActivities.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-unit-lg py-8 text-center text-on-surface-variant font-body-md">
+                                    <td
+                                        colSpan={5}
+                                        className="px-unit-lg py-8 text-center font-body-md text-on-surface-variant"
+                                    >
                                         Tidak ada kegiatan yang ditemukan.
                                     </td>
                                 </tr>
@@ -576,21 +707,29 @@ return;
                 </div>
 
                 {/* Pagination */}
-                <div className="px-unit-lg py-4 bg-surface-container-low border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-unit-md">
+                <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant bg-surface-container-low px-unit-lg py-4 md:flex-row">
                     <span className="font-body-sm text-on-surface-variant">
-                        Menampilkan 1-{filteredActivities.length} dari {filteredActivities.length} data
+                        Menampilkan 1-{filteredActivities.length} dari{' '}
+                        {filteredActivities.length} data
                     </span>
                     <div className="flex items-center gap-1">
                         <button
-                            className="p-2 rounded-lg hover:bg-surface-container-highest transition-colors text-on-surface-variant disabled:opacity-30 cursor-pointer"
+                            className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
                             disabled
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </button>
-                        <button className="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md cursor-pointer">1</button>
-                        <button className="w-8 h-8 rounded-lg hover:bg-surface-container-highest transition-colors font-label-md text-on-surface-variant cursor-pointer" disabled>2</button>
+                        <button className="h-8 w-8 cursor-pointer rounded-lg bg-primary font-label-md text-on-primary">
+                            1
+                        </button>
                         <button
-                            className="p-2 rounded-lg hover:bg-surface-container-highest transition-colors text-on-surface-variant disabled:opacity-30 cursor-pointer"
+                            className="h-8 w-8 cursor-pointer rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest"
+                            disabled
+                        >
+                            2
+                        </button>
+                        <button
+                            className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
                             disabled
                         >
                             <ChevronRight className="h-5 w-5" />
@@ -600,30 +739,42 @@ return;
             </Card>
 
             {/* Guide & Informational Section */}
-            <div className="mt-unit-xl grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                <div className="md:col-span-2 relative overflow-hidden bg-primary text-on-primary p-unit-xl rounded-xl shadow-lg">
+            <div className="mt-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
+                <div className="relative overflow-hidden rounded-xl bg-primary p-unit-xl text-on-primary shadow-lg md:col-span-2">
                     <div className="relative z-10 max-w-md">
-                        <h3 className="font-headline-md text-headline-md mb-2">Panduan Pengelolaan Event</h3>
-                        <p className="font-body-md opacity-80 mb-6 font-normal">
-                            Pastikan pengurus berkoordinasi dengan Bendahara terkait biaya pendaftaran sebelum mendaftarkan kegiatan berbayar baru. Kegiatan yang dibatalkan wajib dicantumkan alasan pembatalannya demi laporan pertanggungjawaban.
+                        <h3 className="mb-2 font-headline-md text-headline-md">
+                            Panduan Pengelolaan Event
+                        </h3>
+                        <p className="mb-6 font-body-md font-normal opacity-80">
+                            Pastikan pengurus berkoordinasi dengan Bendahara
+                            terkait biaya pendaftaran sebelum mendaftarkan
+                            kegiatan berbayar baru. Kegiatan yang dibatalkan
+                            wajib dicantumkan alasan pembatalannya demi laporan
+                            pertanggungjawaban.
                         </p>
-                        <a className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline" href="#">
+                        <a
+                            className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline"
+                            href="#"
+                        >
                             Lihat SOP Kegiatan STIKOM
                             <ArrowRight className="h-[18px] w-[18px]" />
                         </a>
                     </div>
-                    <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20"></div>
-                    <div className="absolute right-12 bottom-0 w-32 h-32 bg-white/5 rounded-full mb-8"></div>
+                    <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-white/5"></div>
+                    <div className="absolute right-12 bottom-0 mb-8 h-32 w-32 rounded-full bg-white/5"></div>
                 </div>
-                <div className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-center items-center text-center">
-                    <div className="w-16 h-16 bg-primary-fixed rounded-full flex items-center justify-center mb-4 text-primary">
+                <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg text-center shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
+                    <div className="bg-primary-fixed mb-4 flex h-16 w-16 items-center justify-center rounded-full text-primary">
                         <HelpCircle className="h-10 w-10" />
                     </div>
-                    <h4 className="font-headline-sm text-primary mb-2">Butuh Bantuan?</h4>
-                    <p className="font-body-sm text-on-surface-variant mb-4">
-                        Hubungi admin kemahasiswaan jika terjadi kendala sewa aula kampus.
+                    <h4 className="mb-2 font-headline-sm text-primary">
+                        Butuh Bantuan?
+                    </h4>
+                    <p className="mb-4 font-body-sm text-on-surface-variant">
+                        Hubungi admin kemahasiswaan jika terjadi kendala sewa
+                        aula kampus.
                     </p>
-                    <button className="w-full border-2 border-primary text-primary font-label-lg py-2 rounded-lg hover:bg-primary-fixed transition-colors cursor-pointer font-semibold">
+                    <button className="hover:bg-primary-fixed w-full cursor-pointer rounded-lg border-2 border-primary py-2 font-label-lg font-semibold text-primary transition-colors">
                         Panduan Operator
                     </button>
                 </div>
@@ -632,102 +783,174 @@ return;
             {/* Create Activity Modal */}
             {isCreateModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setIsCreateModalOpen(false)}></div>
-                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant max-w-lg w-full p-unit-lg shadow-xl relative z-10 animate-in fade-in-50 zoom-in-95 duration-150">
-                        <div className="flex justify-between items-center pb-unit-sm border-b border-outline-variant/60">
-                            <h3 className="font-headline-sm text-primary font-bold">Tambah Kegiatan Baru</h3>
-                            <button onClick={() => setIsCreateModalOpen(false)} className="text-on-surface-variant hover:text-primary text-xl font-bold cursor-pointer">×</button>
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+                        onClick={() => setIsCreateModalOpen(false)}
+                    ></div>
+                    <div className="relative z-10 w-full max-w-lg animate-in rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                            <h3 className="font-headline-sm font-bold text-primary">
+                                Tambah Kegiatan Baru
+                            </h3>
+                            <button
+                                onClick={() => setIsCreateModalOpen(false)}
+                                className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
+                            >
+                                ×
+                            </button>
                         </div>
-                        <form onSubmit={handleCreateActivity} className="space-y-4 mt-4">
+                        <form
+                            onSubmit={handleCreateActivity}
+                            className="mt-4 space-y-4"
+                        >
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Nama Kegiatan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Nama Kegiatan *
+                                </label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                    className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     placeholder="Contoh: Seminar Nasional AI 2026"
                                     value={formData.nama_kegiatan}
-                                    onChange={e => setFormData({ ...formData, nama_kegiatan: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            nama_kegiatan: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Jenis Kegiatan *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Jenis Kegiatan *
+                                    </label>
                                     <select
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm cursor-pointer"
+                                        className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.jenis_kegiatan}
-                                        onChange={e => setFormData({ ...formData, jenis_kegiatan: e.target.value as Activity['jenis_kegiatan'] })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                jenis_kegiatan: e.target
+                                                    .value as Activity['jenis_kegiatan'],
+                                            })
+                                        }
                                     >
                                         <option value="Seminar">Seminar</option>
-                                        <option value="Pelatihan">Pelatihan</option>
+                                        <option value="Pelatihan">
+                                            Pelatihan
+                                        </option>
                                         <option value="Lomba">Lomba</option>
-                                        <option value="Pengabdian Masyarakat">Pengabdian Masyarakat</option>
+                                        <option value="Pengabdian Masyarakat">
+                                            Pengabdian Masyarakat
+                                        </option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Tanggal Pelaksanaan *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Tanggal Pelaksanaan *
+                                    </label>
                                     <input
                                         type="date"
                                         required
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm cursor-pointer"
+                                        className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.tanggal_pelaksanaan}
-                                        onChange={e => setFormData({ ...formData, tanggal_pelaksanaan: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                tanggal_pelaksanaan:
+                                                    e.target.value,
+                                            })
+                                        }
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Biaya Pendaftaran (Rp) *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Biaya Pendaftaran (Rp) *
+                                    </label>
                                     <input
                                         type="number"
                                         min={0}
                                         required
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                        className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         placeholder="0 untuk gratis"
                                         value={formData.biaya_pendaftaran}
-                                        onChange={e => setFormData({ ...formData, biaya_pendaftaran: Number(e.target.value) })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                biaya_pendaftaran: Number(
+                                                    e.target.value,
+                                                ),
+                                            })
+                                        }
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Kuota Peserta *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Kuota Peserta *
+                                    </label>
                                     <input
                                         type="number"
                                         min={1}
                                         required
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                        className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.kuota_peserta}
-                                        onChange={e => setFormData({ ...formData, kuota_peserta: Number(e.target.value) })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                kuota_peserta: Number(
+                                                    e.target.value,
+                                                ),
+                                            })
+                                        }
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Lokasi Kegiatan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Lokasi Kegiatan *
+                                </label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                    className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     placeholder="Contoh: Aula STIKOM Renon / Online Zoom"
                                     value={formData.lokasi_kegiatan}
-                                    onChange={e => setFormData({ ...formData, lokasi_kegiatan: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            lokasi_kegiatan: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Deskripsi Kegiatan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Deskripsi Kegiatan *
+                                </label>
                                 <textarea
                                     required
                                     rows={3}
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm resize-none"
+                                    className="w-full resize-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     placeholder="Jelaskan ringkasan agenda atau rincian kegiatan..."
                                     value={formData.deskripsi_kegiatan}
-                                    onChange={e => setFormData({ ...formData, deskripsi_kegiatan: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            deskripsi_kegiatan: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-4 border-t border-outline-variant/60">
+                            <div className="flex justify-end gap-2 border-t border-outline-variant/60 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -738,7 +961,7 @@ return;
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="bg-primary text-on-primary hover:opacity-90 cursor-pointer"
+                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-90"
                                 >
                                     Simpan Kegiatan
                                 </Button>
@@ -751,98 +974,170 @@ return;
             {/* Edit Activity Modal */}
             {isEditModalOpen && activeActivity && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setIsEditModalOpen(false)}></div>
-                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant max-w-lg w-full p-unit-lg shadow-xl relative z-10 animate-in fade-in-50 zoom-in-95 duration-150">
-                        <div className="flex justify-between items-center pb-unit-sm border-b border-outline-variant/60">
-                            <h3 className="font-headline-sm text-primary font-bold">Ubah Detail Kegiatan</h3>
-                            <button onClick={() => setIsEditModalOpen(false)} className="text-on-surface-variant hover:text-primary text-xl font-bold cursor-pointer">×</button>
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+                        onClick={() => setIsEditModalOpen(false)}
+                    ></div>
+                    <div className="relative z-10 w-full max-w-lg animate-in rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                            <h3 className="font-headline-sm font-bold text-primary">
+                                Ubah Detail Kegiatan
+                            </h3>
+                            <button
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
+                            >
+                                ×
+                            </button>
                         </div>
-                        <form onSubmit={handleEditActivity} className="space-y-4 mt-4">
+                        <form
+                            onSubmit={handleEditActivity}
+                            className="mt-4 space-y-4"
+                        >
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Nama Kegiatan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Nama Kegiatan *
+                                </label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                    className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     value={formData.nama_kegiatan}
-                                    onChange={e => setFormData({ ...formData, nama_kegiatan: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            nama_kegiatan: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Jenis Kegiatan *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Jenis Kegiatan *
+                                    </label>
                                     <select
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm cursor-pointer"
+                                        className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.jenis_kegiatan}
-                                        onChange={e => setFormData({ ...formData, jenis_kegiatan: e.target.value as Activity['jenis_kegiatan'] })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                jenis_kegiatan: e.target
+                                                    .value as Activity['jenis_kegiatan'],
+                                            })
+                                        }
                                     >
                                         <option value="Seminar">Seminar</option>
-                                        <option value="Pelatihan">Pelatihan</option>
+                                        <option value="Pelatihan">
+                                            Pelatihan
+                                        </option>
                                         <option value="Lomba">Lomba</option>
-                                        <option value="Pengabdian Masyarakat">Pengabdian Masyarakat</option>
+                                        <option value="Pengabdian Masyarakat">
+                                            Pengabdian Masyarakat
+                                        </option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Tanggal Pelaksanaan *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Tanggal Pelaksanaan *
+                                    </label>
                                     <input
                                         type="date"
                                         required
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm cursor-pointer"
+                                        className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.tanggal_pelaksanaan}
-                                        onChange={e => setFormData({ ...formData, tanggal_pelaksanaan: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                tanggal_pelaksanaan:
+                                                    e.target.value,
+                                            })
+                                        }
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Biaya Pendaftaran (Rp) *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Biaya Pendaftaran (Rp) *
+                                    </label>
                                     <input
                                         type="number"
                                         min={0}
                                         required
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                        className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.biaya_pendaftaran}
-                                        onChange={e => setFormData({ ...formData, biaya_pendaftaran: Number(e.target.value) })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                biaya_pendaftaran: Number(
+                                                    e.target.value,
+                                                ),
+                                            })
+                                        }
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-primary mb-1">Kuota Peserta *</label>
+                                    <label className="mb-1 block text-sm font-semibold text-primary">
+                                        Kuota Peserta *
+                                    </label>
                                     <input
                                         type="number"
                                         min={1}
                                         required
-                                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                        className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         value={formData.kuota_peserta}
-                                        onChange={e => setFormData({ ...formData, kuota_peserta: Number(e.target.value) })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                kuota_peserta: Number(
+                                                    e.target.value,
+                                                ),
+                                            })
+                                        }
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Lokasi Kegiatan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Lokasi Kegiatan *
+                                </label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
+                                    className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     value={formData.lokasi_kegiatan}
-                                    onChange={e => setFormData({ ...formData, lokasi_kegiatan: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            lokasi_kegiatan: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Deskripsi Kegiatan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Deskripsi Kegiatan *
+                                </label>
                                 <textarea
                                     required
                                     rows={3}
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm resize-none"
+                                    className="w-full resize-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     value={formData.deskripsi_kegiatan}
-                                    onChange={e => setFormData({ ...formData, deskripsi_kegiatan: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            deskripsi_kegiatan: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-4 border-t border-outline-variant/60">
+                            <div className="flex justify-end gap-2 border-t border-outline-variant/60 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -853,7 +1148,7 @@ return;
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="bg-primary text-on-primary hover:opacity-90 cursor-pointer"
+                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-90"
                                 >
                                     Simpan Perubahan
                                 </Button>
@@ -866,32 +1161,54 @@ return;
             {/* Cancel Activity Modal */}
             {isCancelModalOpen && activeActivity && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setIsCancelModalOpen(false)}></div>
-                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant max-w-md w-full p-unit-lg shadow-xl relative z-10 animate-in fade-in-50 zoom-in-95 duration-150">
-                        <div className="flex justify-between items-center pb-unit-sm border-b border-outline-variant/60">
-                            <h3 className="font-headline-sm text-error font-bold flex items-center gap-2">
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+                        onClick={() => setIsCancelModalOpen(false)}
+                    ></div>
+                    <div className="relative z-10 w-full max-w-md animate-in rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                            <h3 className="flex items-center gap-2 font-headline-sm font-bold text-error">
                                 <AlertCircle className="h-5 w-5" />
                                 Batalkan Kegiatan
                             </h3>
-                            <button onClick={() => setIsCancelModalOpen(false)} className="text-on-surface-variant hover:text-primary text-xl font-bold cursor-pointer">×</button>
+                            <button
+                                onClick={() => setIsCancelModalOpen(false)}
+                                className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
+                            >
+                                ×
+                            </button>
                         </div>
-                        <form onSubmit={handleCancelActivity} className="space-y-4 mt-4">
+                        <form
+                            onSubmit={handleCancelActivity}
+                            className="mt-4 space-y-4"
+                        >
                             <p className="font-body-sm text-on-surface-variant">
-                                Anda akan membatalkan kegiatan <strong className="text-primary">{activeActivity.nama_kegiatan}</strong>. Masukkan alasan pembatalan untuk memberikan kejelasan bagi calon pendaftar.
+                                Anda akan membatalkan kegiatan{' '}
+                                <strong className="text-primary">
+                                    {activeActivity.nama_kegiatan}
+                                </strong>
+                                . Masukkan alasan pembatalan untuk memberikan
+                                kejelasan bagi calon pendaftar.
                             </p>
                             <div>
-                                <label className="block text-sm font-semibold text-primary mb-1">Alasan Pembatalan *</label>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    Alasan Pembatalan *
+                                </label>
                                 <textarea
                                     required
                                     rows={3}
-                                    className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm resize-none"
+                                    className="w-full resize-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     placeholder="Contoh: Bentrok dengan agenda Ujian Tengah Semester (UTS) / Kekurangan alokasi dana..."
                                     value={cancellationReasonInput}
-                                    onChange={e => setCancellationReasonInput(e.target.value)}
+                                    onChange={(e) =>
+                                        setCancellationReasonInput(
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-4 border-t border-outline-variant/60">
+                            <div className="flex justify-end gap-2 border-t border-outline-variant/60 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -902,7 +1219,7 @@ return;
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="bg-error text-on-error hover:opacity-90 cursor-pointer"
+                                    className="cursor-pointer bg-error text-on-error hover:opacity-90"
                                 >
                                     Ya, Batalkan Kegiatan
                                 </Button>

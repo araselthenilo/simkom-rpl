@@ -25,31 +25,42 @@ export default function TopNavBar() {
     const initials = auth.user ? getInitials(auth.user.name) : 'U';
 
     return (
-        <header
-            className="bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant h-16 flex items-center sticky top-0 z-40">
-            <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop">
+        <header className="sticky top-0 z-40 flex h-16 items-center border-b border-outline-variant bg-surface shadow-sm dark:bg-surface-dim">
+            <div className="flex w-full items-center justify-between px-margin-mobile md:px-margin-desktop">
                 <div className="flex items-center gap-unit-md">
-                    <span className="font-headline-md text-headline-md font-bold text-primary">SIMKOM STIKOM Bali</span>
+                    <span className="font-headline-md text-headline-md font-bold text-primary">
+                        SIMKOM STIKOM Bali
+                    </span>
                 </div>
                 <div className="flex items-center gap-unit-lg">
-                    <div className="hidden md:flex gap-unit-lg">
-                        <a className="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md"
-                            href="#">Beranda</a>
-                        <a className="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md"
-                            href="#">Organisasi</a>
-                        <a className="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md"
-                            href="#">Profil</a>
+                    <div className="hidden gap-unit-lg md:flex">
+                        <a
+                            className="border-b-2 border-primary pb-1 font-body-md text-body-md font-bold text-primary"
+                            href="#"
+                        >
+                            Beranda
+                        </a>
+                        <a
+                            className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
+                            href="#"
+                        >
+                            Organisasi
+                        </a>
+                        <a
+                            className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
+                            href="#"
+                        >
+                            Profil
+                        </a>
                     </div>
-                    <div className="flex items-center gap-4 ml-6">
-                        <button
-                            className="relative p-2 hover:bg-surface-container-low rounded-full transition-all active:scale-95 duration-100 cursor-pointer">
-                            <Bell className="text-primary h-6 w-6" />
-                            <span
-                                className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+                    <div className="ml-6 flex items-center gap-4">
+                        <button className="relative cursor-pointer rounded-full p-2 transition-all duration-100 hover:bg-surface-container-low active:scale-95">
+                            <Bell className="h-6 w-6 text-primary" />
+                            <span className="absolute top-2 right-2 h-2 w-2 rounded-full border-2 border-surface bg-error"></span>
                         </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-outline-variant bg-primary-fixed overflow-hidden transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
+                                <button className="bg-primary-fixed flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
                                     {auth.user?.avatar ? (
                                         <img
                                             src={auth.user.avatar}
@@ -57,7 +68,9 @@ export default function TopNavBar() {
                                             className="h-full w-full object-cover"
                                         />
                                     ) : (
-                                        <span className="text-sm font-semibold text-primary">{initials}</span>
+                                        <span className="text-sm font-semibold text-primary">
+                                            {initials}
+                                        </span>
                                     )}
                                 </button>
                             </DropdownMenuTrigger>
@@ -78,6 +91,7 @@ export default function TopNavBar() {
                                     <Link
                                         className="block w-full cursor-pointer"
                                         href={logout()}
+                                        method="post"
                                         as="button"
                                         onClick={handleLogout}
                                         data-test="logout-button"

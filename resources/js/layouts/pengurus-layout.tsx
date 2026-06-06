@@ -9,16 +9,14 @@ export default function PengurusLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="flex min-h-screen flex-col">
             <Head title="Dashboard" />
             <Sidepanel />
-            <div className="pl-64 flex-1 flex flex-col">
+            <div className="flex flex-1 flex-col pl-64">
                 <TopNavBar />
-                <main className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
-                    <div className="flex-grow">
-                        {children}
-                    </div>
-                    <div className="w-full max-w-container-max mx-auto px-margin-desktop">
+                <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
+                    <div className="flex-grow">{children}</div>
+                    <div className="mx-auto w-full max-w-container-max px-margin-desktop">
                         <Footer />
                     </div>
                 </main>

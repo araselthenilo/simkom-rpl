@@ -44,8 +44,8 @@ function OrganizationIcon({
     const IconComponent = ICON_MAP[name];
 
     if (!IconComponent) {
-return null;
-}
+        return null;
+    }
 
     return <IconComponent className={className} />;
 }

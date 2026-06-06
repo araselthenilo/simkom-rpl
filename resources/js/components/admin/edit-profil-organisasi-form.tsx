@@ -3,23 +3,46 @@ import { ArrowLeft, Building2, Upload, Save, HelpCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import admin from '@/routes/admin';
 
-export default function TambahOrganisasiForm() {
-    const nextYear = new Date().getFullYear() + 1;
-    const defaultPeriode = `${nextYear}/${nextYear + 1}`;
+interface Organisasi {
+    id_organisasi: number;
+    nama_organisasi: string;
+}
 
+interface ProfilOrganisasi {
+    id_profil: number;
+    id_organisasi: number;
+    periode_kepengurusan: string;
+    logo_organisasi: string;
+    deskripsi_organisasi: string;
+    visi_organisasi: string;
+    misi_organisasi: string;
+    status_aktif: boolean;
+    organisasi: Organisasi;
+}
+
+interface EditProfilOrganisasiFormProps {
+    profilOrganisasi: ProfilOrganisasi;
+}
+
+export default function EditProfilOrganisasiForm({
+    profilOrganisasi,
+}: EditProfilOrganisasiFormProps) {
     const { data, setData, post, processing, errors } = useForm({
-        nama_organisasi: '',
-        status_aktif: true,
-        periode_kepengurusan: defaultPeriode,
+        _method: 'PUT',
+        periode_kepengurusan: profilOrganisasi.periode_kepengurusan || '',
+        status_aktif: !!profilOrganisasi.status_aktif,
         logo_organisasi: null as File | null,
-        deskripsi_organisasi: '',
-        visi_organisasi: '',
-        misi_organisasi: '',
+        deskripsi_organisasi: profilOrganisasi.deskripsi_organisasi || '',
+        visi_organisasi: profilOrganisasi.visi_organisasi || '',
+        misi_organisasi: profilOrganisasi.misi_organisasi || '',
     });
 
-    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(
+        profilOrganisasi.logo_organisasi
+            ? `/storage/${profilOrganisasi.logo_organisasi}`
+            : null,
+    );
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -33,13 +56,17 @@ export default function TambahOrganisasiForm() {
             reader.readAsDataURL(file);
         } else {
             setData('logo_organisasi', null);
-            setLogoPreview(null);
+            setLogoPreview(
+                profilOrganisasi.logo_organisasi
+                    ? `/storage/${profilOrganisasi.logo_organisasi}`
+                    : null,
+            );
         }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/organisasi');
+        post(`/admin/profil-organisasi/${profilOrganisasi.id_profil}`);
     };
 
     return (
@@ -47,11 +74,11 @@ export default function TambahOrganisasiForm() {
             {/* Header / Breadcrumb navigation */}
             <div className="flex items-center justify-between">
                 <Link
-                    href={admin.dashboard()}
+                    href={`/admin/organisasi/${profilOrganisasi.id_organisasi}/profil`}
                     className="decoration-none inline-flex items-center gap-2 text-sm font-semibold text-primary transition-opacity hover:opacity-80"
                 >
                     <ArrowLeft className="h-4 w-4" />
-                    Kembali ke Dashboard
+                    Kembali ke Riwayat Profil
                 </Link>
             </div>
 
@@ -63,11 +90,12 @@ export default function TambahOrganisasiForm() {
                     </div>
                     <div>
                         <h2 className="font-headline-sm text-headline-sm font-bold text-primary">
-                            Tambah Organisasi (UKM) Baru
+                            Edit Profil Organisasi
                         </h2>
                         <p className="mt-0.5 font-label-md text-label-md text-on-surface-variant/80">
-                            Formulir pendaftaran unit kegiatan mahasiswa beserta
-                            profil periode kepengurusan perdana.
+                            Formulir pembaruan profil unit kegiatan mahasiswa
+                            periode kepengurusan{' '}
+                            {profilOrganisasi.periode_kepengurusan}.
                         </p>
                     </div>
                 </div>
@@ -79,23 +107,17 @@ export default function TambahOrganisasiForm() {
                             htmlFor="nama_organisasi"
                             className="mb-1 block text-sm font-semibold text-primary"
                         >
-                            Nama Organisasi (UKM){' '}
-                            <span className="text-red-500">*</span>
+                            Nama Organisasi (UKM)
                         </label>
                         <input
                             id="nama_organisasi"
                             type="text"
-                            required
-                            className="w-full rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                            placeholder="Contoh: UKM Computer Club STIKOM"
-                            value={data.nama_organisasi}
-                            onChange={(e) =>
-                                setData('nama_organisasi', e.target.value)
+                            disabled
+                            className="w-full cursor-not-allowed rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm font-medium text-on-surface-variant"
+                            value={
+                                profilOrganisasi.organisasi?.nama_organisasi ||
+                                ''
                             }
-                        />
-                        <InputError
-                            message={errors.nama_organisasi}
-                            className="mt-1.5"
                         />
                     </div>
 
@@ -136,7 +158,7 @@ export default function TambahOrganisasiForm() {
                         {/* Status Aktif */}
                         <div>
                             <label className="mb-1 block text-sm font-semibold text-primary">
-                                Status Organisasi{' '}
+                                Status Profil{' '}
                                 <span className="text-red-500">*</span>
                             </label>
                             <div className="flex h-[42px] items-center space-x-3 rounded-lg border border-outline-variant bg-surface-container-low p-2">
@@ -156,7 +178,7 @@ export default function TambahOrganisasiForm() {
                                     htmlFor="status_aktif"
                                     className="cursor-pointer text-sm font-semibold text-primary select-none"
                                 >
-                                    Aktif dan Dapat Mengajukan Kegiatan
+                                    Aktif untuk Periode Ini
                                 </label>
                             </div>
                             <InputError
@@ -169,8 +191,7 @@ export default function TambahOrganisasiForm() {
                     {/* Logo Organisasi */}
                     <div>
                         <label className="mb-1 block text-sm font-semibold text-primary">
-                            Logo Organisasi{' '}
-                            <span className="text-red-500">*</span>
+                            Logo Organisasi
                         </label>
                         <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-4">
                             {/* File Selector Box */}
@@ -178,11 +199,15 @@ export default function TambahOrganisasiForm() {
                                 <label className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low p-6 transition-colors hover:bg-surface-container-high">
                                     <Upload className="mb-2 h-8 w-8 text-on-surface-variant/70 transition-colors group-hover:text-primary" />
                                     <span className="text-sm font-semibold text-primary">
-                                        Pilih File Logo
+                                        Pilih File Logo Baru
                                     </span>
                                     <span className="mt-1 text-xs text-on-surface-variant/70">
                                         Format: PNG, JPG, JPEG, atau WEBP
                                         (Maksimal 2MB)
+                                    </span>
+                                    <span className="mt-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                                        Biarkan kosong jika tidak ingin mengubah
+                                        logo
                                     </span>
                                     <input
                                         type="file"
@@ -299,7 +324,7 @@ export default function TambahOrganisasiForm() {
                     {/* Submit and Cancel Buttons */}
                     <div className="flex justify-end gap-3 border-t border-outline-variant/60 pt-4">
                         <Link
-                            href={admin.dashboard()}
+                            href={`/admin/organisasi/${profilOrganisasi.id_organisasi}/profil`}
                             className="hover:bg-surface-variant decoration-none inline-flex h-auto cursor-pointer items-center justify-center rounded-lg border border-outline px-6 py-2.5 font-label-lg text-sm font-semibold text-on-surface-variant transition-all"
                         >
                             Batal
@@ -310,7 +335,7 @@ export default function TambahOrganisasiForm() {
                             className="flex h-auto cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-2.5 font-label-lg text-sm font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95"
                         >
                             <Save className="h-[18px] w-[18px]" />
-                            {processing ? 'Menyimpan...' : 'Simpan Organisasi'}
+                            {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
                         </Button>
                     </div>
                 </form>
@@ -324,10 +349,10 @@ export default function TambahOrganisasiForm() {
                         Informasi:
                     </span>{' '}
                     <span className="text-on-surface-variant">
-                        Penambahan organisasi ini akan secara otomatis
-                        mendaftarkan profil kepengurusan pertama. Pastikan data
-                        nama organisasi dan logo yang diunggah sudah sesuai
-                        dengan keputusan resmi Kemahasiswaan.
+                        Pembaruan profil organisasi ini akan mengubah deskripsi,
+                        visi, misi, status keaktifan, dan logo untuk periode
+                        yang bersangkutan. Perubahan ini langsung tercermin pada
+                        halaman publik dan halaman pemantauan pengurus.
                     </span>
                 </div>
             </div>

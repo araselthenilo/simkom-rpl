@@ -34,7 +34,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Budi Setiawan',
                         'prodi' => 'Sistem Informasi',
                         'telepon' => '082345678001',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Olahraga',
@@ -55,7 +55,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Rian Hidayat',
                         'prodi' => 'Sistem Komputer',
                         'telepon' => '082345678002',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Fotografi',
@@ -76,7 +76,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Siti Rahma',
                         'prodi' => 'Teknologi Informasi',
                         'telepon' => '082345678003',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Teater',
@@ -97,7 +97,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Dewi Lestari',
                         'prodi' => 'Bisnis Digital',
                         'telepon' => '082345678004',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Robotika',
@@ -118,7 +118,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Faisal Haris',
                         'prodi' => 'Sistem Komputer',
                         'telepon' => '082345678005',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Pecinta Alam',
@@ -139,7 +139,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Ayu Lestari',
                         'prodi' => 'Sistem Informasi',
                         'telepon' => '082345678006',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Kewirausahaan',
@@ -160,7 +160,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Rizky Pratama',
                         'prodi' => 'Bisnis Digital',
                         'telepon' => '082345678007',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Jurnalistik',
@@ -181,7 +181,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Eka Putri',
                         'prodi' => 'Manajemen Informatika',
                         'telepon' => '082345678008',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Tari',
@@ -202,7 +202,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Dimas Saputra',
                         'prodi' => 'Teknologi Informasi',
                         'telepon' => '082345678009',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'UKM Penalaran & Riset',
@@ -223,8 +223,8 @@ class DummyOrganisasiSeeder extends Seeder
                         'nama' => 'Nanda Kartika',
                         'prodi' => 'Sistem Informasi',
                         'telepon' => '082345678010',
-                    ]
-                ]
+                    ],
+                ],
             ];
 
             $defaultPassword = Hash::make('password');

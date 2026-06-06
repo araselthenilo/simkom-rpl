@@ -12,12 +12,16 @@ interface PageProps {
 }
 
 export default function RiwayatProfilPage() {
-    const { organisasi, profils } = usePage<PageProps>().props;
+    const { organisasi, profils, allPembina = [] } = usePage<PageProps>().props;
 
     return (
         <>
             <Head title={`Riwayat Profil - ${organisasi.nama_organisasi}`} />
-            <RiwayatProfil organisasi={organisasi} profils={profils} />
+            <RiwayatProfil
+                organisasi={organisasi}
+                profils={profils}
+                allPembina={allPembina}
+            />
         </>
     );
 }

@@ -60,8 +60,9 @@ export default function TopNavbar({
                 />
             </Head>
             <header
-                className={`sticky top-0 z-40 w-full border-b border-outline-variant bg-surface shadow-sm transition-transform duration-300 ease-out dark:bg-surface-dim ${isHidden ? '-translate-y-full' : 'translate-y-0'
-                    }`}
+                className={`sticky top-0 z-40 w-full border-b border-outline-variant bg-surface shadow-sm transition-transform duration-300 ease-out dark:bg-surface-dim ${
+                    isHidden ? '-translate-y-full' : 'translate-y-0'
+                }`}
             >
                 <div className="mx-auto flex h-16 w-full max-w-container-max items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-unit-md">
@@ -70,39 +71,39 @@ export default function TopNavbar({
                         </span>
                     </div>
 
-                    <div className="hidden md:flex gap-unit-lg">
+                    <div className="hidden gap-unit-lg md:flex">
                         <a
-                            className="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md"
+                            className="border-b-2 border-primary pb-1 font-body-md text-body-md font-bold text-primary"
                             href="#"
                         >
                             Beranda
                         </a>
                         <a
-                            className="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md"
+                            className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
                             href="#"
                         >
                             Organisasi
                         </a>
                         <a
-                            className="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md"
+                            className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
                             href="#"
                         >
                             Profil
                         </a>
                     </div>
 
-                    <div className="flex items-center gap-4 ml-6">
-                        <button className="relative p-2 hover:bg-surface-container-low rounded-full transition-all active:scale-95 duration-100">
-                            <Bell className="text-primary h-6 w-6" />
+                    <div className="ml-6 flex items-center gap-4">
+                        <button className="relative rounded-full p-2 transition-all duration-100 hover:bg-surface-container-low active:scale-95">
+                            <Bell className="h-6 w-6 text-primary" />
                             {count > 0 && (
-                                <span className="absolute top-2 right-2 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-error px-1.5 py-0.5 text-[10px] leading-none font-bold text-on-error border-2 border-surface">
+                                <span className="absolute top-2 right-2 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full border-2 border-surface bg-error px-1.5 py-0.5 text-[10px] leading-none font-bold text-on-error">
                                     {count > 99 ? '99+' : count}
                                 </span>
                             )}
                         </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-outline-variant bg-primary-fixed overflow-hidden transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
+                                <button className="bg-primary-fixed flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
                                     {auth.user?.avatar ? (
                                         <img
                                             src={auth.user.avatar}
@@ -110,7 +111,9 @@ export default function TopNavbar({
                                             className="h-full w-full object-cover"
                                         />
                                     ) : (
-                                        <span className="text-sm font-semibold text-primary">{initials}</span>
+                                        <span className="text-sm font-semibold text-primary">
+                                            {initials}
+                                        </span>
                                     )}
                                 </button>
                             </DropdownMenuTrigger>
@@ -131,6 +134,7 @@ export default function TopNavbar({
                                     <Link
                                         className="block w-full cursor-pointer"
                                         href={logout()}
+                                        method="post"
                                         as="button"
                                         onClick={handleLogout}
                                         data-test="logout-button"

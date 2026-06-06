@@ -8,7 +8,7 @@ import {
     ArrowDown,
     Receipt,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,8 @@ export default function ManajemenKeuangan() {
             time: '14:20 WITA',
             type: 'pemasukan',
             nominal: 5000000,
-            purpose: 'Sponsorship Acara Seminar IT Nasional 2024 - PT Digital Solusi',
+            purpose:
+                'Sponsorship Acara Seminar IT Nasional 2024 - PT Digital Solusi',
             invoice: 'nota_552.pdf',
         },
         {
@@ -56,45 +57,55 @@ export default function ManajemenKeuangan() {
             time: '10:00 WITA',
             type: 'pemasukan',
             nominal: 7500000,
-            purpose: 'Iuran Anggota Tahunan Gelombang I Tahun Akademik 2024/2025',
+            purpose:
+                'Iuran Anggota Tahunan Gelombang I Tahun Akademik 2024/2025',
             invoice: 'iuran_batch1.xlsx',
-        }
+        },
     ];
 
     const formatRupiah = (value: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(value).replace('IDR', 'Rp');
+            minimumFractionDigits: 0,
+        })
+            .format(value)
+            .replace('IDR', 'Rp');
     };
 
-    const filteredTransactions = transactions.filter(t =>
-        t.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.invoice.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredTransactions = transactions.filter(
+        (t) =>
+            t.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.invoice.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     return (
-        <div className="p-margin-desktop max-w-container-max mx-auto w-full space-y-gutter">
+        <div className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
             {/* Header Section */}
-            <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-gutter">
+            <section className="flex flex-col items-start justify-between gap-gutter md:flex-row md:items-center">
                 <div className="space-y-unit-xs">
-                    <h2 className="font-headline-lg text-headline-lg text-primary">Manajemen Buku Kas</h2>
+                    <h2 className="font-headline-lg text-headline-lg text-primary">
+                        Manajemen Buku Kas
+                    </h2>
                     <p className="font-body-md text-body-md text-on-surface-variant">
                         Lacak dan kelola semua mutasi keuangan organisasi.
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-gutter w-full md:w-auto">
-                    <Card className="bg-surface-container-lowest p-4 px-unit-lg rounded-xl shadow-sm border border-outline-variant/30 flex items-center gap-4 ring-0">
-                        <div className="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center text-on-secondary-container">
+                <div className="flex w-full flex-col items-stretch gap-gutter sm:flex-row sm:items-center md:w-auto">
+                    <Card className="flex items-center gap-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 px-unit-lg shadow-sm ring-0">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container/20 text-on-secondary-container">
                             <Wallet className="h-6 w-6" />
                         </div>
                         <div>
-                            <p className="font-label-md text-label-md text-on-surface-variant">Total Saldo Saat Ini</p>
-                            <p className="font-headline-sm text-headline-sm text-primary font-bold">Rp 45.750.000</p>
+                            <p className="font-label-md text-label-md text-on-surface-variant">
+                                Total Saldo Saat Ini
+                            </p>
+                            <p className="font-headline-sm text-headline-sm font-bold text-primary">
+                                Rp 45.750.000
+                            </p>
                         </div>
                     </Card>
-                    <Button className="flex items-center gap-2 bg-primary !text-on-primary px-6 py-3 h-auto rounded-lg font-label-lg text-label-lg hover:shadow-lg hover:bg-primary/95 transition-all active:scale-95 duration-100 cursor-pointer">
+                    <Button className="flex h-auto cursor-pointer items-center gap-2 rounded-lg bg-primary px-6 py-3 font-label-lg text-label-lg !text-on-primary transition-all duration-100 hover:bg-primary/95 hover:shadow-lg active:scale-95">
                         <PlusCircle className="h-5 w-5" />
                         Catat Transaksi
                     </Button>
@@ -102,101 +113,154 @@ export default function ManajemenKeuangan() {
             </section>
 
             {/* Stats Bento Grid */}
-            <section className="grid grid-cols-1 md:grid-cols-4 gap-unit-lg">
-                <Card className="md:col-span-1 bg-surface-container-lowest p-unit-lg rounded-xl shadow-sm border border-outline-variant/30 ring-0">
-                    <p className="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Bulan Ini</p>
-                    <p className="font-headline-md text-headline-md text-green-600 font-bold">+ Rp 12.500k</p>
-                    <div className="mt-2 h-1 w-full bg-green-100 dark:bg-green-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500 w-[65%]" />
+            <section className="grid grid-cols-1 gap-unit-lg md:grid-cols-4">
+                <Card className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-unit-lg shadow-sm ring-0 md:col-span-1">
+                    <p className="mb-1 font-label-md text-label-md tracking-wider text-on-surface-variant uppercase">
+                        Bulan Ini
+                    </p>
+                    <p className="font-headline-md text-headline-md font-bold text-green-600">
+                        + Rp 12.500k
+                    </p>
+                    <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-green-100 dark:bg-green-950">
+                        <div className="h-full w-[65%] bg-green-500" />
                     </div>
                 </Card>
-                <Card className="md:col-span-1 bg-surface-container-lowest p-unit-lg rounded-xl shadow-sm border border-outline-variant/30 ring-0">
-                    <p className="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Pengeluaran</p>
-                    <p className="font-headline-md text-headline-md text-error font-bold">- Rp 4.200k</p>
-                    <div className="mt-2 h-1 w-full bg-red-100 dark:bg-red-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-error w-[30%]" />
+                <Card className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-unit-lg shadow-sm ring-0 md:col-span-1">
+                    <p className="mb-1 font-label-md text-label-md tracking-wider text-on-surface-variant uppercase">
+                        Pengeluaran
+                    </p>
+                    <p className="font-headline-md text-headline-md font-bold text-error">
+                        - Rp 4.200k
+                    </p>
+                    <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-red-100 dark:bg-red-950">
+                        <div className="h-full w-[30%] bg-error" />
                     </div>
                 </Card>
-                <Card className="md:col-span-2 bg-primary p-unit-lg rounded-xl shadow-lg relative overflow-hidden group border-none ring-0">
-                    <div className="relative z-10 flex justify-between items-center h-full">
+                <Card className="group relative overflow-hidden rounded-xl border-none bg-primary p-unit-lg shadow-lg ring-0 md:col-span-2">
+                    <div className="relative z-10 flex h-full items-center justify-between">
                         <div>
-                            <p className="font-label-md text-label-md text-on-primary/60 mb-1">Status Keuangan</p>
-                            <p className="font-headline-md text-headline-md text-on-primary font-bold">Sehat &amp; Stabil</p>
+                            <p className="mb-1 font-label-md text-label-md text-on-primary/60">
+                                Status Keuangan
+                            </p>
+                            <p className="font-headline-md text-headline-md font-bold text-on-primary">
+                                Sehat &amp; Stabil
+                            </p>
                         </div>
-                        <TrendingUp className="text-white/20 h-16 w-16 group-hover:scale-110 transition-transform" />
+                        <TrendingUp className="h-16 w-16 text-white/20 transition-transform group-hover:scale-110" />
                     </div>
                     {/* Abstract visual effect */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-container/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+                    <div className="absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-secondary-container/10 blur-2xl" />
                 </Card>
             </section>
 
             {/* Table Container */}
-            <Card className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden ring-0">
-                <div className="px-unit-lg py-4 border-b border-outline-variant/30 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-surface-container-low/30">
-                    <h3 className="font-headline-sm text-headline-sm text-primary">Riwayat Mutasi Kas</h3>
+            <Card className="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-sm ring-0">
+                <div className="flex flex-col items-stretch justify-between gap-4 border-b border-outline-variant/30 bg-surface-container-low/30 px-unit-lg py-4 sm:flex-row sm:items-center">
+                    <h3 className="font-headline-sm text-headline-sm text-primary">
+                        Riwayat Mutasi Kas
+                    </h3>
                     <div className="flex gap-2">
                         <div className="relative flex-1 sm:flex-none">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant h-4 w-4" />
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
                             <input
-                                className="pl-10 pr-4 py-2 border border-outline-variant/50 rounded-lg text-body-sm focus:ring-2 focus:ring-primary/20 outline-none w-full sm:w-64 bg-surface-container-lowest"
+                                className="w-full rounded-lg border border-outline-variant/50 bg-surface-container-lowest py-2 pr-4 pl-10 text-body-sm outline-none focus:ring-2 focus:ring-primary/20 sm:w-64"
                                 placeholder="Cari mutasi..."
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <Button variant="outline" className="p-2 border border-outline-variant/50 rounded-lg hover:bg-surface-container-low transition-colors h-auto cursor-pointer shadow-none">
+                        <Button
+                            variant="outline"
+                            className="h-auto cursor-pointer rounded-lg border border-outline-variant/50 p-2 shadow-none transition-colors hover:bg-surface-container-low"
+                        >
                             <Filter className="h-5 w-5 text-on-surface-variant" />
                         </Button>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-surface-container-lowest border-b border-outline-variant/30">
-                                <th className="px-unit-lg py-4 font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Tanggal</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Jenis</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Nominal</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Keperluan</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Bukti Nota</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider text-right">Aksi</th>
+                            <tr className="border-b border-outline-variant/30 bg-surface-container-lowest">
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Tanggal
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Jenis
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Nominal
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Keperluan
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Bukti Nota
+                                </th>
+                                <th className="px-unit-lg py-4 text-right font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/20">
                             {filteredTransactions.map((transaction, idx) => (
-                                <tr key={idx} className="hover:bg-surface-container-low/20 transition-colors">
+                                <tr
+                                    key={idx}
+                                    className="transition-colors hover:bg-surface-container-low/20"
+                                >
                                     <td className="px-unit-lg py-4">
-                                        <p className="font-body-md text-body-md font-medium">{transaction.date}</p>
-                                        <p className="font-label-md text-label-md text-on-surface-variant">{transaction.time}</p>
+                                        <p className="font-body-md text-body-md font-medium">
+                                            {transaction.date}
+                                        </p>
+                                        <p className="font-label-md text-label-md text-on-surface-variant">
+                                            {transaction.time}
+                                        </p>
                                     </td>
                                     <td className="px-unit-lg py-4">
-                                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-label-md font-bold border ${transaction.type === 'pemasukan'
-                                                ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/40 dark:text-green-400 dark:border-green-900/50'
-                                                : 'bg-red-50 text-error border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-900/50'
-                                            }`}>
-                                            {transaction.type === 'pemasukan' ? (
+                                        <span
+                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${
+                                                transaction.type === 'pemasukan'
+                                                    ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
+                                                    : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
+                                            }`}
+                                        >
+                                            {transaction.type ===
+                                            'pemasukan' ? (
                                                 <ArrowUp className="h-3.5 w-3.5" />
                                             ) : (
                                                 <ArrowDown className="h-3.5 w-3.5" />
                                             )}
-                                            {transaction.type === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran'}
+                                            {transaction.type === 'pemasukan'
+                                                ? 'Pemasukan'
+                                                : 'Pengeluaran'}
                                         </span>
                                     </td>
-                                    <td className={`px-unit-lg py-4 font-headline-sm font-semibold ${transaction.type === 'pemasukan' ? 'text-green-700 dark:text-green-400' : 'text-error'
-                                        }`}>
+                                    <td
+                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${
+                                            transaction.type === 'pemasukan'
+                                                ? 'text-green-700 dark:text-green-400'
+                                                : 'text-error'
+                                        }`}
+                                    >
                                         {formatRupiah(transaction.nominal)}
                                     </td>
-                                    <td className="px-unit-lg py-4 font-body-md text-body-md max-w-xs truncate" title={transaction.purpose}>
+                                    <td
+                                        className="max-w-xs truncate px-unit-lg py-4 font-body-md text-body-md"
+                                        title={transaction.purpose}
+                                    >
                                         {transaction.purpose}
                                     </td>
                                     <td className="px-unit-lg py-4">
-                                        <Button variant="link" className="flex items-center gap-2 text-primary hover:text-primary/80 font-label-lg text-label-lg p-0 h-auto cursor-pointer shadow-none">
+                                        <Button
+                                            variant="link"
+                                            className="flex h-auto cursor-pointer items-center gap-2 p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
+                                        >
                                             <Receipt className="h-4 w-4" />
                                             {transaction.invoice}
                                         </Button>
                                     </td>
                                     <td className="px-unit-lg py-4 text-right">
-                                        <Button className="bg-surface-container-low text-primary px-4 py-2 rounded-lg font-label-lg text-label-lg hover:bg-primary hover:text-on-primary transition-all cursor-pointer border-none shadow-none h-auto">
+                                        <Button className="h-auto cursor-pointer rounded-lg border-none bg-surface-container-low px-4 py-2 font-label-lg text-label-lg text-primary shadow-none transition-all hover:bg-primary hover:text-on-primary">
                                             Koreksi
                                         </Button>
                                     </td>
@@ -204,7 +268,10 @@ export default function ManajemenKeuangan() {
                             ))}
                             {filteredTransactions.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="px-unit-lg py-8 text-center text-on-surface-variant font-body-md">
+                                    <td
+                                        colSpan={6}
+                                        className="px-unit-lg py-8 text-center font-body-md text-on-surface-variant"
+                                    >
                                         Tidak ada transaksi yang ditemukan.
                                     </td>
                                 </tr>
@@ -213,20 +280,46 @@ export default function ManajemenKeuangan() {
                     </table>
                 </div>
                 {/* Table Footer */}
-                <div className="px-unit-lg py-4 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-unit-md text-on-surface-variant">
-                    <p className="font-body-sm text-body-sm">Menampilkan 1-4 dari 128 transaksi</p>
+                <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant/30 px-unit-lg py-4 text-on-surface-variant md:flex-row">
+                    <p className="font-body-sm text-body-sm">
+                        Menampilkan 1-4 dari 128 transaksi
+                    </p>
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" className="p-2 rounded-lg hover:bg-surface-container-low disabled:opacity-30 h-auto cursor-pointer shadow-none" disabled>
+                        <Button
+                            variant="ghost"
+                            className="h-auto cursor-pointer rounded-lg p-2 shadow-none hover:bg-surface-container-low disabled:opacity-30"
+                            disabled
+                        >
                             <ChevronLeft className="h-5 w-5" />
                         </Button>
                         <div className="flex items-center gap-1">
-                            <Button className="w-8 h-8 p-0 rounded-lg bg-primary !text-on-primary font-label-lg text-label-lg h-auto cursor-pointer">1</Button>
-                            <Button variant="ghost" className="w-8 h-8 p-0 rounded-lg hover:bg-surface-container-low font-label-lg text-label-lg h-auto cursor-pointer shadow-none">2</Button>
-                            <Button variant="ghost" className="w-8 h-8 p-0 rounded-lg hover:bg-surface-container-low font-label-lg text-label-lg h-auto cursor-pointer shadow-none">3</Button>
+                            <Button className="h-8 h-auto w-8 cursor-pointer rounded-lg bg-primary p-0 font-label-lg text-label-lg !text-on-primary">
+                                1
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="h-8 h-auto w-8 cursor-pointer rounded-lg p-0 font-label-lg text-label-lg shadow-none hover:bg-surface-container-low"
+                            >
+                                2
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="h-8 h-auto w-8 cursor-pointer rounded-lg p-0 font-label-lg text-label-lg shadow-none hover:bg-surface-container-low"
+                            >
+                                3
+                            </Button>
                             <span className="px-2">...</span>
-                            <Button variant="ghost" className="w-8 h-8 p-0 rounded-lg hover:bg-surface-container-low font-label-lg text-label-lg h-auto cursor-pointer shadow-none">32</Button>
+                            <Button
+                                variant="ghost"
+                                className="h-8 h-auto w-8 cursor-pointer rounded-lg p-0 font-label-lg text-label-lg shadow-none hover:bg-surface-container-low"
+                            >
+                                32
+                            </Button>
                         </div>
-                        <Button variant="ghost" className="p-2 rounded-lg hover:bg-surface-container-low h-auto cursor-pointer shadow-none">
+                        <Button
+                            variant="ghost"
+                            className="h-auto cursor-pointer rounded-lg p-2 shadow-none hover:bg-surface-container-low"
+                        >
                             <ChevronRight className="h-5 w-5" />
                         </Button>
                     </div>

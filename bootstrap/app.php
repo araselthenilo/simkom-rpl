@@ -31,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
             return '/home';
         });
 
+        $middleware->redirectGuestsTo('/login');
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,

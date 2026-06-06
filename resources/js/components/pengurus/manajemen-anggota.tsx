@@ -9,7 +9,7 @@ import {
     ChevronRight,
     ArrowRight,
     HelpCircle,
-    IdCard
+    IdCard,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -26,13 +26,15 @@ interface Member {
 
 export default function ManajemenAnggota() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState<'Semua' | 'Aktif' | 'Diproses' | 'Ditolak'>('Semua');
+    const [activeTab, setActiveTab] = useState<
+        'Semua' | 'Aktif' | 'Diproses' | 'Ditolak'
+    >('Semua');
 
     const [stats, setStats] = useState({
         total: 1248,
         pending: 42,
         active: 890,
-        rejected: 12
+        rejected: 12,
     });
 
     const [members, setMembers] = useState<Member[]>([
@@ -75,26 +77,26 @@ export default function ManajemenAnggota() {
             status: 'Diproses',
             initials: 'DW',
             avatarColor: 'bg-secondary-fixed text-on-secondary-container',
-        }
+        },
     ]);
 
     const handleAccept = (nim: string) => {
-        setMembers(prevMembers =>
-            prevMembers.map(member => {
+        setMembers((prevMembers) =>
+            prevMembers.map((member) => {
                 if (member.nim === nim) {
                     if (member.status === 'Diproses') {
-                        setStats(prev => ({
+                        setStats((prev) => ({
                             ...prev,
                             pending: Math.max(0, prev.pending - 1),
                             active: prev.active + 1,
-                            total: prev.total + 1
+                            total: prev.total + 1,
                         }));
                     } else if (member.status === 'Ditolak') {
-                        setStats(prev => ({
+                        setStats((prev) => ({
                             ...prev,
                             rejected: Math.max(0, prev.rejected - 1),
                             active: prev.active + 1,
-                            total: prev.total + 1
+                            total: prev.total + 1,
                         }));
                     }
 
@@ -102,26 +104,26 @@ export default function ManajemenAnggota() {
                 }
 
                 return member;
-            })
+            }),
         );
     };
 
     const handleReject = (nim: string) => {
-        setMembers(prevMembers =>
-            prevMembers.map(member => {
+        setMembers((prevMembers) =>
+            prevMembers.map((member) => {
                 if (member.nim === nim) {
                     if (member.status === 'Diproses') {
-                        setStats(prev => ({
+                        setStats((prev) => ({
                             ...prev,
                             pending: Math.max(0, prev.pending - 1),
-                            rejected: prev.rejected + 1
+                            rejected: prev.rejected + 1,
                         }));
                     } else if (member.status === 'Aktif') {
-                        setStats(prev => ({
+                        setStats((prev) => ({
                             ...prev,
                             active: Math.max(0, prev.active - 1),
                             total: Math.max(0, prev.total - 1),
-                            rejected: prev.rejected + 1
+                            rejected: prev.rejected + 1,
                         }));
                     }
 
@@ -129,35 +131,37 @@ export default function ManajemenAnggota() {
                 }
 
                 return member;
-            })
+            }),
         );
     };
 
-    const filteredMembers = members.filter(member => {
-        const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const filteredMembers = members.filter((member) => {
+        const matchesSearch =
+            member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             member.nim.includes(searchQuery);
 
         if (activeTab === 'Semua') {
-return matchesSearch;
-}
+            return matchesSearch;
+        }
 
         return matchesSearch && member.status === activeTab;
     });
 
     return (
-        <main className="p-margin-desktop max-w-container-max mx-auto w-full space-y-gutter">
+        <main className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
             {/* Header */}
-            <header className="flex justify-between items-end mb-unit-xl">
+            <header className="mb-unit-xl flex items-end justify-between">
                 <div>
-                    <h2 className="font-headline-lg text-headline-lg text-primary">Manajemen Anggota</h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant mt-1">
-                        Kelola permohonan keanggotaan dan status mahasiswa aktif.
+                    <h2 className="font-headline-lg text-headline-lg text-primary">
+                        Manajemen Anggota
+                    </h2>
+                    <p className="mt-1 font-body-md text-body-md text-on-surface-variant">
+                        Kelola permohonan keanggotaan dan status mahasiswa
+                        aktif.
                     </p>
                 </div>
                 <div className="flex gap-unit-sm">
-                    <Button
-                        className="bg-primary text-on-primary px-6 py-3 h-auto rounded-lg font-label-lg flex items-center gap-2 shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer border-none"
-                    >
+                    <Button className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95">
                         <Download className="h-[18px] w-[18px]" />
                         Export PDF
                     </Button>
@@ -165,57 +169,76 @@ return matchesSearch;
             </header>
 
             {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-unit-xl">
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-primary/70 font-label-md">Total Anggota</span>
-                        <Users className="text-primary/40 h-5 w-5" />
+            <div className="mb-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-4">
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-primary/70">
+                            Total Anggota
+                        </span>
+                        <Users className="h-5 w-5 text-primary/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-primary font-bold">{stats.total.toLocaleString('id-ID')}</div>
+                    <div className="font-headline-md text-headline-md font-bold text-primary">
+                        {stats.total.toLocaleString('id-ID')}
+                    </div>
                 </Card>
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-secondary font-label-md">Menunggu Proses</span>
-                        <Hourglass className="text-secondary/40 h-5 w-5" />
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-secondary">
+                            Menunggu Proses
+                        </span>
+                        <Hourglass className="h-5 w-5 text-secondary/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-secondary font-bold">{stats.pending}</div>
+                    <div className="font-headline-md text-headline-md font-bold text-secondary">
+                        {stats.pending}
+                    </div>
                 </Card>
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-green-700 font-label-md">Aktif Semester Ini</span>
-                        <CheckCircle2 className="text-green-700/40 h-5 w-5" />
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-green-700">
+                            Aktif Semester Ini
+                        </span>
+                        <CheckCircle2 className="h-5 w-5 text-green-700/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-green-700 font-bold">{stats.active}</div>
+                    <div className="font-headline-md text-headline-md font-bold text-green-700">
+                        {stats.active}
+                    </div>
                 </Card>
-                <Card className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-between h-32 ring-0">
-                    <div className="flex justify-between items-start">
-                        <span className="text-error font-label-md">Permohonan Ditolak</span>
-                        <XCircle className="text-error/40 h-5 w-5" />
+                <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
+                    <div className="flex items-start justify-between">
+                        <span className="font-label-md text-error">
+                            Permohonan Ditolak
+                        </span>
+                        <XCircle className="h-5 w-5 text-error/40" />
                     </div>
-                    <div className="font-headline-md text-headline-md text-error font-bold">{stats.rejected}</div>
+                    <div className="font-headline-md text-headline-md font-bold text-error">
+                        {stats.rejected}
+                    </div>
                 </Card>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="bg-surface-container-lowest rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant p-unit-md mb-unit-lg flex flex-col md:flex-row justify-between items-center gap-unit-md">
-                <div className="flex p-1 bg-surface-container-low rounded-lg w-full md:w-auto overflow-x-auto">
-                    {(['Semua', 'Aktif', 'Diproses', 'Ditolak'] as const).map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2 rounded-md font-label-lg transition-all text-nowrap ${activeTab === tab
-                                    ? 'bg-white shadow-sm text-primary font-semibold'
-                                    : 'text-on-surface-variant hover:text-primary'
+            <div className="mb-unit-lg flex flex-col items-center justify-between gap-unit-md rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-md shadow-[0px_2px_4px_rgba(26,54,93,0.05)] md:flex-row">
+                <div className="flex w-full overflow-x-auto rounded-lg bg-surface-container-low p-1 md:w-auto">
+                    {(['Semua', 'Aktif', 'Diproses', 'Ditolak'] as const).map(
+                        (tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${
+                                    activeTab === tab
+                                        ? 'bg-white font-semibold text-primary shadow-sm'
+                                        : 'text-on-surface-variant hover:text-primary'
                                 }`}
-                        >
-                            {tab}
-                        </button>
-                    ))}
+                            >
+                                {tab}
+                            </button>
+                        ),
+                    )}
                 </div>
                 <div className="relative w-full md:w-80">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant h-4 w-4" />
+                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
                     <input
-                        className="w-full pl-10 pr-4 py-2 bg-background border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-sm text-on-background"
+                        className="w-full rounded-lg border border-outline-variant bg-background py-2 pr-4 pl-10 font-body-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                         placeholder="Cari NIM atau Nama..."
                         type="text"
                         value={searchQuery}
@@ -225,39 +248,62 @@ return matchesSearch;
             </div>
 
             {/* Members Table */}
-            <Card className="bg-surface-container-lowest rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant overflow-hidden ring-0">
+            <Card className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0px_2px_4px_rgba(26,54,93,0.05)] ring-0">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full border-collapse text-left">
                         <thead>
-                            <tr className="bg-surface-container-low border-b border-outline-variant">
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">NIM</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Nama Mahasiswa</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Program Studi</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider">Status</th>
-                                <th className="px-unit-lg py-4 font-label-lg text-primary uppercase tracking-wider text-right">Aksi</th>
+                            <tr className="border-b border-outline-variant bg-surface-container-low">
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    NIM
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Nama Mahasiswa
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Program Studi
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
+                                    Status
+                                </th>
+                                <th className="px-unit-lg py-4 text-right font-label-lg tracking-wider text-primary uppercase">
+                                    Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/50">
                             {filteredMembers.map((member) => (
-                                <tr key={member.nim} className="hover:bg-primary/[0.02] transition-colors">
-                                    <td className="px-unit-lg py-4 font-label-md text-on-background">{member.nim}</td>
+                                <tr
+                                    key={member.nim}
+                                    className="transition-colors hover:bg-primary/[0.02]"
+                                >
+                                    <td className="px-unit-lg py-4 font-label-md text-on-background">
+                                        {member.nim}
+                                    </td>
                                     <td className="px-unit-lg py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full ${member.avatarColor} flex items-center justify-center font-bold text-xs`}>
+                                            <div
+                                                className={`h-8 w-8 rounded-full ${member.avatarColor} flex items-center justify-center text-xs font-bold`}
+                                            >
                                                 {member.initials}
                                             </div>
-                                            <span className="font-body-md font-medium text-on-background">{member.name}</span>
+                                            <span className="font-body-md font-medium text-on-background">
+                                                {member.name}
+                                            </span>
                                         </div>
                                     </td>
-                                    <td className="px-unit-lg py-4 font-body-sm text-on-surface-variant">{member.major}</td>
+                                    <td className="px-unit-lg py-4 font-body-sm text-on-surface-variant">
+                                        {member.major}
+                                    </td>
                                     <td className="px-unit-lg py-4">
                                         <span
-                                            className={`px-3 py-1 rounded-full text-[12px] font-semibold ${member.status === 'Aktif'
+                                            className={`rounded-full px-3 py-1 text-[12px] font-semibold ${
+                                                member.status === 'Aktif'
                                                     ? 'bg-green-100 text-green-700'
-                                                    : member.status === 'Diproses'
-                                                        ? 'bg-secondary-container text-on-secondary-container'
-                                                        : 'bg-error-container text-error'
-                                                }`}
+                                                    : member.status ===
+                                                        'Diproses'
+                                                      ? 'bg-secondary-container text-on-secondary-container'
+                                                      : 'bg-error-container text-error'
+                                            }`}
                                         >
                                             {member.status}
                                         </span>
@@ -265,31 +311,41 @@ return matchesSearch;
                                     <td className="px-unit-lg py-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button
-                                                className="p-2 text-primary hover:bg-primary-fixed rounded-lg transition-colors"
+                                                className="hover:bg-primary-fixed rounded-lg p-2 text-primary transition-colors"
                                                 title="Lihat KTM"
                                             >
                                                 <IdCard className="h-5 w-5" />
                                             </button>
 
                                             <button
-                                                onClick={() => handleAccept(member.nim)}
-                                                className={`p-2 transition-colors rounded-lg ${member.status === 'Aktif'
-                                                        ? 'text-outline-variant cursor-not-allowed'
+                                                onClick={() =>
+                                                    handleAccept(member.nim)
+                                                }
+                                                className={`rounded-lg p-2 transition-colors ${
+                                                    member.status === 'Aktif'
+                                                        ? 'cursor-not-allowed text-outline-variant'
                                                         : 'text-green-700 hover:bg-green-100'
-                                                    }`}
-                                                disabled={member.status === 'Aktif'}
+                                                }`}
+                                                disabled={
+                                                    member.status === 'Aktif'
+                                                }
                                                 title="Terima"
                                             >
                                                 <CheckCircle2 className="h-5 w-5" />
                                             </button>
 
                                             <button
-                                                onClick={() => handleReject(member.nim)}
-                                                className={`p-2 transition-colors rounded-lg ${member.status === 'Ditolak'
-                                                        ? 'text-outline-variant cursor-not-allowed'
+                                                onClick={() =>
+                                                    handleReject(member.nim)
+                                                }
+                                                className={`rounded-lg p-2 transition-colors ${
+                                                    member.status === 'Ditolak'
+                                                        ? 'cursor-not-allowed text-outline-variant'
                                                         : 'text-error hover:bg-error-container'
-                                                    }`}
-                                                disabled={member.status === 'Ditolak'}
+                                                }`}
+                                                disabled={
+                                                    member.status === 'Ditolak'
+                                                }
                                                 title="Tolak"
                                             >
                                                 <XCircle className="h-5 w-5" />
@@ -300,7 +356,10 @@ return matchesSearch;
                             ))}
                             {filteredMembers.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-unit-lg py-8 text-center text-on-surface-variant font-body-md">
+                                    <td
+                                        colSpan={5}
+                                        className="px-unit-lg py-8 text-center font-body-md text-on-surface-variant"
+                                    >
                                         Tidak ada anggota yang ditemukan.
                                     </td>
                                 </tr>
@@ -310,23 +369,37 @@ return matchesSearch;
                 </div>
 
                 {/* Pagination */}
-                <div className="px-unit-lg py-4 bg-surface-container-low border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-unit-md">
+                <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant bg-surface-container-low px-unit-lg py-4 md:flex-row">
                     <span className="font-body-sm text-on-surface-variant">
-                        Menampilkan 1-{filteredMembers.length} dari {filteredMembers.length === 5 ? '1.248' : filteredMembers.length} data
+                        Menampilkan 1-{filteredMembers.length} dari{' '}
+                        {filteredMembers.length === 5
+                            ? '1.248'
+                            : filteredMembers.length}{' '}
+                        data
                     </span>
                     <div className="flex items-center gap-1">
                         <button
-                            className="p-2 rounded-lg hover:bg-surface-container-highest transition-colors text-on-surface-variant disabled:opacity-30"
+                            className="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
                             disabled
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </button>
-                        <button className="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md">1</button>
-                        <button className="w-8 h-8 rounded-lg hover:bg-surface-container-highest transition-colors font-label-md text-on-surface-variant">2</button>
-                        <button className="w-8 h-8 rounded-lg hover:bg-surface-container-highest transition-colors font-label-md text-on-surface-variant">3</button>
-                        <span className="px-2 text-on-surface-variant">...</span>
-                        <button className="w-8 h-8 rounded-lg hover:bg-surface-container-highest transition-colors font-label-md text-on-surface-variant">250</button>
-                        <button className="p-2 rounded-lg hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+                        <button className="h-8 w-8 rounded-lg bg-primary font-label-md text-on-primary">
+                            1
+                        </button>
+                        <button className="h-8 w-8 rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
+                            2
+                        </button>
+                        <button className="h-8 w-8 rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
+                            3
+                        </button>
+                        <span className="px-2 text-on-surface-variant">
+                            ...
+                        </span>
+                        <button className="h-8 w-8 rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
+                            250
+                        </button>
+                        <button className="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest">
                             <ChevronRight className="h-5 w-5" />
                         </button>
                     </div>
@@ -334,30 +407,40 @@ return matchesSearch;
             </Card>
 
             {/* Guide & Support Section */}
-            <div className="mt-unit-xl grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                <div className="md:col-span-2 relative overflow-hidden bg-primary text-on-primary p-unit-xl rounded-xl shadow-lg">
+            <div className="mt-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
+                <div className="relative overflow-hidden rounded-xl bg-primary p-unit-xl text-on-primary shadow-lg md:col-span-2">
                     <div className="relative z-10 max-w-md">
-                        <h3 className="font-headline-md text-headline-md mb-2">Panduan Verifikasi</h3>
-                        <p className="font-body-md opacity-80 mb-6">
-                            Pastikan Nama dan NIM yang tertera di form pendaftaran sesuai dengan Kartu Tanda Mahasiswa (KTM) yang diunggah sebelum menyetujui anggota baru.
+                        <h3 className="mb-2 font-headline-md text-headline-md">
+                            Panduan Verifikasi
+                        </h3>
+                        <p className="mb-6 font-body-md opacity-80">
+                            Pastikan Nama dan NIM yang tertera di form
+                            pendaftaran sesuai dengan Kartu Tanda Mahasiswa
+                            (KTM) yang diunggah sebelum menyetujui anggota baru.
                         </p>
-                        <a className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline" href="#">
+                        <a
+                            className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline"
+                            href="#"
+                        >
                             Lihat SOP Keanggotaan
                             <ArrowRight className="h-[18px] w-[18px]" />
                         </a>
                     </div>
-                    <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20"></div>
-                    <div className="absolute right-12 bottom-0 w-32 h-32 bg-white/5 rounded-full mb-8"></div>
+                    <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-white/5"></div>
+                    <div className="absolute right-12 bottom-0 mb-8 h-32 w-32 rounded-full bg-white/5"></div>
                 </div>
-                <div className="bg-surface-container-lowest p-unit-lg rounded-xl shadow-[0px_2px_4px_rgba(26,54,93,0.05)] border border-outline-variant flex flex-col justify-center items-center text-center">
-                    <div className="w-16 h-16 bg-primary-fixed rounded-full flex items-center justify-center mb-4 text-primary">
+                <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg text-center shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
+                    <div className="bg-primary-fixed mb-4 flex h-16 w-16 items-center justify-center rounded-full text-primary">
                         <HelpCircle className="h-10 w-10" />
                     </div>
-                    <h4 className="font-headline-sm text-primary mb-2">Butuh Bantuan?</h4>
-                    <p className="font-body-sm text-on-surface-variant mb-4">
-                        Hubungi tim IT jika terjadi kendala pada sinkronisasi data NIM.
+                    <h4 className="mb-2 font-headline-sm text-primary">
+                        Butuh Bantuan?
+                    </h4>
+                    <p className="mb-4 font-body-sm text-on-surface-variant">
+                        Hubungi tim IT jika terjadi kendala pada sinkronisasi
+                        data NIM.
                     </p>
-                    <button className="w-full border-2 border-primary text-primary font-label-lg py-2 rounded-lg hover:bg-primary-fixed transition-colors">
+                    <button className="hover:bg-primary-fixed w-full rounded-lg border-2 border-primary py-2 font-label-lg text-primary transition-colors">
                         Tiket Support
                     </button>
                 </div>
