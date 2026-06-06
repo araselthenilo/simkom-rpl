@@ -130,4 +130,38 @@ class OrganisasiController extends Controller
 
         return to_route('admin.organisasi');
     }
+
+    /**
+     * Display historical profiles of an organization and their pembinas across time.
+     */
+    public function profilHistory(Organisasi $organisasi): Response
+    {
+        Gate::authorize('is-admin');
+
+        $organisasi->load(['profilOrganisasi' => function ($query) {
+            $query->orderBy('periode_kepengurusan', 'desc');
+        }]);
+
+        // Get all pembinaans for this organization with their pembinaOrganisasi
+        $pembinaans = $organisasi->pembinaan()->with('pembinaOrganisasi')->get();
+
+        // Map pembina into the respective profil_organisasi based on period
+        $profils = $organisasi->profilOrganisasi->map(function ($profil) use ($pembinaans) {
+            $profil->pembina = $pembinaans->filter(function ($pembinaan) use ($profil) {
+                return $pembinaan->periode_pembinaan === $profil->periode_kepengurusan;
+            })->map(function ($pembinaan) {
+                return $pembinaan->pembinaOrganisasi;
+            })->values();
+            return $profil;
+        });
+
+        return Inertia::render('admin/riwayat-profil', [
+            'organisasi' => [
+                'id_organisasi' => $organisasi->id_organisasi,
+                'nama_organisasi' => $organisasi->nama_organisasi,
+                'status_aktif' => $organisasi->status_aktif,
+            ],
+            'profils' => $profils,
+        ]);
+    }
 }

@@ -21,5 +21,9 @@ class DatabaseSeeder extends Seeder
             'username' => 'testuser',
             'email' => 'test@example.com',
         ]);
+
+        $this->call([
+            DummyOrganisasiSeeder::class,
+        ]);
     }
 }

@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/organisasi', [OrganisasiController::class, 'store'])->name('admin.organisasi.store')->middleware('can:is-admin');
     Route::patch('/admin/organisasi/{organisasi}/toggle', [OrganisasiController::class, 'toggleStatus'])->name('admin.organisasi.toggle')->middleware('can:is-admin');
     Route::delete('/admin/organisasi/{organisasi}', [OrganisasiController::class, 'destroy'])->name('admin.organisasi.destroy')->middleware('can:is-admin');
+    Route::get('/admin/organisasi/{organisasi}/profil', [OrganisasiController::class, 'profilHistory'])->name('admin.organisasi.profil')->middleware('can:is-admin');
     Route::inertia('/pengurus', 'pengurus/dashboard')->name('pengurus');
     Route::inertia('/pengurus/keuangan', 'pengurus/manajemen-keuangan')->name('pengurus.keuangan');
     Route::inertia('/pengurus/anggota', 'pengurus/manajemen-anggota')->name('pengurus.anggota');

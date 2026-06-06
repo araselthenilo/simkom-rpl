@@ -18,7 +18,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import admin from '@/routes/admin';
-import profilOrganisasi from '@/routes/profil-organisasi';
 
 interface ProfilOrganisasi {
     id_profil: number;
@@ -203,9 +202,12 @@ export default function ManajemenOrganisasi({ organisasi = [] }: ManajemenOrgani
                                                     )}
                                                 </div>
                                                 <div className="flex flex-col gap-0.5">
-                                                    <span className="font-body-md font-semibold text-primary group-hover:underline">
+                                                    <Link
+                                                        href={admin.organisasi.profil(org.id_organisasi)}
+                                                        className="font-body-md font-semibold text-primary hover:underline decoration-none"
+                                                    >
                                                         {org.nama_organisasi}
-                                                    </span>
+                                                    </Link>
                                                     <span className="text-[11px] text-on-surface-variant/70">
                                                         ID: {org.id_organisasi}
                                                     </span>
@@ -242,16 +244,14 @@ export default function ManajemenOrganisasi({ organisasi = [] }: ManajemenOrgani
                                         {/* Actions */}
                                         <td className="px-unit-lg py-4 text-right">
                                             <div className="flex justify-end gap-1.5">
-                                                {/* View Profile details (if profile exists) */}
-                                                {latestProfile && (
-                                                    <Link
-                                                        href={profilOrganisasi.show(latestProfile.id_profil)}
-                                                        className="p-2 text-primary hover:bg-primary-fixed rounded-lg transition-colors cursor-pointer display-inline-block"
-                                                        title="Lihat Profil Lengkap"
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </Link>
-                                                )}
+                                                {/* View Profile History */}
+                                                <Link
+                                                    href={admin.organisasi.profil(org.id_organisasi)}
+                                                    className="p-2 text-primary hover:bg-primary-fixed rounded-lg transition-colors cursor-pointer display-inline-block"
+                                                    title="Lihat Riwayat Profil & Pembina"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </Link>
 
                                                 {/* Toggle status */}
                                                 <button
