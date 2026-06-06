@@ -25,8 +25,13 @@ const setCookie = (name: string, value: string, days = 365): void => {
         return;
     }
 
-    const maxAge = days * 24 * 60 * 60;
-    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
+    try {
+        const maxAge = days * 24 * 60 * 60;
+        const secure = window.location.protocol === 'https:' ? ';Secure' : '';
+        document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax${secure}`;
+    } catch (e) {
+        console.warn('Failed to set cookie:', e);
+    }
 };
 
 const getStoredAppearance = (): Appearance => {
@@ -34,7 +39,31 @@ const getStoredAppearance = (): Appearance => {
         return 'system';
     }
 
-    return (localStorage.getItem('appearance') as Appearance) || 'system';
+    let stored: Appearance | null = null;
+    try {
+        stored = localStorage.getItem('appearance') as Appearance | null;
+    } catch (e) {
+        console.warn('Failed to read from localStorage:', e);
+    }
+
+    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+        return stored;
+    }
+
+    // Fallback: read from cookie
+    try {
+        const match = document.cookie.match(/(^|;)\s*appearance\s*=\s*([^;]+)/);
+        if (match) {
+            const cookieVal = decodeURIComponent(match[2]) as Appearance;
+            if (cookieVal === 'light' || cookieVal === 'dark' || cookieVal === 'system') {
+                return cookieVal;
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to read cookie:', e);
+    }
+
+    return 'system';
 };
 
 const isDarkMode = (appearance: Appearance): boolean => {
@@ -75,9 +104,21 @@ export function initializeTheme(): void {
         return;
     }
 
-    if (!localStorage.getItem('appearance')) {
-        localStorage.setItem('appearance', 'system');
-        setCookie('appearance', 'system');
+    let hasStored = false;
+    try {
+        hasStored = !!localStorage.getItem('appearance');
+    } catch (e) {
+        console.warn('Failed to check localStorage:', e);
+    }
+
+    if (!hasStored) {
+        const fallback = getStoredAppearance();
+        try {
+            localStorage.setItem('appearance', fallback);
+        } catch (e) {
+            // ignore
+        }
+        setCookie('appearance', fallback);
     }
 
     currentAppearance = getStoredAppearance();
@@ -109,8 +150,12 @@ export function useAppearance(): UseAppearanceReturn {
     const updateAppearance = (mode: Appearance): void => {
         currentAppearance = mode;
 
-        // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
+        try {
+            // Store in localStorage for client-side persistence...
+            localStorage.setItem('appearance', mode);
+        } catch (e) {
+            console.warn('Failed to write to localStorage:', e);
+        }
 
         // Store in cookie for SSR...
         setCookie('appearance', mode);
