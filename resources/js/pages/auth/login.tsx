@@ -1,4 +1,5 @@
 import { Head, Form } from '@inertiajs/react';
+import { BadgeCheck, Users, User, Lock, LogIn } from 'lucide-react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -25,10 +26,6 @@ export default function Login({ status, canResetPassword }: Props) {
                     rel="stylesheet"
                     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
                 />
-                <link
-                    rel="stylesheet"
-                    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-                />
             </Head>
 
             <main className="flex min-h-screen bg-background text-on-background">
@@ -51,20 +48,16 @@ export default function Login({ status, canResetPassword }: Props) {
                                 Mahasiswa (SIMKOM) menyediakan akses terpusat
                                 bagi seluruh civitas akademika untuk
                                 berkolaborasi, berinovasi, dan mengelola
-                                administrasi kampus dengan efisiensi tinggi.
+                                administrrasi kampus dengan efisiensi tinggi.
                             </p>
                         </div>
                         <div className="flex items-center gap-unit-lg font-label-md text-white/60">
                             <div className="flex items-center gap-unit-xs">
-                                <span className="material-symbols-outlined text-[18px]">
-                                    verified
-                                </span>
+                                <BadgeCheck size={18} />
                                 <span>Terakreditasi Unggul</span>
                             </div>
                             <div className="flex items-center gap-unit-xs">
-                                <span className="material-symbols-outlined text-[18px]">
-                                    group
-                                </span>
+                                <Users size={18} />
                                 <span>6k+ Mahasiswa Aktif</span>
                             </div>
                         </div>
@@ -114,9 +107,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                             </Label>
                                             <div className="group relative">
                                                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-variant transition-colors group-focus-within:text-primary">
-                                                    <span className="material-symbols-outlined text-[20px]">
-                                                        person
-                                                    </span>
+                                                    <User size={20} />
                                                 </div>
                                                 <Input
                                                     id="username"
@@ -145,10 +136,8 @@ export default function Login({ status, canResetPassword }: Props) {
                                                 Password
                                             </Label>
                                             <div className="group relative">
-                                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-variant transition-colors group-focus-within:text-primary">
-                                                    <span className="material-symbols-outlined text-[20px]">
-                                                        lock
-                                                    </span>
+                                                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-3 text-on-surface-variant transition-colors group-focus-within:text-primary">
+                                                    <Lock size={20} />
                                                 </div>
                                                 <PasswordInput
                                                     id="password"
@@ -204,9 +193,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                             {processing
                                                 ? 'Menghubungkan...'
                                                 : 'Masuk Ke Akun'}
-                                            <span className="material-symbols-outlined text-[18px]">
-                                                login
-                                            </span>
+                                            <LogIn size={18} />
                                         </Button>
                                     </>
                                 )}

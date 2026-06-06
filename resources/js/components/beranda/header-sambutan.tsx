@@ -11,7 +11,7 @@ export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
             badge: 'Portal Mahasiswa',
             title: `Selamat Datang, ${namaUser}!`,
             description:
-                'Pantau kegiatan, kelola organisasi, dan kumpulkan poin SKP Anda di portal SIMKOM STIKOM Bali.',
+                'Pantau kegiatan, kelola organisasi, dan kumpulkan poin SKKM Anda di portal SIMKOM STIKOM Bali.',
             buttonText: 'Mulai Jelajah',
             image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNpH-22IoCl63a9joUP9Z1QrnkhqiidpiG-kGq4F28wU2YMId0zMr_kh1mpUy08_LHyxEbyr-C811ezXrxnhqsZJlzDbJwevVEZf3ZzWQGgYJax6866wuAuyf2O1FkVsMrE2_7R3XY3ROKUNJaanx5BWRYmVWv-XdtX8HCh0DzebLzXbHO2H4MYijharWgAPXVGw_kt1BhR41UIn7nEcKcc1olzoC0vAXhsY4y_aANFzz-vHg1pgH2YugoOlJtlC3u2nRFWtm9tS0',
         },
@@ -47,11 +47,10 @@ export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
                 {slides.map((slide, index) => (
                     <div
                         key={index}
-                        className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-in-out ${
-                            index === currentSlide
+                        className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-in-out ${index === currentSlide
                                 ? 'z-10 opacity-100'
                                 : 'pointer-events-none z-0 opacity-0'
-                        }`}
+                            }`}
                     >
                         <img
                             className="h-full w-full object-cover opacity-60"
@@ -84,11 +83,10 @@ export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
                     <button
                         key={index}
                         onClick={() => setCurrentSlide(index)}
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                            index === currentSlide
+                        className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide
                                 ? 'w-8 bg-on-primary'
                                 : 'w-2 bg-on-primary/50'
-                        }`}
+                            }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />
                 ))}

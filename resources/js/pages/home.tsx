@@ -1,7 +1,6 @@
 import HeaderSambutan from '@/components/beranda/header-sambutan';
 import KegiatanMendatang from '@/components/beranda/kegiatan-mendatang';
 import OrganisasiSaya from '@/components/beranda/organisasi-saya';
-import HomeLayout from '@/layouts/home-layout';
 import type { Auth } from '@/types/auth';
 
 export default function Home({ auth }: { auth: Auth }) {
@@ -9,12 +8,10 @@ export default function Home({ auth }: { auth: Auth }) {
 
     return (
         <>
-            <HomeLayout>
-                <HeaderSambutan user={user} />
-                <KegiatanMendatang />
-                <OrganisasiSaya />
-                {/* Brief Data Pencapaian Mahasiswa */}
-            </HomeLayout>
+            <HeaderSambutan user={user} />
+            <KegiatanMendatang />
+            <OrganisasiSaya />
+            {/* Brief Data Pencapaian Mahasiswa */}
         </>
     );
 }

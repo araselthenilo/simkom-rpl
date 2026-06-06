@@ -68,9 +68,6 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                                 Email Institusi
                                             </Label>
                                             <div className="relative">
-                                                {/* <span className="material-symbols-outlined absolute top-1/2 left-3 -translate-y-1/2 text-[20px] text-outline">
-                                                    mail
-                                                </span> */}
                                                 <MailIcon className="absolute top-1/2 left-3 -translate-y-1/2 text-[20px] text-outline" />
                                                 <Input
                                                     className="w-full rounded-lg border border-outline-variant bg-surface-container py-6 pr-4 pl-11 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"

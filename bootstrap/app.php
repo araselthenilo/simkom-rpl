@@ -17,6 +17,19 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        $middleware->redirectUsersTo(function (Request $request) {
+            $user = $request->user();
+            if ($user) {
+                if ($user->role === 'Admin Kemahasiswaan') {
+                    return route('admin.dashboard');
+                }
+                if ($user->role === 'Mahasiswa') {
+                    return route('home');
+                }
+            }
+            return '/home';
+        });
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,

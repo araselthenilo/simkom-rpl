@@ -17,6 +17,18 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
+        Gate::define('is-mahasiswa', function ($user) {
+            return $user->role === 'Mahasiswa';
+        });
+
+        Gate::define('is-pembina', function ($user) {
+            return $user->role === 'Pembina Organisasi';
+        });
+
+        Gate::define('is-admin', function ($user) {
+            return $user->role === 'Admin Kemahasiswaan';
+        });
+
         Gate::define('is-petugas', function ($user) {
             return in_array($user->role, ['Admin Kemahasiswaan', 'Pembina Organisasi']);
         });
@@ -48,13 +60,13 @@ class AppServiceProvider extends ServiceProvider
 
         Password::defaults(
             fn(): ?Password => app()->isProduction()
-                ? Password::min(12)
+            ? Password::min(12)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
-                : null,
+            : null,
         );
     }
 }

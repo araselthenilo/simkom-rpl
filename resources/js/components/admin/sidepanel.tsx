@@ -13,7 +13,8 @@ import {
     LogOut
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { logout, pengurus } from '@/routes';
+import { logout } from '@/routes';
+import { dashboard as adminDashboard } from '@/routes/admin';
 import { keuangan, anggota, kegiatan } from '@/routes/pengurus';
 
 interface NavItem {
@@ -26,7 +27,7 @@ export default function Sidepanel() {
     const { isCurrentUrl } = useCurrentUrl();
 
     const menuItems: NavItem[] = [
-        { title: 'Dashboard', href: pengurus(), icon: LayoutDashboard },
+        { title: 'Dashboard', href: adminDashboard(), icon: LayoutDashboard },
         { title: 'Anggota', href: anggota(), icon: Users },
         { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
