@@ -73,6 +73,61 @@ class OrganisasiController extends Controller
             'message' => 'Organisasi dan profil baru berhasil ditambahkan.',
         ]);
 
-        return to_route('admin.dashboard');
+        return to_route('admin.organisasi');
+    }
+
+    /**
+     * Display a listing of registered organizations.
+     */
+    public function index(): Response
+    {
+        Gate::authorize('is-admin');
+
+        $organisasi = Organisasi::with(['profilOrganisasi' => function ($query) {
+            $query->orderBy('periode_kepengurusan', 'desc');
+        }])
+        ->withCount('anggotaOrganisasi')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return Inertia::render('admin/manajemen-organisasi', [
+            'organisasi' => $organisasi,
+        ]);
+    }
+
+    /**
+     * Toggle the active status of an organization.
+     */
+    public function toggleStatus(Organisasi $organisasi): RedirectResponse
+    {
+        Gate::authorize('is-admin');
+
+        $organisasi->update([
+            'status_aktif' => !$organisasi->status_aktif,
+        ]);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Status aktif organisasi berhasil diperbarui.',
+        ]);
+
+        return to_route('admin.organisasi');
+    }
+
+    /**
+     * Soft delete an organization.
+     */
+    public function destroy(Organisasi $organisasi): RedirectResponse
+    {
+        Gate::authorize('is-admin');
+
+        $organisasi->delete();
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Organisasi berhasil dinonaktifkan/dihapus.',
+        ]);
+
+        return to_route('admin.organisasi');
     }
 }

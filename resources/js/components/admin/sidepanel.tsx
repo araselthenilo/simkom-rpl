@@ -10,12 +10,16 @@ import {
     BarChart3,
     Database,
     User,
-    LogOut
+    LogOut,
+    Building2
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout } from '@/routes';
-import { dashboard as adminDashboard } from '@/routes/admin';
-import { keuangan, anggota, kegiatan } from '@/routes/pengurus';
+import {
+    dashboard as adminDashboard,
+    organisasi as adminOrganisasi
+} from '@/routes/admin';
+import { keuangan, kegiatan } from '@/routes/pengurus';
 
 interface NavItem {
     title: string;
@@ -28,7 +32,7 @@ export default function Sidepanel() {
 
     const menuItems: NavItem[] = [
         { title: 'Dashboard', href: adminDashboard(), icon: LayoutDashboard },
-        { title: 'Anggota', href: anggota(), icon: Users },
+        { title: 'Organisasi', href: adminOrganisasi(), icon: Building2 },
         { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },

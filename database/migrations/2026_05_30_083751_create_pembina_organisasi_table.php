@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('nomor_telepon', 15);
             $table->enum('role', ['Pembina Organisasi'])->default('Pembina Organisasi');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign(['username', 'role'])
                 ->references(['username', 'role'])

@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('nama_organisasi', 100);
             $table->boolean('status_aktif');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

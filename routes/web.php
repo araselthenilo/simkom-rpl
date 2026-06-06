@@ -11,8 +11,11 @@ Route::inertia('/', 'welcome')->name('welcome');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('/home', 'home')->name('home')->middleware('can:is-mahasiswa');
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard')->middleware('can:is-admin');
+    Route::get('/admin/organisasi', [OrganisasiController::class, 'index'])->name('admin.organisasi')->middleware('can:is-admin');
     Route::get('/admin/organisasi/create', [OrganisasiController::class, 'create'])->name('admin.organisasi.create')->middleware('can:is-admin');
     Route::post('/admin/organisasi', [OrganisasiController::class, 'store'])->name('admin.organisasi.store')->middleware('can:is-admin');
+    Route::patch('/admin/organisasi/{organisasi}/toggle', [OrganisasiController::class, 'toggleStatus'])->name('admin.organisasi.toggle')->middleware('can:is-admin');
+    Route::delete('/admin/organisasi/{organisasi}', [OrganisasiController::class, 'destroy'])->name('admin.organisasi.destroy')->middleware('can:is-admin');
     Route::inertia('/pengurus', 'pengurus/dashboard')->name('pengurus');
     Route::inertia('/pengurus/keuangan', 'pengurus/manajemen-keuangan')->name('pengurus.keuangan');
     Route::inertia('/pengurus/anggota', 'pengurus/manajemen-anggota')->name('pengurus.anggota');
@@ -22,4 +25,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::resource('profil-organisasi', ProfilOrganisasiController::class);
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

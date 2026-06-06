@@ -9,9 +9,11 @@ import {
     Megaphone,
     Mail,
     BookOpen,
-    Download
+    Download,
+    PlusCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import admin from '@/routes/admin';
 
 interface DashboardProps {
     totalOrganisasiAktif: number;
@@ -68,11 +70,11 @@ export default function Dashboard({
                             <p className="font-headline-sm text-headline-sm text-primary">{totalAnggotaAktif}</p>
                         </div>
                         <Link
-                            href="/admin/organisasi/create"
-                            className="flex-1 bg-primary text-on-primary rounded-lg p-3 flex items-center justify-center cursor-pointer hover:bg-primary-container hover:scale-105 active:scale-95 transition-all duration-100 decoration-none"
+                            href={admin.organisasi.create()}
+                            className="bg-primary text-on-primary px-6 py-3 h-auto rounded-lg font-label-lg flex items-center justify-center gap-2 shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer border-none w-full md:w-auto decoration-none font-semibold"
                         >
-                            <Plus className="h-6 w-6" />
-                            <span className="text-on-primary font-label-lg text-label-lg">Tambah UKM</span>
+                            <PlusCircle className="h-[18px] w-[18px]" />
+                            Tambah UKM Baru
                         </Link>
                     </div>
                 </div>

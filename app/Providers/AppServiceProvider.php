@@ -36,7 +36,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('is-pengurus', function ($user) {
             return PengurusOrganisasi::whereHas('anggotaOrganisasi.mahasiswa', function ($query) use ($user) {
                 $query->where('username', $user->username);
-            })->exists();
+            })
+                ->whereHas('anggotaOrganisasi.organisasi')
+                ->exists();
         });
 
         Gate::define('is-pengurus-kegiatan', function ($user, Kegiatan $kegiatan) {
@@ -44,7 +46,8 @@ class AppServiceProvider extends ServiceProvider
                 $query->where('username', $user->username);
             })
                 ->whereHas('profilOrganisasi', function ($query) use ($kegiatan) {
-                    $query->where('id_profil', $kegiatan->id_profil);
+                    $query->where('id_profil', $kegiatan->id_profil)
+                        ->whereHas('organisasi');
                 })
                 ->exists();
         });
