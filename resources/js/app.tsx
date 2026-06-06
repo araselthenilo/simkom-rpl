@@ -3,6 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
+import PengurusLayout from '@/layouts/pengurus-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -18,6 +19,8 @@ createInertiaApp({
                 return null;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
+            case name.startsWith('pengurus/'):
+                return [PengurusLayout];
             default:
                 return AppLayout;
         }

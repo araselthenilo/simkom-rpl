@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import {
     Code2,
     Terminal,
@@ -6,6 +7,7 @@ import {
     Calendar,
     ChevronRight,
 } from 'lucide-react';
+import { pengurus } from '@/routes';
 
 interface Organization {
     id: number;
@@ -40,7 +42,11 @@ function OrganizationIcon({
     className?: string;
 }) {
     const IconComponent = ICON_MAP[name];
-    if (!IconComponent) return null;
+
+    if (!IconComponent) {
+return null;
+}
+
     return <IconComponent className={className} />;
 }
 
@@ -150,9 +156,12 @@ export default function OrganisasiSaya({
                                     )}
                                 </div>
                                 {org.link && (
-                                    <button className="z-10 mt-8 w-full cursor-pointer rounded-lg bg-[#FFD54F] py-3 font-label-lg font-medium text-[#001D35] transition-all hover:bg-[#FFC107]">
+                                    <Link
+                                        href={pengurus()}
+                                        className="z-10 mt-8 block w-full cursor-pointer rounded-lg bg-[#FFD54F] py-3 text-center font-label-lg font-medium text-[#001D35] transition-all hover:bg-[#FFC107]"
+                                    >
                                         Dashboard UKM
-                                    </button>
+                                    </Link>
                                 )}
                                 {org.bgIcon && (
                                     <div className="absolute -right-10 -bottom-10 opacity-10 transition-transform duration-700 group-hover:scale-110">

@@ -1,8 +1,8 @@
-import KegiatanMendatang from '@/components/beranda/kegiatan-mendatang';
 import HeaderSambutan from '@/components/beranda/header-sambutan';
+import KegiatanMendatang from '@/components/beranda/kegiatan-mendatang';
 import OrganisasiSaya from '@/components/beranda/organisasi-saya';
 import HomeLayout from '@/layouts/home-layout';
-import { Auth } from '@/types/auth';
+import type { Auth } from '@/types/auth';
 
 export default function Home({ auth }: { auth: Auth }) {
     const user = auth.user;

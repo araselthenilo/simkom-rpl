@@ -1,16 +1,16 @@
 import { Head, Form } from '@inertiajs/react';
-import stikomBgJpg from '../../../../public/stikom-bg.jpg';
-import stikomLogoPng from '../../../../public/stikom-logo.png';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
-import { Checkbox } from '@/components/ui/checkbox';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { store } from '@/routes/login';
+import { request } from '@/routes/password';
+import stikomBgJpg from '../../../../public/stikom-bg.jpg';
+import stikomLogoPng from '../../../../public/stikom-logo.png';
 
 type Props = {
     status?: string;

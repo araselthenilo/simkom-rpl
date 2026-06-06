@@ -4,6 +4,7 @@ import { dashboard } from '@/routes';
 
 export default function Dashboard() {
     console.log('Hadir!');
+
     return (
         <>
             <Head title="Dashboard" />

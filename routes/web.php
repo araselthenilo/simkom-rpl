@@ -8,6 +8,8 @@ Route::inertia('/', 'welcome')->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('/home', 'home')->name('home');
+    Route::inertia('/pengurus', 'pengurus/dashboard')->name('pengurus');
+    Route::inertia('/pengurus/keuangan', 'pengurus/manajemen-keuangan')->name('pengurus.keuangan');
     Route::get('dashboard/{organisasi?}', [DashboardMonitoringController::class, 'index'])->name('dashboard');
 });
 

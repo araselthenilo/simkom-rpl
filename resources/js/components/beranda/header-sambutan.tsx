@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Auth } from '@/types/auth';
+import { useState, useEffect } from 'react';
+import type { Auth } from '@/types/auth';
 
 export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
     const namaUser = user.name;
@@ -29,6 +29,7 @@ export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, 6000);
+
         return () => clearInterval(timer);
     }, [currentSlide, slides.length]);
 
