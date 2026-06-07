@@ -14,7 +14,7 @@ import {
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout } from '@/routes';
 import admin from '@/routes/admin';
-import { keuangan, kegiatan } from '@/routes/pengurus';
+import { keuangan } from '@/routes/pengurus';
 import { edit as profileEdit } from '@/routes/profile';
 
 interface NavItem {
@@ -30,7 +30,7 @@ export default function Sidepanel() {
         { title: 'Dashboard', href: admin.dashboard(), icon: LayoutDashboard },
         { title: 'Organisasi', href: admin.organisasi(), icon: Building2 },
         { title: 'Pengurus', href: admin.pengurus.index(), icon: Users },
-        { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
+        { title: 'Kegiatan', href: admin.kegiatan.index(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },
         { title: 'Master Data', href: '/master-data', icon: Database },

@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import {
     Calendar,
     Search,
@@ -7,7 +8,6 @@ import {
     XCircle,
     Edit2,
     Trash2,
-    Download,
     ArrowRight,
     HelpCircle,
     ChevronLeft,
@@ -19,7 +19,7 @@ import {
     Info,
     RefreshCw,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -35,116 +35,51 @@ interface Activity {
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-        | 'Mendatang'
-        | 'Sedang berlangsung'
-        | 'Selesai'
-        | 'Dibatalkan';
+    | 'Mendatang'
+    | 'Sedang berlangsung'
+    | 'Selesai'
+    | 'Dibatalkan';
     alasan_pembatalan: string | null;
+    profil_organisasi?: {
+        id_profil: number;
+        id_organisasi: number;
+        periode_kepengurusan: string;
+        organisasi?: {
+            id_organisasi: number;
+            nama_organisasi: string;
+        };
+    };
 }
 
-export default function ManajemenKegiatan() {
+interface ProfilOrganisasi {
+    id_profil: number;
+    id_organisasi: number;
+    periode_kepengurusan: string;
+    status_aktif: boolean;
+    organisasi?: {
+        id_organisasi: number;
+        nama_organisasi: string;
+    };
+}
+
+export default function ManajemenKegiatan({
+    initialActivities = [],
+    profilList = [],
+}: {
+    initialActivities?: Activity[];
+    profilList?: ProfilOrganisasi[];
+}) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<
         'Semua' | 'Mendatang' | 'Sedang berlangsung' | 'Selesai' | 'Dibatalkan'
     >('Semua');
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
-    // Sample database-backed kegiatan data state
-    const [activities, setActivities] = useState<Activity[]>([
-        {
-            id_kegiatan: 1,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan: 'Seminar IT Nasional: Masa Depan Web Modern & AI',
-            jenis_kegiatan: 'Seminar',
-            deskripsi_kegiatan:
-                'Seminar nasional yang membahas perkembangan teknologi web terbaru dan integrasi kecerdasan buatan dalam pengembangan aplikasi masa kini.',
-            biaya_pendaftaran: 50000,
-            tanggal_pelaksanaan: '2026-06-15',
-            lokasi_kegiatan: 'Aula Kampus Renon',
-            kuota_peserta: 300,
-            status_kegiatan: 'Mendatang',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 2,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan:
-                'Pelatihan UI/UX: Menguasai Auto-Layout & Design System',
-            jenis_kegiatan: 'Pelatihan',
-            deskripsi_kegiatan:
-                'Workshop mendalam tentang pembuatan design system berskala besar di Figma dan taktik optimal auto-layout.',
-            biaya_pendaftaran: 25000,
-            tanggal_pelaksanaan: '2026-06-08',
-            lokasi_kegiatan: 'Lab Komputer 3',
-            kuota_peserta: 40,
-            status_kegiatan: 'Mendatang',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 3,
-            id_profil: 102,
-            username_petugas: 'admin_sari',
-            nama_kegiatan: 'Lomba Hackathon: Solusi Cerdas untuk Lingkungan',
-            jenis_kegiatan: 'Lomba',
-            deskripsi_kegiatan:
-                'Kompetisi coding 24 jam untuk merancang solusi digital ramah lingkungan dan keberlanjutan energi.',
-            biaya_pendaftaran: 150000,
-            tanggal_pelaksanaan: '2026-05-20',
-            lokasi_kegiatan: 'Gedung IT Center STIKOM',
-            kuota_peserta: 20,
-            status_kegiatan: 'Selesai',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 4,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan: 'Pengabdian Masyarakat: Hijaukan Pantai Serangan',
-            jenis_kegiatan: 'Pengabdian Masyarakat',
-            deskripsi_kegiatan:
-                'Kegiatan sosial penanaman bibit pohon mangrove bersama komunitas pecinta alam Bali.',
-            biaya_pendaftaran: 0,
-            tanggal_pelaksanaan: '2026-04-10',
-            lokasi_kegiatan: 'Pantai Melasti Serangan',
-            kuota_peserta: 100,
-            status_kegiatan: 'Selesai',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 5,
-            id_profil: 103,
-            username_petugas: 'admin_budi',
-            nama_kegiatan:
-                'Seminar Cyber Security: Melindungi Aset Digital Organisasi',
-            jenis_kegiatan: 'Seminar',
-            deskripsi_kegiatan:
-                'Pengenalan konsep dasar keamanan informasi dan ancaman cyber terkini di era transformasi digital.',
-            biaya_pendaftaran: 0,
-            tanggal_pelaksanaan: '2026-06-05',
-            lokasi_kegiatan: 'Online via Zoom',
-            kuota_peserta: 500,
-            status_kegiatan: 'Sedang berlangsung',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 6,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan: 'Lomba DevFest STIKOM 2026',
-            jenis_kegiatan: 'Lomba',
-            deskripsi_kegiatan:
-                'Festival kompetisi teknologi tingkat regional.',
-            biaya_pendaftaran: 75000,
-            tanggal_pelaksanaan: '2026-06-25',
-            lokasi_kegiatan: 'Gedung Aula Kampus STIKOM',
-            kuota_peserta: 150,
-            status_kegiatan: 'Dibatalkan',
-            alasan_pembatalan:
-                'Kurangnya alokasi dana dan bentrok dengan jadwal ujian akhir semester.',
-        },
-    ]);
+    const [activities, setActivities] = useState<Activity[]>(initialActivities);
+
+    useEffect(() => {
+        setActivities(initialActivities);
+    }, [initialActivities]);
 
     // Modal state controllers
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -154,6 +89,7 @@ export default function ManajemenKegiatan() {
 
     // Form inputs state
     const [formData, setFormData] = useState({
+        id_profil: profilList[0]?.id_profil || 0,
         nama_kegiatan: '',
         jenis_kegiatan: 'Seminar' as Activity['jenis_kegiatan'],
         deskripsi_kegiatan: '',
@@ -202,6 +138,9 @@ export default function ManajemenKegiatan() {
                 .includes(searchQuery.toLowerCase()) ||
             activity.lokasi_kegiatan
                 .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+            (activity.profil_organisasi?.organisasi?.nama_organisasi || '')
+                .toLowerCase()
                 .includes(searchQuery.toLowerCase());
 
         const matchesStatus =
@@ -216,6 +155,7 @@ export default function ManajemenKegiatan() {
     // Form handlers
     const openCreateModal = () => {
         setFormData({
+            id_profil: profilList[0]?.id_profil || 0,
             nama_kegiatan: '',
             jenis_kegiatan: 'Seminar',
             deskripsi_kegiatan: '',
@@ -231,6 +171,7 @@ export default function ManajemenKegiatan() {
         e.preventDefault();
 
         if (
+            !formData.id_profil ||
             !formData.nama_kegiatan ||
             !formData.lokasi_kegiatan ||
             !formData.deskripsi_kegiatan
@@ -240,28 +181,36 @@ export default function ManajemenKegiatan() {
             return;
         }
 
-        const newActivity: Activity = {
-            id_kegiatan: Date.now(),
-            id_profil: 101,
-            username_petugas: 'testuser',
-            nama_kegiatan: formData.nama_kegiatan,
-            jenis_kegiatan: formData.jenis_kegiatan,
-            deskripsi_kegiatan: formData.deskripsi_kegiatan,
-            biaya_pendaftaran: Number(formData.biaya_pendaftaran),
-            tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
-            lokasi_kegiatan: formData.lokasi_kegiatan,
-            kuota_peserta: Number(formData.kuota_peserta),
-            status_kegiatan: 'Mendatang',
-            alasan_pembatalan: null,
-        };
-
-        setActivities((prev) => [newActivity, ...prev]);
-        setIsCreateModalOpen(false);
+        router.post(
+            '/admin/kegiatan',
+            {
+                id_profil: formData.id_profil,
+                nama_kegiatan: formData.nama_kegiatan,
+                jenis_kegiatan: formData.jenis_kegiatan,
+                deskripsi_kegiatan: formData.deskripsi_kegiatan,
+                biaya_pendaftaran: Number(formData.biaya_pendaftaran),
+                tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
+                lokasi_kegiatan: formData.lokasi_kegiatan,
+                kuota_peserta: Number(formData.kuota_peserta),
+            },
+            {
+                onSuccess: () => {
+                    setIsCreateModalOpen(false);
+                },
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message || 'Terjadi kesalahan saat menyimpan kegiatan.',
+                    );
+                },
+            },
+        );
     };
 
     const openEditModal = (activity: Activity) => {
         setActiveActivity(activity);
         setFormData({
+            id_profil: activity.id_profil,
             nama_kegiatan: activity.nama_kegiatan,
             jenis_kegiatan: activity.jenis_kegiatan,
             deskripsi_kegiatan: activity.deskripsi_kegiatan,
@@ -280,24 +229,32 @@ export default function ManajemenKegiatan() {
             return;
         }
 
-        setActivities((prev) =>
-            prev.map((item) =>
-                item.id_kegiatan === activeActivity.id_kegiatan
-                    ? {
-                          ...item,
-                          nama_kegiatan: formData.nama_kegiatan,
-                          jenis_kegiatan: formData.jenis_kegiatan,
-                          deskripsi_kegiatan: formData.deskripsi_kegiatan,
-                          biaya_pendaftaran: Number(formData.biaya_pendaftaran),
-                          tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
-                          lokasi_kegiatan: formData.lokasi_kegiatan,
-                          kuota_peserta: Number(formData.kuota_peserta),
-                      }
-                    : item,
-            ),
+        router.put(
+            `/admin/kegiatan/${activeActivity.id_kegiatan}`,
+            {
+                id_profil: formData.id_profil,
+                nama_kegiatan: formData.nama_kegiatan,
+                jenis_kegiatan: formData.jenis_kegiatan,
+                deskripsi_kegiatan: formData.deskripsi_kegiatan,
+                biaya_pendaftaran: Number(formData.biaya_pendaftaran),
+                tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
+                lokasi_kegiatan: formData.lokasi_kegiatan,
+                kuota_peserta: Number(formData.kuota_peserta),
+            },
+            {
+                onSuccess: () => {
+                    setIsEditModalOpen(false);
+                    setActiveActivity(null);
+                },
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message ||
+                        'Terjadi kesalahan saat memperbarui kegiatan.',
+                    );
+                },
+            },
         );
-        setIsEditModalOpen(false);
-        setActiveActivity(null);
     };
 
     const openCancelModal = (activity: Activity) => {
@@ -319,26 +276,36 @@ export default function ManajemenKegiatan() {
             return;
         }
 
-        setActivities((prev) =>
-            prev.map((item) =>
-                item.id_kegiatan === activeActivity.id_kegiatan
-                    ? {
-                          ...item,
-                          status_kegiatan: 'Dibatalkan',
-                          alasan_pembatalan: cancellationReasonInput,
-                      }
-                    : item,
-            ),
+        router.put(
+            `/admin/kegiatan/${activeActivity.id_kegiatan}`,
+            {
+                status_kegiatan: 'Dibatalkan',
+                alasan_pembatalan: cancellationReasonInput,
+            },
+            {
+                onSuccess: () => {
+                    setIsCancelModalOpen(false);
+                    setActiveActivity(null);
+                },
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message ||
+                        'Terjadi kesalahan saat membatalkan kegiatan.',
+                    );
+                },
+            },
         );
-        setIsCancelModalOpen(false);
-        setActiveActivity(null);
     };
 
     const handleDeleteActivity = (id: number) => {
         if (confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
-            setActivities((prev) =>
-                prev.filter((item) => item.id_kegiatan !== id),
-            );
+            router.delete(`/admin/kegiatan/${id}`, {
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(message || 'Gagal menghapus kegiatan.');
+                },
+            });
         }
     };
 
@@ -356,16 +323,21 @@ export default function ManajemenKegiatan() {
             nextStatus = 'Mendatang';
         }
 
-        setActivities((prev) =>
-            prev.map((item) =>
-                item.id_kegiatan === id
-                    ? {
-                          ...item,
-                          status_kegiatan: nextStatus,
-                          alasan_pembatalan: null,
-                      }
-                    : item,
-            ),
+        router.put(
+            `/admin/kegiatan/${id}`,
+            {
+                status_kegiatan: nextStatus,
+                alasan_pembatalan: null,
+            },
+            {
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message ||
+                        'Terjadi kesalahan saat memperbarui status kegiatan.',
+                    );
+                },
+            },
         );
     };
 
@@ -375,11 +347,11 @@ export default function ManajemenKegiatan() {
             <header className="mb-unit-xl flex flex-col items-start justify-between gap-unit-md md:flex-row md:items-end">
                 <div>
                     <h2 className="font-headline-lg text-headline-lg text-primary">
-                        Manajemen Kegiatan
+                        Manajemen Kegiatan (Admin)
                     </h2>
                     <p className="mt-1 font-body-md text-body-md text-on-surface-variant">
                         Kelola pendaftaran, lokasi, biaya, dan status
-                        pelaksanaan kegiatan organisasi.
+                        pelaksanaan seluruh kegiatan organisasi/UKM.
                     </p>
                 </div>
                 <div className="flex w-full gap-unit-sm md:w-auto">
@@ -457,11 +429,10 @@ export default function ManajemenKegiatan() {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${
-                                activeTab === tab
-                                    ? 'bg-white font-semibold text-primary shadow-sm'
-                                    : 'text-on-surface-variant hover:text-primary'
-                            }`}
+                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
+                                ? 'bg-white font-semibold text-primary shadow-sm'
+                                : 'text-on-surface-variant hover:text-primary'
+                                }`}
                         >
                             {tab}
                         </button>
@@ -495,7 +466,7 @@ export default function ManajemenKegiatan() {
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
                         <input
                             className="w-full rounded-lg border border-outline-variant bg-background py-2 pr-4 pl-10 font-body-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                            placeholder="Cari kegiatan atau lokasi..."
+                            placeholder="Cari kegiatan, UKM, atau lokasi..."
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -511,7 +482,7 @@ export default function ManajemenKegiatan() {
                         <thead>
                             <tr className="border-b border-outline-variant bg-surface-container-low">
                                 <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
-                                    Nama & Kategori
+                                    Nama & Penyelenggara
                                 </th>
                                 <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
                                     Pelaksanaan & Tempat
@@ -539,9 +510,12 @@ export default function ManajemenKegiatan() {
                                             <span className="font-body-md font-semibold text-primary group-hover:underline">
                                                 {activity.nama_kegiatan}
                                             </span>
-                                            <div className="flex items-center gap-2">
-                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary">
                                                     {activity.jenis_kegiatan}
+                                                </span>
+                                                <span className="bg-secondary-fixed rounded border border-secondary/10 px-2 py-0.5 text-[11px] font-medium text-on-secondary-fixed">
+                                                    {activity.profil_organisasi?.organisasi?.nama_organisasi || 'Organisasi'}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">
                                                     ID: {activity.id_kegiatan}
@@ -596,18 +570,17 @@ export default function ManajemenKegiatan() {
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col items-start gap-1">
                                             <span
-                                                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${
-                                                    activity.status_kegiatan ===
+                                                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${activity.status_kegiatan ===
                                                     'Selesai'
-                                                        ? 'bg-green-100 text-green-700'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : activity.status_kegiatan ===
+                                                        'Sedang berlangsung'
+                                                        ? 'bg-amber-100 text-amber-800'
                                                         : activity.status_kegiatan ===
-                                                            'Sedang berlangsung'
-                                                          ? 'bg-amber-100 text-amber-800'
-                                                          : activity.status_kegiatan ===
-                                                              'Mendatang'
+                                                            'Mendatang'
                                                             ? 'bg-blue-100 text-blue-700'
                                                             : 'bg-red-100 text-red-700'
-                                                }`}
+                                                    }`}
                                             >
                                                 {activity.status_kegiatan}
                                             </span>
@@ -632,22 +605,35 @@ export default function ManajemenKegiatan() {
                                     {/* Actions */}
                                     <td className="px-unit-lg py-4 text-right">
                                         <div className="flex justify-end gap-1.5">
+                                            {/* View Participants Button */}
+                                            <button
+                                                onClick={() =>
+                                                    router.get(
+                                                        `/admin/kegiatan/${activity.id_kegiatan}/peserta`,
+                                                    )
+                                                }
+                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                title="Lihat Daftar Peserta"
+                                            >
+                                                <Users className="h-4 w-4" />
+                                            </button>
+
                                             {/* Change Status Switcher */}
                                             {activity.status_kegiatan !==
                                                 'Dibatalkan' && (
-                                                <button
-                                                    onClick={() =>
-                                                        handleStatusTransition(
-                                                            activity.id_kegiatan,
-                                                            activity.status_kegiatan,
-                                                        )
-                                                    }
-                                                    className="cursor-pointer rounded-lg p-2 text-secondary transition-colors hover:bg-secondary-fixed"
-                                                    title="Maju ke Tahap Selanjutnya"
-                                                >
-                                                    <RefreshCw className="h-4 w-4" />
-                                                </button>
-                                            )}
+                                                    <button
+                                                        onClick={() =>
+                                                            handleStatusTransition(
+                                                                activity.id_kegiatan,
+                                                                activity.status_kegiatan,
+                                                            )
+                                                        }
+                                                        className="cursor-pointer rounded-lg p-2 text-secondary transition-colors hover:bg-secondary-fixed hover:text-on-secondary-fixed"
+                                                        title="Maju ke Tahap Selanjutnya"
+                                                    >
+                                                        <RefreshCw className="h-4 w-4" />
+                                                    </button>
+                                                )}
 
                                             {/* Edit Button */}
                                             <button
@@ -663,18 +649,18 @@ export default function ManajemenKegiatan() {
                                             {/* Cancel Button */}
                                             {activity.status_kegiatan !==
                                                 'Dibatalkan' && (
-                                                <button
-                                                    onClick={() =>
-                                                        openCancelModal(
-                                                            activity,
-                                                        )
-                                                    }
-                                                    className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
-                                                    title="Batalkan Kegiatan"
-                                                >
-                                                    <XCircle className="h-4 w-4" />
-                                                </button>
-                                            )}
+                                                    <button
+                                                        onClick={() =>
+                                                            openCancelModal(
+                                                                activity,
+                                                            )
+                                                        }
+                                                        className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
+                                                        title="Batalkan Kegiatan"
+                                                    >
+                                                        <XCircle className="h-4 w-4" />
+                                                    </button>
+                                                )}
 
                                             {/* Delete Button */}
                                             <button
@@ -723,12 +709,6 @@ export default function ManajemenKegiatan() {
                             1
                         </button>
                         <button
-                            className="h-8 w-8 cursor-pointer rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest"
-                            disabled
-                        >
-                            2
-                        </button>
-                        <button
                             className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
                             disabled
                         >
@@ -746,11 +726,8 @@ export default function ManajemenKegiatan() {
                             Panduan Pengelolaan Event
                         </h3>
                         <p className="mb-6 font-body-md font-normal opacity-80">
-                            Pastikan pengurus berkoordinasi dengan Bendahara
-                            terkait biaya pendaftaran sebelum mendaftarkan
-                            kegiatan berbayar baru. Kegiatan yang dibatalkan
-                            wajib dicantumkan alasan pembatalannya demi laporan
-                            pertanggungjawaban.
+                            Sebagai Admin, Anda dapat memantau dan mengubah detail kegiatan dari seluruh UKM.
+                            Pastikan perubahan status atau pembatalan dikoordinasikan terlebih dahulu dengan UKM yang bersangkutan.
                         </p>
                         <a
                             className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline"
@@ -771,8 +748,7 @@ export default function ManajemenKegiatan() {
                         Butuh Bantuan?
                     </h4>
                     <p className="mb-4 font-body-sm text-on-surface-variant">
-                        Hubungi admin kemahasiswaan jika terjadi kendala sewa
-                        aula kampus.
+                        Hubungi biro administrasi jika ada kendala sistem atau perizinan gedung.
                     </p>
                     <button className="hover:bg-primary-fixed w-full cursor-pointer rounded-lg border-2 border-primary py-2 font-label-lg font-semibold text-primary transition-colors">
                         Panduan Operator
@@ -803,6 +779,30 @@ export default function ManajemenKegiatan() {
                             onSubmit={handleCreateActivity}
                             className="mt-4 space-y-4"
                         >
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    UKM Penyelenggara *
+                                </label>
+                                <select
+                                    required
+                                    className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                    value={formData.id_profil}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            id_profil: Number(e.target.value),
+                                        })
+                                    }
+                                >
+                                    <option value="" disabled>-- Pilih UKM Penyelenggara --</option>
+                                    {profilList.map((profil) => (
+                                        <option key={profil.id_profil} value={profil.id_profil}>
+                                            {profil.organisasi?.nama_organisasi} ({profil.periode_kepengurusan})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div>
                                 <label className="mb-1 block text-sm font-semibold text-primary">
                                     Nama Kegiatan *
@@ -994,6 +994,29 @@ export default function ManajemenKegiatan() {
                             onSubmit={handleEditActivity}
                             className="mt-4 space-y-4"
                         >
+                            <div>
+                                <label className="mb-1 block text-sm font-semibold text-primary">
+                                    UKM Penyelenggara *
+                                </label>
+                                <select
+                                    required
+                                    className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                    value={formData.id_profil}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            id_profil: Number(e.target.value),
+                                        })
+                                    }
+                                >
+                                    {profilList.map((profil) => (
+                                        <option key={profil.id_profil} value={profil.id_profil}>
+                                            {profil.organisasi?.nama_organisasi} ({profil.periode_kepengurusan})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div>
                                 <label className="mb-1 block text-sm font-semibold text-primary">
                                     Nama Kegiatan *

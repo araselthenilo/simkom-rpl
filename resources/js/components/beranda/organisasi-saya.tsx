@@ -196,8 +196,7 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
     if (isHomePage) {
         const maxCards = 2;
         displayStaffOrgs = staffOrgs.slice(0, maxCards);
-        const remainingSpace = maxCards - displayStaffOrgs.length;
-        displayMemberOrgs = memberOrgs.slice(0, remainingSpace);
+        displayMemberOrgs = memberOrgs.slice(0, maxCards);
     }
 
     return (

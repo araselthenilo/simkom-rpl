@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminKegiatanController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PengurusOrganisasiController;
 use Illuminate\Support\Facades\Route;
@@ -26,4 +27,11 @@ Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(functi
     Route::post('/pengurus', [PengurusOrganisasiController::class, 'store'])->name('pengurus.store');
     Route::patch('/pengurus/{pengurus}/toggle', [PengurusOrganisasiController::class, 'toggleStatus'])->name('pengurus.toggle');
     Route::delete('/pengurus/{pengurus}', [PengurusOrganisasiController::class, 'destroy'])->name('pengurus.destroy');
+
+    // Kegiatan management routes
+    Route::get('/kegiatan', [AdminKegiatanController::class, 'index'])->name('kegiatan.index');
+    Route::post('/kegiatan', [AdminKegiatanController::class, 'store'])->name('kegiatan.store');
+    Route::put('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
+    Route::delete('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'destroy'])->name('kegiatan.destroy');
+    Route::get('/kegiatan/{kegiatan}/peserta', [AdminKegiatanController::class, 'peserta'])->name('kegiatan.peserta');
 });

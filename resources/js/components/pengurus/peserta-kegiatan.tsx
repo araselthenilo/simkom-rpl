@@ -72,9 +72,11 @@ interface Peserta {
 export default function PesertaKegiatan({
     kegiatan,
     pesertaList = [],
+    role = 'pengurus',
 }: {
     kegiatan: Activity;
     pesertaList?: Peserta[];
+    role?: 'admin' | 'pengurus';
 }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activePeserta, setActivePeserta] = useState<Peserta | null>(null);
@@ -166,7 +168,7 @@ export default function PesertaKegiatan({
             <header className="mb-unit-xl flex flex-col items-start justify-between gap-unit-md md:flex-row md:items-center">
                 <div className="flex flex-col gap-2">
                     <button
-                        onClick={() => router.get('/pengurus/kegiatan')}
+                        onClick={() => router.get(role === 'admin' ? '/admin/kegiatan' : '/pengurus/kegiatan')}
                         className="group inline-flex cursor-pointer items-center gap-2 font-label-lg text-primary transition-all hover:opacity-80 focus:outline-none"
                     >
                         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />

@@ -482,7 +482,7 @@ export default function ManajemenKegiatan({
                                                 {activity.nama_kegiatan}
                                             </span>
                                             <div className="flex items-center gap-2">
-                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed">
                                                     {activity.jenis_kegiatan}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">
