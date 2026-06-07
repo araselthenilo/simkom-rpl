@@ -32,27 +32,38 @@ class AnggotaOrganisasiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $nim = auth()->user()->profilPengguna->nim;
+
         $validated = $request->validate([
             'id_organisasi' => ['required', 'integer', 'exists:organisasi,id_organisasi'],
-            'nim' => ['required', 'string', 'size:9', 'exists:mahasiswa,nim'],
+            'foto_ktm' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $sudahTerdaftar = AnggotaOrganisasi::where('id_organisasi', $validated['id_organisasi'])
-            ->where('nim', $validated['nim'])
+            ->where('nim', $nim)
             ->exists();
 
         if ($sudahTerdaftar) {
             return back()->withErrors([
-                'nim' => 'Mahasiswa sudah terdaftar di organisasi ini.',
+                'id_organisasi' => 'Anda sudah terdaftar atau sedang mengajukan pendaftaran di organisasi ini.',
             ]);
         }
 
+        $fotoKtmPath = $request->file('foto_ktm')
+            ->store('foto_ktm', 'public');
+
         AnggotaOrganisasi::create([
             'id_organisasi' => $validated['id_organisasi'],
-            'nim' => $validated['nim'],
+            'nim' => $nim,
+            'foto_ktm' => $fotoKtmPath,
             // Diisi sementara; akan ditimpa saat disetujui (status --> Aktif)
             'tanggal_bergabung' => now()->toDateString(),
             'status_keanggotaan' => 'Diproses',
+        ]);
+
+        \Inertia\Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => 'Pendaftaran anggota berhasil diajukan.',
         ]);
 
         return back()->with('success', 'Pendaftaran anggota berhasil diajukan.');
@@ -186,6 +197,7 @@ class AnggotaOrganisasiController extends Controller
                 'status' => $anggota->status_keanggotaan,
                 'initials' => $initials,
                 'avatarColor' => $avatarColor,
+                'foto_ktm' => $anggota->foto_ktm,
             ];
         });
 

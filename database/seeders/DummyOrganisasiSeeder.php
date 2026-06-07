@@ -309,6 +309,7 @@ class DummyOrganisasiSeeder extends Seeder
                     'nim' => $data['ketua']['nim'],
                     'tanggal_bergabung' => '2026-06-01',
                     'status_keanggotaan' => 'Aktif',
+                    'foto_ktm' => 'foto_ktm/dummy.png',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

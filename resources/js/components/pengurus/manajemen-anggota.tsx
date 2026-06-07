@@ -15,6 +15,14 @@ import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
 
 interface Member {
     id_keanggotaan: number;
@@ -24,6 +32,7 @@ interface Member {
     status: 'Aktif' | 'Diproses' | 'Ditolak' | 'Tidak Aktif';
     initials: string;
     avatarColor: string;
+    foto_ktm: string;
 }
 
 export default function ManajemenAnggota({
@@ -42,6 +51,7 @@ export default function ManajemenAnggota({
     const [activeTab, setActiveTab] = useState<
         'Semua' | 'Aktif' | 'Diproses' | 'Ditolak'
     >('Semua');
+    const [selectedKtm, setSelectedKtm] = useState<string | null>(null);
 
     const members = initialMembers;
     const stats = initialStats;
@@ -253,6 +263,7 @@ export default function ManajemenAnggota({
                                     <td className="px-unit-lg py-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button
+                                                onClick={() => setSelectedKtm(member.foto_ktm)}
                                                 className="hover:bg-primary-fixed rounded-lg p-2 text-primary transition-colors"
                                                 title="Lihat KTM"
                                             >
@@ -379,6 +390,36 @@ export default function ManajemenAnggota({
                     </button>
                 </div>
             </div>
+
+            {/* KTM Viewer Dialog */}
+            <Dialog open={selectedKtm !== null} onOpenChange={(open) => !open && setSelectedKtm(null)}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="text-primary font-bold">Foto Kartu Tanda Mahasiswa (KTM)</DialogTitle>
+                        <DialogDescription>
+                            Gunakan foto KTM ini untuk mencocokkan data NIM dan nama mahasiswa.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center justify-center overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        {selectedKtm ? (
+                            <img
+                                src={`/storage/${selectedKtm}`}
+                                alt="KTM Mahasiswa"
+                                className="max-h-[70vh] w-full object-contain rounded-md"
+                            />
+                        ) : (
+                            <div className="py-8 text-center text-on-surface-variant/50">
+                                Tidak ada foto KTM yang diunggah.
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => setSelectedKtm(null)} className="w-full bg-primary text-on-primary">
+                            Tutup
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </main>
     );
 }

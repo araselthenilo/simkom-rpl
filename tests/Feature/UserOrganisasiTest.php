@@ -121,9 +121,11 @@ test('student can apply to join an organization', function () {
         'status_aktif' => true,
     ]);
 
+    $file = \Illuminate\Http\UploadedFile::fake()->create('ktm.jpg', 500, 'image/jpeg');
+
     $response = $this->actingAs($user)->post('/organisasi/daftar', [
         'id_organisasi' => $id_organisasi,
-        'nim' => $nim,
+        'foto_ktm' => $file,
     ]);
 
     $response->assertRedirect();

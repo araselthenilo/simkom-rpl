@@ -19,6 +19,7 @@ return new class extends Migration {
                 'Tidak Aktif',
             ])->default('Diproses');
             $table->string('alasan_penolakan', 500)->nullable();
+            $table->string('foto_ktm')->default('foto_ktm/dummy.png');
             $table->timestamps();
 
             $table->foreign('id_organisasi')

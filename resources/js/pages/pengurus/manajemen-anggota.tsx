@@ -8,6 +8,7 @@ interface Member {
     status: 'Aktif' | 'Diproses' | 'Ditolak' | 'Tidak Aktif';
     initials: string;
     avatarColor: string;
+    foto_ktm: string;
 }
 
 interface Stats {

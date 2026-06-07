@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['id_organisasi', 'nim', 'tanggal_bergabung', 'status_keanggotaan', 'alasan_penolakan'])]
+#[Fillable(['id_organisasi', 'nim', 'tanggal_bergabung', 'status_keanggotaan', 'alasan_penolakan', 'foto_ktm'])]
 class AnggotaOrganisasi extends Model
 {
     protected $table = 'anggota_organisasi';

@@ -2,12 +2,15 @@ import { Head } from '@inertiajs/react';
 import Footer from '@/components/pengurus/footer';
 import Sidepanel from '@/components/pengurus/sidepanel';
 import TopNavBar from '@/components/pengurus/top-nav-bar';
+import { useFlashToast } from '@/hooks/use-flash-toast';
 
 export default function PengurusLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    useFlashToast();
+
     return (
         <div className="flex min-h-screen flex-col">
             <Head title="Dashboard" />

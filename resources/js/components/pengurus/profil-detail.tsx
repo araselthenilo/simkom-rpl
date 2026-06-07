@@ -1,4 +1,4 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import { Link, router, usePage, useForm } from '@inertiajs/react';
 import {
     Building2,
     FileEdit,
@@ -9,10 +9,19 @@ import {
     Clock,
     CheckCircle,
     XCircle,
+    Upload,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
 
 interface Profil {
     id_profil: number;
@@ -53,22 +62,41 @@ export default function ProfilDetail({
     statusKeanggotaan = null,
 }: ProfilDetailProps) {
     const { auth } = usePage<any>().props;
-    const nim = auth?.user?.profilPengguna?.nim;
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const mahasiswaInfo = auth?.user?.profil_pengguna;
+    const nim = mahasiswaInfo?.nim;
+    const [isOpen, setIsOpen] = useState(false);
 
-    const handleJoin = () => {
-        if (!nim) return;
-        setIsSubmitting(true);
-        router.post(
-            '/organisasi/daftar',
-            {
-                id_organisasi: organisasi.id_organisasi,
-                nim: nim,
+    const { data, setData, post, processing, errors, reset } = useForm({
+        id_organisasi: organisasi.id_organisasi,
+        foto_ktm: null as File | null,
+    });
+
+    const [ktmPreview, setKtmPreview] = useState<string | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData('foto_ktm', file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setKtmPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setData('foto_ktm', null);
+            setKtmPreview(null);
+        }
+    };
+
+    const handleJoin = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/organisasi/daftar', {
+            onSuccess: () => {
+                setIsOpen(false);
+                reset('foto_ktm');
+                setKtmPreview(null);
             },
-            {
-                onFinish: () => setIsSubmitting(false),
-            },
-        );
+        });
     };
     return (
         <main className="animate-fade-in mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
@@ -104,8 +132,7 @@ export default function ProfilDetail({
                         </div>
                     ) : (
                         <Button
-                            onClick={handleJoin}
-                            disabled={isSubmitting}
+                            onClick={() => setIsOpen(true)}
                             className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-md transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
                         >
                             <CheckCircle className="h-[18px] w-[18px]" />
@@ -283,6 +310,123 @@ export default function ProfilDetail({
                     </div>
                 </div>
             )}
+
+            {/* Registration Dialog */}
+            <Dialog open={isOpen} onOpenChange={(open) => {
+                setIsOpen(open);
+                if (!open) {
+                    reset('foto_ktm');
+                    setKtmPreview(null);
+                }
+            }}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="text-primary font-bold text-headline-sm">
+                            Pendaftaran Anggota
+                        </DialogTitle>
+                        <DialogDescription>
+                            Silakan lengkapi pendaftaran untuk bergabung dengan <strong>{organisasi.nama_organisasi}</strong>.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={handleJoin} className="space-y-5">
+                        {/* Auto-filled Student Metadata to Reduce Redundancy */}
+                        <div className="rounded-xl border border-secondary/20 bg-secondary-container/10 p-4 space-y-3">
+                            <div className="flex items-center gap-2 text-xs font-semibold text-secondary">
+                                <span className="flex h-2 w-2 rounded-full bg-secondary"></span>
+                                Data Mahasiswa Terverifikasi (Auto-fill)
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 text-xs">
+                                <div>
+                                    <span className="block text-on-surface-variant/70">NIM</span>
+                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.nim || '-'}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-on-surface-variant/70">Nama Lengkap</span>
+                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.nama_lengkap || '-'}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-on-surface-variant/70">Program Studi</span>
+                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.program_studi || '-'}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-on-surface-variant/70">Nomor Telepon</span>
+                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.nomor_telepon || '-'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Foto KTM Upload */}
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-primary">
+                                Foto Kartu Tanda Mahasiswa (KTM) <span className="text-red-500">*</span>
+                            </label>
+                            
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                                <div className="sm:col-span-3">
+                                    <label className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low p-4 transition-colors hover:bg-surface-container-high">
+                                        <Upload className="mb-2 h-6 w-6 text-on-surface-variant/70 transition-colors group-hover:text-primary" />
+                                        <span className="text-xs font-semibold text-primary">
+                                            Pilih Foto KTM
+                                        </span>
+                                        <span className="mt-1 text-[10px] text-on-surface-variant/70 text-center">
+                                            PNG, JPG, JPEG, atau WEBP (Maksimal 2MB)
+                                        </span>
+                                        <input
+                                            type="file"
+                                            required
+                                            accept="image/png, image/jpeg, image/jpg, image/webp"
+                                            className="hidden"
+                                            onChange={handleFileChange}
+                                        />
+                                    </label>
+                                </div>
+
+                                <div className="flex items-center justify-center sm:col-span-1">
+                                    <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-outline-variant bg-background p-1 shadow-inner">
+                                        {ktmPreview ? (
+                                            <img
+                                                src={ktmPreview}
+                                                alt="KTM Preview"
+                                                className="h-full w-full object-contain rounded"
+                                            />
+                                        ) : (
+                                            <span className="text-center text-[10px] font-semibold text-on-surface-variant/50">
+                                                No Preview
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {errors.foto_ktm && (
+                                <p className="text-xs text-error font-medium">{errors.foto_ktm}</p>
+                            )}
+                            {errors.id_organisasi && (
+                                <p className="text-xs text-error font-medium">{errors.id_organisasi}</p>
+                            )}
+                        </div>
+
+                        <DialogFooter className="pt-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsOpen(false)}
+                                className="w-full sm:w-auto"
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={processing || !data.foto_ktm}
+                                className="w-full sm:w-auto bg-primary text-on-primary"
+                            >
+                                {processing ? 'Mengirim...' : 'Kirim Pendaftaran'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </main>
     );
 }
