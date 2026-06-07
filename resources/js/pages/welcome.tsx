@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { dashboard, login, home, register } from '@/routes';
+import { login, home, register } from '@/routes';
 import { dashboard as adminDashboard } from '@/routes/admin';
 
 export default function Welcome() {
@@ -18,7 +18,7 @@ export default function Welcome() {
                                         ? adminDashboard()
                                         : auth.user.role === 'Mahasiswa'
                                           ? home()
-                                          : dashboard()
+                                          : home()
                                 }
                                 className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                             >

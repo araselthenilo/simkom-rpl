@@ -20,7 +20,7 @@ createInertiaApp({
                 return null;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
-            case name === 'home':
+            case name === 'home' || name.startsWith('organisasi/'):
                 return [HomeLayout];
             case name.startsWith('pengurus/'):
                 return [PengurusLayout];

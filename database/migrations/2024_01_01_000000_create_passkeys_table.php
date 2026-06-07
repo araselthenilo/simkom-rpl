@@ -13,12 +13,17 @@ return new class extends Migration
     {
         Schema::create('passkeys', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('user_id', 30);
             $table->string('name');
             $table->string('credential_id')->unique();
             $table->json('credential');
             $table->timestamp('last_used_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('username')
+                ->on('users')
+                ->cascadeOnDelete();
 
             $table->index('user_id');
         });

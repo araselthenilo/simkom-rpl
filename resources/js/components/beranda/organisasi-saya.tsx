@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import {
     Code2,
     Terminal,
@@ -8,6 +8,7 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import { pengurus } from '@/routes';
+import type { Auth } from '@/types/auth';
 
 interface Organization {
     id: number;
@@ -86,15 +87,95 @@ const DEFAULT_ORGANIZATIONS: Organization[] = [
     },
 ];
 
+const nameToIcon = (name: string): string => {
+    const normalized = name.toLowerCase();
+    if (
+        normalized.includes('program') ||
+        normalized.includes('robot') ||
+        normalized.includes('komputer') ||
+        normalized.includes('code')
+    ) {
+        return 'code';
+    }
+    if (
+        normalized.includes('musik') ||
+        normalized.includes('tari') ||
+        normalized.includes('seni') ||
+        normalized.includes('teater')
+    ) {
+        return 'music_note';
+    }
+    if (
+        normalized.includes('jurnal') ||
+        normalized.includes('pers') ||
+        normalized.includes('wirausaha') ||
+        normalized.includes('foto')
+    ) {
+        return 'campaign';
+    }
+    return 'event';
+};
+
+const nameToBgIcon = (name: string): string | undefined => {
+    const normalized = name.toLowerCase();
+    if (
+        normalized.includes('program') ||
+        normalized.includes('robot') ||
+        normalized.includes('komputer') ||
+        normalized.includes('code')
+    ) {
+        return 'terminal';
+    }
+    return undefined;
+};
+
 interface OrganisasiSayaProps {
     organizations?: Organization[];
 }
 
-export default function OrganisasiSaya({
-    organizations = DEFAULT_ORGANIZATIONS,
-}: OrganisasiSayaProps) {
-    const staffOrgs = organizations.filter((org) => org.type === 'staff');
-    const memberOrgs = organizations.filter((org) => org.type === 'member');
+export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
+    const { auth } = usePage<{ auth: Auth }>().props;
+    const user = auth?.user;
+
+    const sourceOrgs = organizations || DEFAULT_ORGANIZATIONS;
+
+    const processedOrgs = sourceOrgs.map((org) => {
+        const activeEra = user?.active_organization_eras?.find(
+            (era) =>
+                era.nama_organisasi.toLowerCase() === org.name.toLowerCase(),
+        );
+
+        const iconName = org.icon || nameToIcon(org.name);
+        const bgIconName = org.bgIcon || nameToBgIcon(org.name);
+
+        if (activeEra) {
+            return {
+                ...org,
+                type: 'staff' as const,
+                role: activeEra.jabatan,
+                icon: iconName,
+                bgIcon: bgIconName,
+            };
+        }
+
+        if (org.type === 'staff') {
+            return {
+                ...org,
+                type: 'member' as const,
+                role: 'Anggota Aktif',
+                statusText: org.statusText || 'Anggota Aktif',
+                icon: iconName,
+            };
+        }
+
+        return {
+            ...org,
+            icon: iconName,
+        };
+    });
+
+    const staffOrgs = processedOrgs.filter((org) => org.type === 'staff');
+    const memberOrgs = processedOrgs.filter((org) => org.type === 'member');
 
     return (
         <section className="py-unit-xl">
@@ -157,7 +238,7 @@ export default function OrganisasiSaya({
                                 </div>
                                 {org.link && (
                                     <Link
-                                        href={pengurus()}
+                                        href={`/pengurus/switch-organisasi/${org.id}`}
                                         className="z-10 mt-8 block w-full cursor-pointer rounded-lg bg-[#FFD54F] py-3 text-center font-label-lg font-medium text-[#001D35] transition-all hover:bg-[#FFC107]"
                                     >
                                         Dashboard UKM
@@ -184,7 +265,7 @@ export default function OrganisasiSaya({
                                 /* Added: "flex-1" to stretch cards into equal heights filling the right container */
                                 className="flex flex-1 cursor-pointer items-center gap-unit-lg rounded-xl border border-outline-variant bg-surface p-unit-lg shadow-sm transition-all hover:border-primary"
                                 onClick={() =>
-                                    org.link && window.open(org.link, '_self')
+                                    org.link && router.visit(org.link)
                                 }
                             >
                                 <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-surface-container-high">

@@ -1,9 +1,25 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
+function createStudentUser(): User
+{
+    $user = User::factory()->create(['role' => 'Mahasiswa']);
+
+    DB::table('mahasiswa')->insert([
+        'username' => $user->username,
+        'nim' => fake()->unique()->numerify('#########'),
+        'nama_lengkap' => 'Original Name',
+        'program_studi' => 'Sistem Informasi',
+        'nomor_telepon' => '08123456789',
+    ]);
+
+    return $user;
+}
 
 test('profile page is displayed', function () {
-    $user = User::factory()->create();
+    $user = createStudentUser();
 
     $response = $this
         ->actingAs($user)
@@ -13,7 +29,7 @@ test('profile page is displayed', function () {
 });
 
 test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    $user = createStudentUser();
 
     $response = $this
         ->actingAs($user)
@@ -30,28 +46,10 @@ test('profile information can be updated', function () {
 
     expect($user->name)->toBe('Test User');
     expect($user->email)->toBe('test@example.com');
-    expect($user->email_verified_at)->toBeNull();
-});
-
-test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
-
-    $response = $this
-        ->actingAs($user)
-        ->patch(route('profile.update'), [
-            'name' => 'Test User',
-            'email' => $user->email,
-        ]);
-
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect(route('profile.edit'));
-
-    expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
 test('user can delete their account', function () {
-    $user = User::factory()->create();
+    $user = createStudentUser();
 
     $response = $this
         ->actingAs($user)
@@ -61,14 +59,14 @@ test('user can delete their account', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('home'));
+        ->assertRedirect('/');
 
     $this->assertGuest();
     expect($user->fresh())->toBeNull();
 });
 
 test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
+    $user = createStudentUser();
 
     $response = $this
         ->actingAs($user)

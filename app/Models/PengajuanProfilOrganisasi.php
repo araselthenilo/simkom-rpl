@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['id_pengurus', 'username_petugas', 'periode_kepengurusan', 'logo_organisasi', 'deskripsi_organisasi', 'visi_organisasi', 'misi_organisasi', 'status_pengajuan'])]
 class PengajuanProfilOrganisasi extends Model
 {
     protected $table = 'pengajuan_profil_organisasi';

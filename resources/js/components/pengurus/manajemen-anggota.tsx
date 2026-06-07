@@ -12,126 +12,68 @@ import {
     IdCard,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 interface Member {
+    id_keanggotaan: number;
     nim: string;
     name: string;
     major: string;
-    status: 'Aktif' | 'Diproses' | 'Ditolak';
+    status: 'Aktif' | 'Diproses' | 'Ditolak' | 'Tidak Aktif';
     initials: string;
     avatarColor: string;
 }
 
-export default function ManajemenAnggota() {
+export default function ManajemenAnggota({
+    initialMembers = [],
+    initialStats = { total: 0, pending: 0, active: 0, rejected: 0 },
+}: {
+    initialMembers?: Member[];
+    initialStats?: {
+        total: number;
+        pending: number;
+        active: number;
+        rejected: number;
+    };
+}) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<
         'Semua' | 'Aktif' | 'Diproses' | 'Ditolak'
     >('Semua');
 
-    const [stats, setStats] = useState({
-        total: 1248,
-        pending: 42,
-        active: 890,
-        rejected: 12,
-    });
+    const members = initialMembers;
+    const stats = initialStats;
 
-    const [members, setMembers] = useState<Member[]>([
-        {
-            nim: '210010123',
-            name: 'Bagus Putu Aris',
-            major: 'Sistem Komputer',
-            status: 'Aktif',
-            initials: 'BP',
-            avatarColor: 'bg-primary-fixed text-primary',
-        },
-        {
-            nim: '220030045',
-            name: 'Ni Made Sari',
-            major: 'Teknologi Informasi',
-            status: 'Diproses',
-            initials: 'NM',
-            avatarColor: 'bg-secondary-fixed text-on-secondary-container',
-        },
-        {
-            nim: '210010099',
-            name: 'I Gede Wahyu',
-            major: 'Bisnis Digital',
-            status: 'Ditolak',
-            initials: 'IG',
-            avatarColor: 'bg-tertiary-fixed text-on-tertiary-container',
-        },
-        {
-            nim: '210020412',
-            name: 'Kadek Amara',
-            major: 'Sistem Informasi',
-            status: 'Aktif',
-            initials: 'KA',
-            avatarColor: 'bg-primary-fixed text-primary',
-        },
-        {
-            nim: '230010887',
-            name: 'Dewa Widya',
-            major: 'Teknologi Informasi',
-            status: 'Diproses',
-            initials: 'DW',
-            avatarColor: 'bg-secondary-fixed text-on-secondary-container',
-        },
-    ]);
-
-    const handleAccept = (nim: string) => {
-        setMembers((prevMembers) =>
-            prevMembers.map((member) => {
-                if (member.nim === nim) {
-                    if (member.status === 'Diproses') {
-                        setStats((prev) => ({
-                            ...prev,
-                            pending: Math.max(0, prev.pending - 1),
-                            active: prev.active + 1,
-                            total: prev.total + 1,
-                        }));
-                    } else if (member.status === 'Ditolak') {
-                        setStats((prev) => ({
-                            ...prev,
-                            rejected: Math.max(0, prev.rejected - 1),
-                            active: prev.active + 1,
-                            total: prev.total + 1,
-                        }));
-                    }
-
-                    return { ...member, status: 'Aktif' };
-                }
-
-                return member;
-            }),
+    const handleAccept = (id_keanggotaan: number) => {
+        router.patch(
+            `/pengurus/anggota/${id_keanggotaan}`,
+            {
+                status_keanggotaan: 'Aktif',
+            },
+            {
+                preserveScroll: true,
+            },
         );
     };
 
-    const handleReject = (nim: string) => {
-        setMembers((prevMembers) =>
-            prevMembers.map((member) => {
-                if (member.nim === nim) {
-                    if (member.status === 'Diproses') {
-                        setStats((prev) => ({
-                            ...prev,
-                            pending: Math.max(0, prev.pending - 1),
-                            rejected: prev.rejected + 1,
-                        }));
-                    } else if (member.status === 'Aktif') {
-                        setStats((prev) => ({
-                            ...prev,
-                            active: Math.max(0, prev.active - 1),
-                            total: Math.max(0, prev.total - 1),
-                            rejected: prev.rejected + 1,
-                        }));
-                    }
-
-                    return { ...member, status: 'Ditolak' };
-                }
-
-                return member;
-            }),
+    const handleReject = (id_keanggotaan: number) => {
+        const reason = prompt('Masukkan alasan penolakan:');
+        if (reason === null) return;
+        if (!reason.trim()) {
+            alert('Alasan penolakan harus diisi.');
+            return;
+        }
+        router.patch(
+            `/pengurus/anggota/${id_keanggotaan}`,
+            {
+                status_keanggotaan: 'Ditolak',
+                alasan_penolakan: reason,
+            },
+            {
+                preserveScroll: true,
+            },
         );
     };
 
@@ -319,7 +261,9 @@ export default function ManajemenAnggota() {
 
                                             <button
                                                 onClick={() =>
-                                                    handleAccept(member.nim)
+                                                    handleAccept(
+                                                        member.id_keanggotaan,
+                                                    )
                                                 }
                                                 className={`rounded-lg p-2 transition-colors ${
                                                     member.status === 'Aktif'
@@ -336,7 +280,9 @@ export default function ManajemenAnggota() {
 
                                             <button
                                                 onClick={() =>
-                                                    handleReject(member.nim)
+                                                    handleReject(
+                                                        member.id_keanggotaan,
+                                                    )
                                                 }
                                                 className={`rounded-lg p-2 transition-colors ${
                                                     member.status === 'Ditolak'
@@ -372,10 +318,7 @@ export default function ManajemenAnggota() {
                 <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant bg-surface-container-low px-unit-lg py-4 md:flex-row">
                     <span className="font-body-sm text-on-surface-variant">
                         Menampilkan 1-{filteredMembers.length} dari{' '}
-                        {filteredMembers.length === 5
-                            ? '1.248'
-                            : filteredMembers.length}{' '}
-                        data
+                        {filteredMembers.length} data
                     </span>
                     <div className="flex items-center gap-1">
                         <button
@@ -387,19 +330,10 @@ export default function ManajemenAnggota() {
                         <button className="h-8 w-8 rounded-lg bg-primary font-label-md text-on-primary">
                             1
                         </button>
-                        <button className="h-8 w-8 rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
-                            2
-                        </button>
-                        <button className="h-8 w-8 rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
-                            3
-                        </button>
-                        <span className="px-2 text-on-surface-variant">
-                            ...
-                        </span>
-                        <button className="h-8 w-8 rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest">
-                            250
-                        </button>
-                        <button className="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest">
+                        <button
+                            className="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
+                            disabled
+                        >
                             <ChevronRight className="h-5 w-5" />
                         </button>
                     </div>

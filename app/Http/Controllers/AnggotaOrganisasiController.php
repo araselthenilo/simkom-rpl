@@ -108,4 +108,97 @@ class AnggotaOrganisasiController extends Controller
 
         return back()->with('success', 'Data anggota berhasil dihapus.');
     }
+
+    public function pengurusIndex(Request $request): Response
+    {
+        $user = auth()->user();
+        if (!$user || $user->role !== 'Mahasiswa' || !$user->profilPengguna) {
+            abort(403);
+        }
+
+        $nim = $user->profilPengguna->nim;
+
+        // Find the active PengurusOrganisasi record matching the active organization in session
+        $activeOrgId = session('active_organization_id');
+        $pengurusRecordQuery = \App\Models\PengurusOrganisasi::where('status_aktif', true)
+            ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
+                $q->where('nim', $nim);
+            })
+            ->whereHas('profilOrganisasi.organisasi', function ($q) {
+                $q->where('status_aktif', true);
+            })
+            ->with('profilOrganisasi.organisasi');
+
+        if ($activeOrgId) {
+            $pengurusRecord = (clone $pengurusRecordQuery)
+                ->whereHas('profilOrganisasi', function ($q) use ($activeOrgId) {
+                    $q->where('id_organisasi', $activeOrgId);
+                })
+                ->first();
+        }
+
+        if (!isset($pengurusRecord) || !$pengurusRecord) {
+            $pengurusRecord = $pengurusRecordQuery->first();
+            if ($pengurusRecord && $pengurusRecord->profilOrganisasi) {
+                session(['active_organization_id' => $pengurusRecord->profilOrganisasi->id_organisasi]);
+            }
+        }
+
+        if (!$pengurusRecord || !$pengurusRecord->profilOrganisasi) {
+            abort(403, 'Anda bukan pengurus organisasi yang aktif.');
+        }
+
+        $organisasi = $pengurusRecord->profilOrganisasi->organisasi;
+
+        $anggotaList = AnggotaOrganisasi::with('mahasiswa')
+            ->where('id_organisasi', $organisasi->id_organisasi)
+            ->whereDoesntHave('pengurusOrganisasi', function ($q) {
+                $q->where('status_aktif', true);
+            })
+            ->get();
+
+        $members = $anggotaList->map(function ($anggota) {
+            $name = $anggota->mahasiswa->nama_lengkap ?? '';
+            $words = explode(' ', $name);
+            $initials = '';
+            if (count($words) > 0) {
+                $initials .= strtoupper(substr($words[0], 0, 1));
+            }
+            if (count($words) > 1) {
+                $initials .= strtoupper(substr($words[1], 0, 1));
+            }
+            if (empty($initials)) {
+                $initials = '??';
+            }
+
+            $avatarColor = 'bg-primary-fixed text-primary';
+            if ($anggota->status_keanggotaan === 'Diproses') {
+                $avatarColor = 'bg-secondary-fixed text-on-secondary-container';
+            } elseif ($anggota->status_keanggotaan === 'Ditolak') {
+                $avatarColor = 'bg-tertiary-fixed text-on-tertiary-container';
+            }
+
+            return [
+                'id_keanggotaan' => $anggota->id_keanggotaan,
+                'nim' => $anggota->nim,
+                'name' => $name,
+                'major' => $anggota->mahasiswa->program_studi ?? '',
+                'status' => $anggota->status_keanggotaan,
+                'initials' => $initials,
+                'avatarColor' => $avatarColor,
+            ];
+        });
+
+        $stats = [
+            'total' => $anggotaList->count(),
+            'pending' => $anggotaList->where('status_keanggotaan', 'Diproses')->count(),
+            'active' => $anggotaList->where('status_keanggotaan', 'Aktif')->count(),
+            'rejected' => $anggotaList->where('status_keanggotaan', 'Ditolak')->count(),
+        ];
+
+        return Inertia::render('pengurus/manajemen-anggota', [
+            'members' => $members,
+            'stats' => $stats,
+        ]);
+    }
 }

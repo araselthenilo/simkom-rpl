@@ -9,9 +9,10 @@ import {
     Database,
     User,
     LogOut,
+    ArrowLeft,
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { logout, pengurus } from '@/routes';
+import { logout, pengurus, home } from '@/routes';
 import { keuangan, anggota, kegiatan } from '@/routes/pengurus';
 
 interface NavItem {
@@ -33,6 +34,7 @@ export default function Sidepanel() {
     ];
 
     const bottomItems: NavItem[] = [
+        { title: 'Kembali ke Beranda', href: home(), icon: ArrowLeft },
         { title: 'Profil Saya', href: '/profile', icon: User },
     ];
 
@@ -40,10 +42,10 @@ export default function Sidepanel() {
         <aside className="fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-primary p-unit-md text-on-primary shadow-lg dark:bg-primary-container">
             <div className="mb-unit-xl px-4 py-2">
                 <h1 className="font-headline-sm text-headline-sm font-bold text-on-primary">
-                    Admin Panel
+                    Staff Panel
                 </h1>
                 <p className="font-label-md text-label-md text-on-primary/70">
-                    SIMKOM STIKOM Bali
+                    SIMKOM ITB STIKOM Bali
                 </p>
             </div>
 

@@ -1,5 +1,27 @@
 import ManajemenAnggota from '@/components/pengurus/manajemen-anggota';
 
-export default function ManajemenAnggotaPage() {
-    return <ManajemenAnggota />;
+interface Member {
+    id_keanggotaan: number;
+    nim: string;
+    name: string;
+    major: string;
+    status: 'Aktif' | 'Diproses' | 'Ditolak' | 'Tidak Aktif';
+    initials: string;
+    avatarColor: string;
+}
+
+interface Stats {
+    total: number;
+    pending: number;
+    active: number;
+    rejected: number;
+}
+
+interface Props {
+    members: Member[];
+    stats: Stats;
+}
+
+export default function ManajemenAnggotaPage({ members, stats }: Props) {
+    return <ManajemenAnggota initialMembers={members} initialStats={stats} />;
 }

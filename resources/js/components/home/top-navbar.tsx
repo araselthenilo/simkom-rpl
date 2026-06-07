@@ -19,6 +19,7 @@ export default function TopNavbar({
     notificationsCount?: number;
 }) {
     const { auth } = usePage().props;
+    const { url, component } = usePage();
     const getInitials = useInitials();
     const cleanup = useMobileNavigation();
     const [isHidden, setIsHidden] = useState(false);
@@ -51,6 +52,17 @@ export default function TopNavbar({
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const isHome = url === '/home' || component === 'home';
+    const isOrganisasi =
+        url.startsWith('/organisasi') || component.startsWith('organisasi/');
+    const isProfil =
+        url.startsWith('/settings') || component.startsWith('settings/');
+
+    const activeClass =
+        'border-b-2 border-primary pb-1 font-body-md text-body-md font-bold text-primary';
+    const inactiveClass =
+        'font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary';
+
     return (
         <>
             <Head>
@@ -72,24 +84,26 @@ export default function TopNavbar({
                     </div>
 
                     <div className="hidden gap-unit-lg md:flex">
-                        <a
-                            className="border-b-2 border-primary pb-1 font-body-md text-body-md font-bold text-primary"
-                            href="#"
+                        <Link
+                            className={isHome ? activeClass : inactiveClass}
+                            href="/home"
                         >
                             Beranda
-                        </a>
-                        <a
-                            className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
-                            href="#"
+                        </Link>
+                        <Link
+                            className={
+                                isOrganisasi ? activeClass : inactiveClass
+                            }
+                            href="/organisasi"
                         >
                             Organisasi
-                        </a>
-                        <a
-                            className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
-                            href="#"
+                        </Link>
+                        <Link
+                            className={isProfil ? activeClass : inactiveClass}
+                            href="/settings/profile"
                         >
                             Profil
-                        </a>
+                        </Link>
                     </div>
 
                     <div className="ml-6 flex items-center gap-4">

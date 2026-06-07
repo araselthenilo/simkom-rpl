@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Kegiatan;
 use App\Models\PengurusOrganisasi;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -16,6 +17,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        Relation::morphMap([
+            'Mahasiswa' => \App\Models\Mahasiswa::class,
+            'Pembina Organisasi' => \App\Models\PembinaOrganisasi::class,
+            'Admin Kemahasiswaan' => \App\Models\AdminKemahasiswaan::class,
+        ]);
 
         Gate::define('is-mahasiswa', function ($user) {
             return $user->role === 'Mahasiswa';
@@ -39,6 +46,10 @@ class AppServiceProvider extends ServiceProvider
             })
                 ->whereHas('anggotaOrganisasi.organisasi')
                 ->exists();
+        });
+
+        Gate::define('is-pengurus-organisasi', function ($user) {
+            return $user->isActiveOrganizationStaff;
         });
 
         Gate::define('is-pengurus-kegiatan', function ($user, Kegiatan $kegiatan) {

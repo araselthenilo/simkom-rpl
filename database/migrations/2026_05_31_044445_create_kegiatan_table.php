@@ -40,7 +40,7 @@ return new class extends Migration
 
             $table->foreign('username_petugas')
                 ->references('username')
-                ->on('pengguna')
+                ->on('users')
                 ->onDelete('restrict');
         });
     }
