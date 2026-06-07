@@ -22,6 +22,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import admin from '@/routes/admin';
 
 interface Mahasiswa {
     nim: string;
@@ -209,7 +210,7 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
 
         setIsSubmitting(true);
         router.post(
-            '/admin/pengurus',
+            admin.pengurus.store().url,
             {
                 id_profil: parseInt(modalPeriodId),
                 id_keanggotaan: parseInt(modalMemberId),
@@ -248,13 +249,13 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
         const actionText = currentStatus ? 'menonaktifkan' : 'mengaktifkan';
 
         if (confirm(`Apakah Anda yakin ingin ${actionText} pengurus "${name}"?`)) {
-            router.patch(`/admin/pengurus/${id}/toggle`, {}, { preserveScroll: true });
+            router.patch(admin.pengurus.toggle(id).url, {}, { preserveScroll: true });
         }
     };
 
     const handleDeleteOfficer = (id: number, name: string) => {
         if (confirm(`Apakah Anda yakin ingin menghapus/mengeluarkan pengurus "${name}"?`)) {
-            router.delete(`/admin/pengurus/${id}`, { preserveScroll: true });
+            router.delete(admin.pengurus.destroy(id).url, { preserveScroll: true });
         }
     };
 
@@ -446,7 +447,7 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                                         </td>
                                         <td className="px-unit-lg py-4 font-medium text-primary hover:underline">
                                             {officer.profil_organisasi?.id_profil ? (
-                                                <Link href={`/admin/profil-organisasi/${officer.profil_organisasi.id_profil}/pengurus`}>
+                                                <Link href={admin.profilOrganisasi.pengurus(officer.profil_organisasi.id_profil)}>
                                                     {orgName}
                                                 </Link>
                                             ) : orgName}

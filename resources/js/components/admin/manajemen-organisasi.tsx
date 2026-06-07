@@ -85,7 +85,7 @@ export default function ManajemenOrganisasi({
             )
         ) {
             router.patch(
-                `/admin/organisasi/${id}/toggle`,
+                admin.organisasi.toggle(id).url,
                 {},
                 {
                     preserveScroll: true,
@@ -100,7 +100,7 @@ export default function ManajemenOrganisasi({
                 `Apakah Anda yakin ingin menghapus/menonaktifkan organisasi "${name}"? Tindakan ini menggunakan Soft Delete.`,
             )
         ) {
-            router.delete(`/admin/organisasi/${id}`, {
+            router.delete(admin.organisasi.destroy(id).url, {
                 preserveScroll: true,
             });
         }

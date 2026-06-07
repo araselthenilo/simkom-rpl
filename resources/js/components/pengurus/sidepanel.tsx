@@ -15,6 +15,8 @@ import {
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout, pengurus, home } from '@/routes';
 import { keuangan, anggota, kegiatan } from '@/routes/pengurus';
+import staff from '@/routes/pengurus/staff';
+import { edit as profileEdit } from '@/routes/profile';
 
 interface NavItem {
     title: string;
@@ -28,7 +30,7 @@ export default function Sidepanel() {
     const menuItems: NavItem[] = [
         { title: 'Dashboard', href: pengurus(), icon: LayoutDashboard },
         { title: 'Anggota', href: anggota(), icon: Users },
-        { title: 'Pengurus', href: '/pengurus/staff', icon: Users2 },
+        { title: 'Pengurus', href: staff.index(), icon: Users2 },
         { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },
@@ -37,7 +39,7 @@ export default function Sidepanel() {
 
     const bottomItems: NavItem[] = [
         { title: 'Kembali ke Beranda', href: home(), icon: ArrowLeft },
-        { title: 'Profil Saya', href: '/profile', icon: User },
+        { title: 'Profil Saya', href: profileEdit(), icon: User },
     ];
 
     return (

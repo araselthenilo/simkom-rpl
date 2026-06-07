@@ -12,6 +12,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import admin from '@/routes/admin';
 
 interface Mahasiswa {
     nim: string;
@@ -139,7 +140,7 @@ export default function PengurusPeriode({
 
         setIsSubmitting(true);
         router.post(
-            '/admin/pengurus',
+            admin.pengurus.store().url,
             {
                 id_profil: profilOrganisasi.id_profil,
                 id_keanggotaan: parseInt(selectedMemberId),
@@ -175,14 +176,14 @@ export default function PengurusPeriode({
         const actionText = currentStatus ? 'menonaktifkan' : 'mengaktifkan';
 
         if (confirm(`Apakah Anda yakin ingin ${actionText} pengurus "${name}"?`)) {
-            router.patch(`/admin/pengurus/${id}/toggle`, {}, { preserveScroll: true });
+            router.patch(admin.pengurus.toggle(id).url, {}, { preserveScroll: true });
         }
     };
 
     // Delete officer handler
     const handleDeleteOfficer = (id: number, name: string) => {
         if (confirm(`Apakah Anda yakin ingin menghapus/mengeluarkan pengurus "${name}"?`)) {
-            router.delete(`/admin/pengurus/${id}`, { preserveScroll: true });
+            router.delete(admin.pengurus.destroy(id).url, { preserveScroll: true });
         }
     };
 
@@ -195,7 +196,7 @@ export default function PengurusPeriode({
             {/* Header / Breadcrumb */}
             <header className="flex flex-col gap-4">
                 <Link
-                    href={`/admin/organisasi/${organisasi?.id_organisasi}/profil`}
+                    href={admin.organisasi.profil(organisasi?.id_organisasi ?? 0)}
                     className="decoration-none inline-flex cursor-pointer items-center gap-2 font-label-lg font-semibold text-primary transition-colors hover:text-primary/80"
                 >
                     <ArrowLeft className="h-4 w-4" />

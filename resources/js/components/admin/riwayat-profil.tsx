@@ -88,7 +88,7 @@ export default function RiwayatProfil({
 
         setIsSubmitting(true);
         router.post(
-            `/admin/organisasi/${organisasi.id_organisasi}/pembinaan`,
+            admin.pembinaan.store(organisasi.id_organisasi).url,
             {
                 nip_pembina: selectedNip,
                 periode_pembinaan: selectedPeriod,
@@ -119,7 +119,7 @@ export default function RiwayatProfil({
                 `Apakah Anda yakin ingin menghapus ${name} sebagai pembina untuk periode ini?`,
             )
         ) {
-            router.delete(`/admin/pembinaan/${idPembinaan}`, {
+            router.delete(admin.pembinaan.destroy(idPembinaan).url, {
                 onSuccess: () => {
                     // Success is handled by redirect
                 },
@@ -191,7 +191,7 @@ export default function RiwayatProfil({
 
                     <div className="mt-2 shrink-0 md:mt-0">
                         <Link
-                            href={`/admin/organisasi/${organisasi.id_organisasi}/profil/create`}
+                            href={admin.profilOrganisasi.create(organisasi.id_organisasi)}
                             className="decoration-none inline-flex cursor-pointer items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95"
                         >
                             <Plus className="h-4 w-4" />
@@ -267,14 +267,14 @@ export default function RiwayatProfil({
                                                         : 'Profil Nonaktif'}
                                                 </span>
                                                 <Link
-                                                    href={`/admin/profil-organisasi/${profil.id_profil}/pengurus`}
+                                                    href={admin.profilOrganisasi.pengurus(profil.id_profil)}
                                                     className="hover:bg-surface-variant decoration-none inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-outline px-3 py-1 text-xs font-semibold text-primary transition-colors"
                                                 >
                                                     <Users className="h-3.5 w-3.5" />
                                                     Lihat Pengurus
                                                 </Link>
                                                 <Link
-                                                    href={`/admin/profil-organisasi/${profil.id_profil}/edit`}
+                                                    href={admin.profilOrganisasi.edit(profil.id_profil)}
                                                     className="hover:bg-surface-variant decoration-none inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-outline px-3 py-1 text-xs font-semibold text-primary transition-colors"
                                                 >
                                                     <Edit className="h-3.5 w-3.5" />

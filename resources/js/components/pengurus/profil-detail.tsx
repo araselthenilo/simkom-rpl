@@ -1,4 +1,4 @@
-import { Link, router, usePage, useForm } from '@inertiajs/react';
+import { Link, usePage, useForm } from '@inertiajs/react';
 import {
     Building2,
     FileEdit,
@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -22,6 +21,8 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
+import { daftar as organisasiDaftar } from '@/routes/organisasi';
+import pengurusRoute from '@/routes/pengurus';
 
 interface Profil {
     id_profil: number;
@@ -63,7 +64,6 @@ export default function ProfilDetail({
 }: ProfilDetailProps) {
     const { auth } = usePage<any>().props;
     const mahasiswaInfo = auth?.user?.profil_pengguna;
-    const nim = mahasiswaInfo?.nim;
     const [isOpen, setIsOpen] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -91,7 +91,7 @@ export default function ProfilDetail({
 
     const handleJoin = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/organisasi/daftar', {
+        post(organisasiDaftar().url, {
             onSuccess: () => {
                 setIsOpen(false);
                 reset('foto_ktm');
@@ -116,7 +116,7 @@ export default function ProfilDetail({
                 </div>
                 <div>
                     {!isReadOnly ? (
-                        <Link href="/pengurus/profil/edit">
+                        <Link href={pengurusRoute.profil.edit()}>
                             <Button className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-md transition-all hover:opacity-90 active:scale-95">
                                 <FileEdit className="h-[18px] w-[18px]" />
                                 Ajukan Perubahan Profil

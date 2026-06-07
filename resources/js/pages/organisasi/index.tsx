@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Building2, Clock, ChevronRight, Compass, XCircle } from 'lucide-react';
 import React from 'react';
 import OrganisasiSaya from '@/components/beranda/organisasi-saya';
+import { detail } from '@/routes/organisasi';
 
 interface Organization {
     id: number;
@@ -102,7 +103,7 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                                 Diajukan: {org.tanggal_daftar}
                                             </span>
                                             <Link
-                                                href={`/organisasi/${org.id}/detail`}
+                                                href={detail(org.id)}
                                                 className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
                                             >
                                                 Lihat Detail{' '}
@@ -189,7 +190,7 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
 
                                         <div className="mt-6 flex justify-end border-t border-outline-variant/30 pt-4">
                                             <Link
-                                                href={`/organisasi/${org.id}/detail`}
+                                                href={detail(org.id)}
                                                 className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
                                             >
                                                 Lihat Profil{' '}

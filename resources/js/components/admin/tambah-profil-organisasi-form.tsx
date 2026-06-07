@@ -3,6 +3,7 @@ import { ArrowLeft, Building2, Upload, Save, HelpCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import admin from '@/routes/admin';
 
 interface Organisasi {
     id_organisasi: number;
@@ -48,7 +49,7 @@ export default function TambahProfilOrganisasiForm({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/admin/organisasi/${organisasi.id_organisasi}/profil`);
+        post(admin.profilOrganisasi.store(organisasi.id_organisasi).url);
     };
 
     return (
@@ -56,7 +57,7 @@ export default function TambahProfilOrganisasiForm({
             {/* Header / Breadcrumb navigation */}
             <div className="flex items-center justify-between">
                 <Link
-                    href={`/admin/organisasi/${organisasi.id_organisasi}/profil`}
+                    href={admin.organisasi.profil(organisasi.id_organisasi)}
                     className="decoration-none inline-flex items-center gap-2 text-sm font-semibold text-primary transition-opacity hover:opacity-80"
                 >
                     <ArrowLeft className="h-4 w-4" />
@@ -304,7 +305,7 @@ export default function TambahProfilOrganisasiForm({
                     {/* Submit and Cancel Buttons */}
                     <div className="flex justify-end gap-3 border-t border-outline-variant/60 pt-4">
                         <Link
-                            href={`/admin/organisasi/${organisasi.id_organisasi}/profil`}
+                            href={admin.organisasi.profil(organisasi.id_organisasi)}
                             className="hover:bg-surface-variant decoration-none inline-flex h-auto cursor-pointer items-center justify-center rounded-lg border border-outline px-6 py-2.5 font-label-lg text-sm font-semibold text-on-surface-variant transition-all"
                         >
                             Batal

@@ -10,6 +10,7 @@ import {
 import { useInitials } from '@/hooks/use-initials';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
+import { switchOrganisasi, profil } from '@/routes/pengurus';
 import { edit } from '@/routes/profile';
 
 export default function TopNavBar() {
@@ -74,7 +75,7 @@ export default function TopNavBar() {
                                             asChild
                                         >
                                             <Link
-                                                href={`/pengurus/switch-organisasi/${org.id_organisasi}`}
+                                                href={switchOrganisasi(org.id_organisasi)}
                                                 className="flex w-full cursor-pointer items-center justify-between gap-2"
                                             >
                                                 <div className="flex items-center gap-2 overflow-hidden">
@@ -116,7 +117,7 @@ export default function TopNavBar() {
                         </DropdownMenu>
                         <Link
                             className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
-                            href="/pengurus/profil"
+                            href={profil()}
                         >
                             Profil Organisasi
                         </Link>

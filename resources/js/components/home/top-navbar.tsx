@@ -10,7 +10,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useInitials } from '@/hooks/use-initials';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { logout } from '@/routes';
+import { logout, home } from '@/routes';
+import { index as kegiatanIndex } from '@/routes/kegiatan';
+import { index as organisasiIndex } from '@/routes/organisasi';
 import { edit } from '@/routes/profile';
 
 export default function TopNavbar({
@@ -72,27 +74,26 @@ export default function TopNavbar({
                 />
             </Head>
             <header
-                className={`sticky top-0 z-40 w-full border-b border-outline-variant bg-surface shadow-sm transition-transform duration-300 ease-out dark:bg-surface-dim ${
-                    isHidden ? '-translate-y-full' : 'translate-y-0'
-                }`}
+                className={`sticky top-0 z-40 w-full border-b border-outline-variant bg-surface shadow-sm transition-transform duration-300 ease-out dark:bg-surface-dim ${isHidden ? '-translate-y-full' : 'translate-y-0'
+                    }`}
             >
                 <div className="mx-auto flex h-16 w-full max-w-container-max items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-unit-md">
                         <span className="font-headline-md text-headline-md font-bold text-primary">
-                            ITB SIMKOM STIKOM Bali
+                            SIMKOM ITB STIKOM Bali
                         </span>
                     </div>
 
                     <div className="hidden gap-unit-lg md:flex">
                         <Link
                             className={isHome ? activeClass : inactiveClass}
-                            href="/home"
+                            href={home()}
                         >
                             Beranda
                         </Link>
                         <Link
                             className={isKegiatan ? activeClass : inactiveClass}
-                            href="/kegiatan"
+                            href={kegiatanIndex()}
                         >
                             Kegiatan
                         </Link>
@@ -100,7 +101,7 @@ export default function TopNavbar({
                             className={
                                 isOrganisasi ? activeClass : inactiveClass
                             }
-                            href="/organisasi"
+                            href={organisasiIndex()}
                         >
                             Organisasi
                         </Link>

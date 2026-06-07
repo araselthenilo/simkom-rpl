@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { Calendar, Check, CreditCard, Heart, Laptop, MapPin, Trophy, ArrowRight } from 'lucide-react';
+import { index as kegiatan } from '@/routes/kegiatan';
 
 interface Organisasi {
     id_organisasi: number;
@@ -146,7 +147,7 @@ export default function KegiatanMendatang({
                 </div>
                 <Link
                     className="flex items-center gap-1 font-label-lg text-primary hover:underline"
-                    href="/kegiatan"
+                    href={kegiatan()}
                 >
                     Lihat Semua
                     <ArrowRight className="h-4 w-4" />
@@ -275,7 +276,7 @@ export default function KegiatanMendatang({
                                 <div className="mt-6 border-t border-outline-variant/30 p-6">
                                     {isRegistered ? (
                                         <Link
-                                            href="/kegiatan"
+                                            href={kegiatan()}
                                             className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-600 py-2 font-medium text-white shadow-sm hover:bg-emerald-700 hover:text-white hover:no-underline"
                                         >
                                             <Check className="h-4 w-4 stroke-[3]" /> Terdaftar
@@ -289,7 +290,7 @@ export default function KegiatanMendatang({
                                         </button>
                                     ) : (
                                         <Link
-                                            href="/kegiatan"
+                                            href={kegiatan()}
                                             className="flex w-full items-center justify-center rounded-lg bg-primary py-2 font-medium text-on-primary shadow-sm transition-transform duration-100 hover:scale-[1.01] hover:bg-primary/90 hover:text-on-primary hover:no-underline"
                                         >
                                             Daftar Sekarang

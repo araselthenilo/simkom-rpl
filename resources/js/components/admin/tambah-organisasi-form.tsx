@@ -39,7 +39,7 @@ export default function TambahOrganisasiForm() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/admin/organisasi');
+        post(admin.organisasi.store().url);
     };
 
     return (

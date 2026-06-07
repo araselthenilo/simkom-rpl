@@ -13,11 +13,9 @@ import {
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout } from '@/routes';
-import {
-    dashboard as adminDashboard,
-    organisasi as adminOrganisasi,
-} from '@/routes/admin';
+import admin from '@/routes/admin';
 import { keuangan, kegiatan } from '@/routes/pengurus';
+import { edit as profileEdit } from '@/routes/profile';
 
 interface NavItem {
     title: string;
@@ -29,9 +27,9 @@ export default function Sidepanel() {
     const { isCurrentUrl } = useCurrentUrl();
 
     const menuItems: NavItem[] = [
-        { title: 'Dashboard', href: adminDashboard(), icon: LayoutDashboard },
-        { title: 'Organisasi', href: adminOrganisasi(), icon: Building2 },
-        { title: 'Pengurus', href: '/admin/pengurus', icon: Users },
+        { title: 'Dashboard', href: admin.dashboard(), icon: LayoutDashboard },
+        { title: 'Organisasi', href: admin.organisasi(), icon: Building2 },
+        { title: 'Pengurus', href: admin.pengurus.index(), icon: Users },
         { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },
@@ -39,7 +37,7 @@ export default function Sidepanel() {
     ];
 
     const bottomItems: NavItem[] = [
-        { title: 'Profil Saya', href: '/profile', icon: User },
+        { title: 'Profil Saya', href: profileEdit(), icon: User },
     ];
 
     return (

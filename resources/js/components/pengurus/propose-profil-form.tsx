@@ -3,6 +3,7 @@ import { ArrowLeft, Building2, Upload, Save, HelpCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import pengurusRoute from '@/routes/pengurus';
 
 interface Profil {
     id_profil: number;
@@ -62,7 +63,7 @@ export default function ProposeProfilForm({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/pengurus/profil/propose');
+        post(pengurusRoute.profil.propose().url);
     };
 
     return (
@@ -70,7 +71,7 @@ export default function ProposeProfilForm({
             {/* Navigation back */}
             <div className="flex items-center justify-between">
                 <Link
-                    href="/pengurus/profil"
+                    href={pengurusRoute.profil()}
                     className="decoration-none inline-flex items-center gap-2 text-sm font-semibold text-primary transition-opacity hover:opacity-80"
                 >
                     <ArrowLeft className="h-4 w-4" />
@@ -264,7 +265,7 @@ export default function ProposeProfilForm({
                     {/* Submit and Cancel Buttons */}
                     <div className="flex justify-end gap-3 border-t border-outline-variant/60 pt-4">
                         <Link
-                            href="/pengurus/profil"
+                            href={pengurusRoute.profil()}
                             className="hover:bg-surface-variant decoration-none inline-flex h-auto cursor-pointer items-center justify-center rounded-lg border border-outline px-6 py-2.5 font-label-lg text-sm font-semibold text-on-surface-variant transition-all"
                         >
                             Batal

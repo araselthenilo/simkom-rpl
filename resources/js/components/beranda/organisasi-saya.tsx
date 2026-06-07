@@ -9,6 +9,8 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import { pengurus } from '@/routes';
+import { index as organisasiIndex } from '@/routes/organisasi';
+import { switchOrganisasi } from '@/routes/pengurus';
 import type { Auth } from '@/types/auth';
 
 interface Organization {
@@ -213,7 +215,7 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                     {!isOrganisasiPage && (
                         <Link
                             className="flex items-center gap-1 font-label-lg text-primary hover:underline"
-                            href="/organisasi"
+                            href={organisasiIndex()}
                         >
                             Lihat Semua
                             <ArrowRight className="h-4 w-4" />
@@ -224,7 +226,7 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                 {/* Robust 2-column grid */}
                 <div className="grid grid-cols-1 gap-unit-md lg:grid-cols-2">
                     {/* Left Column: Staff Organizations */}
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-6">
                         {displayStaffOrgs.map((org) => (
                             <div
                                 key={org.id}
@@ -270,7 +272,7 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                                 </div>
                                 {org.link && (
                                     <Link
-                                        href={`/pengurus/switch-organisasi/${org.id}`}
+                                        href={switchOrganisasi(org.id)}
                                         className="z-10 mt-8 block w-full cursor-pointer rounded-lg bg-[#FFD54F] py-3 text-center font-label-lg font-medium text-[#001D35] transition-all hover:bg-[#FFC107]"
                                     >
                                         Dashboard UKM
