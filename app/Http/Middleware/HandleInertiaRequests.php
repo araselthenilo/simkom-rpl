@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PengurusOrganisasi;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,7 +44,7 @@ class HandleInertiaRequests extends Middleware
             $nim = $user->profilPengguna->nim;
 
             // Retrieve active PengurusOrganisasi records
-            $pengurusRecords = \App\Models\PengurusOrganisasi::where('status_aktif', true)
+            $pengurusRecords = PengurusOrganisasi::where('status_aktif', true)
                 ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
                     $q->where('nim', $nim);
                 })
@@ -65,7 +66,7 @@ class HandleInertiaRequests extends Middleware
                 }
             }
 
-            if (!empty($staffOrganizations)) {
+            if (! empty($staffOrganizations)) {
                 $activeOrgId = $request->session()->get('active_organization_id');
                 if ($activeOrgId) {
                     foreach ($staffOrganizations as $orgInfo) {
@@ -76,7 +77,7 @@ class HandleInertiaRequests extends Middleware
                     }
                 }
 
-                if (!$activeOrganization) {
+                if (! $activeOrganization) {
                     $activeOrganization = $staffOrganizations[0];
                     $request->session()->put('active_organization_id', $activeOrganization['id_organisasi']);
                 }
@@ -90,7 +91,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user()
                     ?->load('profilPengguna'),
             ],
-            'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'active_organization' => $activeOrganization,
             'staff_organizations' => $staffOrganizations,
         ];

@@ -2,11 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+#[Fillable([
+    'id_profil',
+    'username_petugas',
+    'nama_kegiatan',
+    'jenis_kegiatan',
+    'deskripsi_kegiatan',
+    'biaya_pendaftaran',
+    'tanggal_pelaksanaan',
+    'lokasi_kegiatan',
+    'kuota_peserta',
+    'status_kegiatan',
+    'alasan_pembatalan',
+])]
 class Kegiatan extends Model
 {
     protected $table = 'kegiatan';

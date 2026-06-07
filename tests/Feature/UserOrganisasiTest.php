@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\User;
-use App\Models\Organisasi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia;
 
@@ -121,7 +121,7 @@ test('student can apply to join an organization', function () {
         'status_aktif' => true,
     ]);
 
-    $file = \Illuminate\Http\UploadedFile::fake()->create('ktm.jpg', 500, 'image/jpeg');
+    $file = UploadedFile::fake()->create('ktm.jpg', 500, 'image/jpeg');
 
     $response = $this->actingAs($user)->post('/organisasi/daftar', [
         'id_organisasi' => $id_organisasi,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AnggotaOrganisasi;
 use App\Models\Organisasi;
+use App\Models\PengurusOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -61,7 +62,7 @@ class AnggotaOrganisasiController extends Controller
             'status_keanggotaan' => 'Diproses',
         ]);
 
-        \Inertia\Inertia::flash('toast', [
+        Inertia::flash('toast', [
             'type' => 'success',
             'message' => 'Pendaftaran anggota berhasil diajukan.',
         ]);
@@ -123,7 +124,7 @@ class AnggotaOrganisasiController extends Controller
     public function pengurusIndex(Request $request): Response
     {
         $user = auth()->user();
-        if (!$user || $user->role !== 'Mahasiswa' || !$user->profilPengguna) {
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
             abort(403);
         }
 
@@ -131,7 +132,7 @@ class AnggotaOrganisasiController extends Controller
 
         // Find the active PengurusOrganisasi record matching the active organization in session
         $activeOrgId = session('active_organization_id');
-        $pengurusRecordQuery = \App\Models\PengurusOrganisasi::where('status_aktif', true)
+        $pengurusRecordQuery = PengurusOrganisasi::where('status_aktif', true)
             ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
                 $q->where('nim', $nim);
             })
@@ -148,14 +149,14 @@ class AnggotaOrganisasiController extends Controller
                 ->first();
         }
 
-        if (!isset($pengurusRecord) || !$pengurusRecord) {
+        if (! isset($pengurusRecord) || ! $pengurusRecord) {
             $pengurusRecord = $pengurusRecordQuery->first();
             if ($pengurusRecord && $pengurusRecord->profilOrganisasi) {
                 session(['active_organization_id' => $pengurusRecord->profilOrganisasi->id_organisasi]);
             }
         }
 
-        if (!$pengurusRecord || !$pengurusRecord->profilOrganisasi) {
+        if (! $pengurusRecord || ! $pengurusRecord->profilOrganisasi) {
             abort(403, 'Anda bukan pengurus organisasi yang aktif.');
         }
 

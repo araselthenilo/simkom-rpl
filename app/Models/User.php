@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Passkeys\Passkeys;
 
 #[Fillable(['username', 'name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
@@ -46,7 +46,7 @@ class User extends Authenticatable implements PasskeyUser
 
     public function passkeys(): HasMany
     {
-        return $this->hasMany(\Laravel\Passkeys\Passkeys::passkeyModel(), 'user_id', 'username');
+        return $this->hasMany(Passkeys::passkeyModel(), 'user_id', 'username');
     }
 
     public function isMahasiswa(): bool
@@ -83,6 +83,7 @@ class User extends Authenticatable implements PasskeyUser
                     $this->profilPengguna->nama_lengkap = $value;
                     $this->profilPengguna->save();
                 }
+
                 return [];
             }
         );

@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\AdminKemahasiswaan;
 use App\Models\Kegiatan;
+use App\Models\Mahasiswa;
+use App\Models\PembinaOrganisasi;
 use App\Models\PengurusOrganisasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -19,9 +22,9 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
 
         Relation::morphMap([
-            'Mahasiswa' => \App\Models\Mahasiswa::class,
-            'Pembina Organisasi' => \App\Models\PembinaOrganisasi::class,
-            'Admin Kemahasiswaan' => \App\Models\AdminKemahasiswaan::class,
+            'Mahasiswa' => Mahasiswa::class,
+            'Pembina Organisasi' => PembinaOrganisasi::class,
+            'Admin Kemahasiswaan' => AdminKemahasiswaan::class,
         ]);
 
         Gate::define('is-mahasiswa', function ($user) {

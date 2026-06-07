@@ -1,6 +1,14 @@
 <?php
 
+use App\Http\Controllers\AnggotaOrganisasiController;
+use App\Http\Controllers\PesertaKegiatanController;
+use App\Http\Controllers\UserKegiatanController;
+use App\Http\Controllers\UserOrganisasiController;
+use App\Models\AnggotaOrganisasi;
+use App\Models\Kegiatan;
+use App\Models\PesertaKegiatan;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::redirect('/', '/login');
 
@@ -12,7 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if ($user && $user->role === 'Mahasiswa' && $user->profilPengguna) {
             $nim = $user->profilPengguna->nim;
 
-            $anggotaList = \App\Models\AnggotaOrganisasi::where('nim', $nim)
+            $anggotaList = AnggotaOrganisasi::where('nim', $nim)
                 ->where('status_keanggotaan', 'Aktif')
                 ->whereHas('organisasi', function ($q) {
                     $q->where('status_aktif', true);
@@ -23,7 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     },
                     'pengurusOrganisasi' => function ($q) {
                         $q->where('status_aktif', true);
-                    }
+                    },
                 ])
                 ->get();
 
@@ -57,24 +65,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
             }
         }
 
-        return \Inertia\Inertia::render('home', [
+        $kegiatanList = Kegiatan::where('status_kegiatan', 'Mendatang')
+            ->with(['profilOrganisasi.organisasi'])
+            ->withCount('pesertaKegiatan')
+            ->orderBy('tanggal_pelaksanaan', 'asc')
+            ->take(3)
+            ->get();
+
+        $registrations = [];
+        $nim = '';
+        if ($user && $user->role === 'Mahasiswa' && $user->profilPengguna) {
+            $nim = $user->profilPengguna->nim;
+            $registrations = PesertaKegiatan::where('nim', $nim)
+                ->get()
+                ->pluck('id_peserta', 'id_kegiatan')
+                ->toArray();
+        }
+
+        return Inertia::render('home', [
             'organizations' => $organizations,
+            'kegiatanList' => $kegiatanList,
+            'registrations' => (object) $registrations,
+            'nim' => $nim,
         ]);
     })->name('home')->middleware('can:is-mahasiswa');
 
     // Mahasiswa Organization Routes
-    Route::get('/organisasi', [\App\Http\Controllers\UserOrganisasiController::class, 'index'])->name('organisasi.index')->middleware('can:is-mahasiswa');
-    Route::get('/organisasi/{organisasi}/detail', [\App\Http\Controllers\UserOrganisasiController::class, 'showProfil'])->name('organisasi.detail')->middleware('can:is-mahasiswa');
-    Route::post('/organisasi/daftar', [\App\Http\Controllers\AnggotaOrganisasiController::class, 'store'])->name('organisasi.daftar')->middleware('can:is-mahasiswa');
+    Route::get('/organisasi', [UserOrganisasiController::class, 'index'])->name('organisasi.index')->middleware('can:is-mahasiswa');
+    Route::get('/organisasi/{organisasi}/detail', [UserOrganisasiController::class, 'showProfil'])->name('organisasi.detail')->middleware('can:is-mahasiswa');
+    Route::post('/organisasi/daftar', [AnggotaOrganisasiController::class, 'store'])->name('organisasi.daftar')->middleware('can:is-mahasiswa');
+
+    // Mahasiswa Kegiatan Routes
+    Route::get('/kegiatan', [UserKegiatanController::class, 'index'])->name('kegiatan.index')->middleware('can:is-mahasiswa');
+    Route::post('/kegiatan/{id_kegiatan}/daftar', [PesertaKegiatanController::class, 'store'])->name('kegiatan.daftar')->middleware('can:is-mahasiswa');
+    Route::delete('/kegiatan/{id_kegiatan}/batal/{id_peserta}', [PesertaKegiatanController::class, 'destroy'])->name('kegiatan.batal')->middleware('can:is-mahasiswa');
 
     // Admin Kemahasiswaan Routes
-    require __DIR__ . '/admin.php';
+    require __DIR__.'/admin.php';
 
     // Pengurus Organisasi Routes
-    require __DIR__ . '/pengurus.php';
+    require __DIR__.'/pengurus.php';
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';
 
 // Catch-all: redirect any undefined URL to login
 Route::fallback(function () {

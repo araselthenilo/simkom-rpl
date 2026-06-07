@@ -75,6 +75,7 @@ export default function ProfilDetail({
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             setData('foto_ktm', file);
             const reader = new FileReader();
@@ -98,6 +99,7 @@ export default function ProfilDetail({
             },
         });
     };
+
     return (
         <main className="animate-fade-in mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
             {/* Header */}
@@ -312,46 +314,67 @@ export default function ProfilDetail({
             )}
 
             {/* Registration Dialog */}
-            <Dialog open={isOpen} onOpenChange={(open) => {
-                setIsOpen(open);
-                if (!open) {
-                    reset('foto_ktm');
-                    setKtmPreview(null);
-                }
-            }}>
+            <Dialog
+                open={isOpen}
+                onOpenChange={(open) => {
+                    setIsOpen(open);
+
+                    if (!open) {
+                        reset('foto_ktm');
+                        setKtmPreview(null);
+                    }
+                }}
+            >
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-primary font-bold text-headline-sm">
+                        <DialogTitle className="text-headline-sm font-bold text-primary">
                             Pendaftaran Anggota
                         </DialogTitle>
                         <DialogDescription>
-                            Silakan lengkapi pendaftaran untuk bergabung dengan <strong>{organisasi.nama_organisasi}</strong>.
+                            Silakan lengkapi pendaftaran untuk bergabung dengan{' '}
+                            <strong>{organisasi.nama_organisasi}</strong>.
                         </DialogDescription>
                     </DialogHeader>
 
                     <form onSubmit={handleJoin} className="space-y-5">
                         {/* Auto-filled Student Metadata to Reduce Redundancy */}
-                        <div className="rounded-xl border border-secondary/20 bg-secondary-container/10 p-4 space-y-3">
+                        <div className="space-y-3 rounded-xl border border-secondary/20 bg-secondary-container/10 p-4">
                             <div className="flex items-center gap-2 text-xs font-semibold text-secondary">
                                 <span className="flex h-2 w-2 rounded-full bg-secondary"></span>
                                 Data Mahasiswa Terverifikasi (Auto-fill)
                             </div>
                             <div className="grid grid-cols-2 gap-3 text-xs">
                                 <div>
-                                    <span className="block text-on-surface-variant/70">NIM</span>
-                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.nim || '-'}</span>
+                                    <span className="block text-on-surface-variant/70">
+                                        NIM
+                                    </span>
+                                    <span className="font-semibold text-foreground">
+                                        {mahasiswaInfo?.nim || '-'}
+                                    </span>
                                 </div>
                                 <div>
-                                    <span className="block text-on-surface-variant/70">Nama Lengkap</span>
-                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.nama_lengkap || '-'}</span>
+                                    <span className="block text-on-surface-variant/70">
+                                        Nama Lengkap
+                                    </span>
+                                    <span className="font-semibold text-foreground">
+                                        {mahasiswaInfo?.nama_lengkap || '-'}
+                                    </span>
                                 </div>
                                 <div>
-                                    <span className="block text-on-surface-variant/70">Program Studi</span>
-                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.program_studi || '-'}</span>
+                                    <span className="block text-on-surface-variant/70">
+                                        Program Studi
+                                    </span>
+                                    <span className="font-semibold text-foreground">
+                                        {mahasiswaInfo?.program_studi || '-'}
+                                    </span>
                                 </div>
                                 <div>
-                                    <span className="block text-on-surface-variant/70">Nomor Telepon</span>
-                                    <span className="font-semibold text-foreground">{mahasiswaInfo?.nomor_telepon || '-'}</span>
+                                    <span className="block text-on-surface-variant/70">
+                                        Nomor Telepon
+                                    </span>
+                                    <span className="font-semibold text-foreground">
+                                        {mahasiswaInfo?.nomor_telepon || '-'}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -359,9 +382,10 @@ export default function ProfilDetail({
                         {/* Foto KTM Upload */}
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold text-primary">
-                                Foto Kartu Tanda Mahasiswa (KTM) <span className="text-red-500">*</span>
+                                Foto Kartu Tanda Mahasiswa (KTM){' '}
+                                <span className="text-red-500">*</span>
                             </label>
-                            
+
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
                                 <div className="sm:col-span-3">
                                     <label className="group flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low p-4 transition-colors hover:bg-surface-container-high">
@@ -369,8 +393,9 @@ export default function ProfilDetail({
                                         <span className="text-xs font-semibold text-primary">
                                             Pilih Foto KTM
                                         </span>
-                                        <span className="mt-1 text-[10px] text-on-surface-variant/70 text-center">
-                                            PNG, JPG, JPEG, atau WEBP (Maksimal 2MB)
+                                        <span className="mt-1 text-center text-[10px] text-on-surface-variant/70">
+                                            PNG, JPG, JPEG, atau WEBP (Maksimal
+                                            2MB)
                                         </span>
                                         <input
                                             type="file"
@@ -388,7 +413,7 @@ export default function ProfilDetail({
                                             <img
                                                 src={ktmPreview}
                                                 alt="KTM Preview"
-                                                className="h-full w-full object-contain rounded"
+                                                className="h-full w-full rounded object-contain"
                                             />
                                         ) : (
                                             <span className="text-center text-[10px] font-semibold text-on-surface-variant/50">
@@ -400,10 +425,14 @@ export default function ProfilDetail({
                             </div>
 
                             {errors.foto_ktm && (
-                                <p className="text-xs text-error font-medium">{errors.foto_ktm}</p>
+                                <p className="text-xs font-medium text-error">
+                                    {errors.foto_ktm}
+                                </p>
                             )}
                             {errors.id_organisasi && (
-                                <p className="text-xs text-error font-medium">{errors.id_organisasi}</p>
+                                <p className="text-xs font-medium text-error">
+                                    {errors.id_organisasi}
+                                </p>
                             )}
                         </div>
 
@@ -419,9 +448,11 @@ export default function ProfilDetail({
                             <Button
                                 type="submit"
                                 disabled={processing || !data.foto_ktm}
-                                className="w-full sm:w-auto bg-primary text-on-primary"
+                                className="w-full bg-primary text-on-primary sm:w-auto"
                             >
-                                {processing ? 'Mengirim...' : 'Kirim Pendaftaran'}
+                                {processing
+                                    ? 'Mengirim...'
+                                    : 'Kirim Pendaftaran'}
                             </Button>
                         </DialogFooter>
                     </form>

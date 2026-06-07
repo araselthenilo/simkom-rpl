@@ -14,7 +14,7 @@ test('guest cannot access pengurus profil page', function () {
 
 test('non-pengurus student cannot access pengurus profil page', function () {
     $user = User::factory()->create(['role' => 'Mahasiswa']);
-    
+
     $response = $this->actingAs($user)->get('/pengurus/profil');
     $response->assertStatus(403);
 });
@@ -119,7 +119,7 @@ test('active pengurus can submit change proposal', function () {
     ]);
 
     $response->assertRedirect(route('pengurus.profil'));
-    
+
     $this->assertDatabaseHas('pengajuan_profil_organisasi', [
         'id_pengurus' => $id_pengurus,
         'periode_kepengurusan' => '2025/2026',

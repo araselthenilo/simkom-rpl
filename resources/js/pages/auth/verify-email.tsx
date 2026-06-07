@@ -30,10 +30,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
                     Resend verification email
                 </Button>
 
-                <TextLink
-                    href={logout()}
-                    className="mx-auto block text-sm"
-                >
+                <TextLink href={logout()} className="mx-auto block text-sm">
                     Log out
                 </TextLink>
             </form>

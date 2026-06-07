@@ -1,7 +1,7 @@
-import OrganisasiSaya from '@/components/beranda/organisasi-saya';
 import { Head, Link } from '@inertiajs/react';
 import { Building2, Clock, ChevronRight, Compass, XCircle } from 'lucide-react';
 import React from 'react';
+import OrganisasiSaya from '@/components/beranda/organisasi-saya';
 
 interface Organization {
     id: number;

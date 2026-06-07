@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import {
     Calendar,
     Search,
@@ -19,7 +20,7 @@ import {
     Info,
     RefreshCw,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -42,109 +43,22 @@ interface Activity {
     alasan_pembatalan: string | null;
 }
 
-export default function ManajemenKegiatan() {
+export default function ManajemenKegiatan({
+    initialActivities = [],
+}: {
+    initialActivities?: Activity[];
+}) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<
         'Semua' | 'Mendatang' | 'Sedang berlangsung' | 'Selesai' | 'Dibatalkan'
     >('Semua');
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
-    // Sample database-backed kegiatan data state
-    const [activities, setActivities] = useState<Activity[]>([
-        {
-            id_kegiatan: 1,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan: 'Seminar IT Nasional: Masa Depan Web Modern & AI',
-            jenis_kegiatan: 'Seminar',
-            deskripsi_kegiatan:
-                'Seminar nasional yang membahas perkembangan teknologi web terbaru dan integrasi kecerdasan buatan dalam pengembangan aplikasi masa kini.',
-            biaya_pendaftaran: 50000,
-            tanggal_pelaksanaan: '2026-06-15',
-            lokasi_kegiatan: 'Aula Kampus Renon',
-            kuota_peserta: 300,
-            status_kegiatan: 'Mendatang',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 2,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan:
-                'Pelatihan UI/UX: Menguasai Auto-Layout & Design System',
-            jenis_kegiatan: 'Pelatihan',
-            deskripsi_kegiatan:
-                'Workshop mendalam tentang pembuatan design system berskala besar di Figma dan taktik optimal auto-layout.',
-            biaya_pendaftaran: 25000,
-            tanggal_pelaksanaan: '2026-06-08',
-            lokasi_kegiatan: 'Lab Komputer 3',
-            kuota_peserta: 40,
-            status_kegiatan: 'Mendatang',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 3,
-            id_profil: 102,
-            username_petugas: 'admin_sari',
-            nama_kegiatan: 'Lomba Hackathon: Solusi Cerdas untuk Lingkungan',
-            jenis_kegiatan: 'Lomba',
-            deskripsi_kegiatan:
-                'Kompetisi coding 24 jam untuk merancang solusi digital ramah lingkungan dan keberlanjutan energi.',
-            biaya_pendaftaran: 150000,
-            tanggal_pelaksanaan: '2026-05-20',
-            lokasi_kegiatan: 'Gedung IT Center STIKOM',
-            kuota_peserta: 20,
-            status_kegiatan: 'Selesai',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 4,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan: 'Pengabdian Masyarakat: Hijaukan Pantai Serangan',
-            jenis_kegiatan: 'Pengabdian Masyarakat',
-            deskripsi_kegiatan:
-                'Kegiatan sosial penanaman bibit pohon mangrove bersama komunitas pecinta alam Bali.',
-            biaya_pendaftaran: 0,
-            tanggal_pelaksanaan: '2026-04-10',
-            lokasi_kegiatan: 'Pantai Melasti Serangan',
-            kuota_peserta: 100,
-            status_kegiatan: 'Selesai',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 5,
-            id_profil: 103,
-            username_petugas: 'admin_budi',
-            nama_kegiatan:
-                'Seminar Cyber Security: Melindungi Aset Digital Organisasi',
-            jenis_kegiatan: 'Seminar',
-            deskripsi_kegiatan:
-                'Pengenalan konsep dasar keamanan informasi dan ancaman cyber terkini di era transformasi digital.',
-            biaya_pendaftaran: 0,
-            tanggal_pelaksanaan: '2026-06-05',
-            lokasi_kegiatan: 'Online via Zoom',
-            kuota_peserta: 500,
-            status_kegiatan: 'Sedang berlangsung',
-            alasan_pembatalan: null,
-        },
-        {
-            id_kegiatan: 6,
-            id_profil: 101,
-            username_petugas: 'admin_budi',
-            nama_kegiatan: 'Lomba DevFest STIKOM 2026',
-            jenis_kegiatan: 'Lomba',
-            deskripsi_kegiatan:
-                'Festival kompetisi teknologi tingkat regional.',
-            biaya_pendaftaran: 75000,
-            tanggal_pelaksanaan: '2026-06-25',
-            lokasi_kegiatan: 'Gedung Aula Kampus STIKOM',
-            kuota_peserta: 150,
-            status_kegiatan: 'Dibatalkan',
-            alasan_pembatalan:
-                'Kurangnya alokasi dana dan bentrok dengan jadwal ujian akhir semester.',
-        },
-    ]);
+    const [activities, setActivities] = useState<Activity[]>(initialActivities);
+
+    useEffect(() => {
+        setActivities(initialActivities);
+    }, [initialActivities]);
 
     // Modal state controllers
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -240,23 +154,29 @@ export default function ManajemenKegiatan() {
             return;
         }
 
-        const newActivity: Activity = {
-            id_kegiatan: Date.now(),
-            id_profil: 101,
-            username_petugas: 'testuser',
-            nama_kegiatan: formData.nama_kegiatan,
-            jenis_kegiatan: formData.jenis_kegiatan,
-            deskripsi_kegiatan: formData.deskripsi_kegiatan,
-            biaya_pendaftaran: Number(formData.biaya_pendaftaran),
-            tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
-            lokasi_kegiatan: formData.lokasi_kegiatan,
-            kuota_peserta: Number(formData.kuota_peserta),
-            status_kegiatan: 'Mendatang',
-            alasan_pembatalan: null,
-        };
-
-        setActivities((prev) => [newActivity, ...prev]);
-        setIsCreateModalOpen(false);
+        router.post(
+            '/pengurus/kegiatan',
+            {
+                nama_kegiatan: formData.nama_kegiatan,
+                jenis_kegiatan: formData.jenis_kegiatan,
+                deskripsi_kegiatan: formData.deskripsi_kegiatan,
+                biaya_pendaftaran: Number(formData.biaya_pendaftaran),
+                tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
+                lokasi_kegiatan: formData.lokasi_kegiatan,
+                kuota_peserta: Number(formData.kuota_peserta),
+            },
+            {
+                onSuccess: () => {
+                    setIsCreateModalOpen(false);
+                },
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message || 'Terjadi kesalahan saat menyimpan kegiatan.',
+                    );
+                },
+            },
+        );
     };
 
     const openEditModal = (activity: Activity) => {
@@ -280,24 +200,31 @@ export default function ManajemenKegiatan() {
             return;
         }
 
-        setActivities((prev) =>
-            prev.map((item) =>
-                item.id_kegiatan === activeActivity.id_kegiatan
-                    ? {
-                          ...item,
-                          nama_kegiatan: formData.nama_kegiatan,
-                          jenis_kegiatan: formData.jenis_kegiatan,
-                          deskripsi_kegiatan: formData.deskripsi_kegiatan,
-                          biaya_pendaftaran: Number(formData.biaya_pendaftaran),
-                          tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
-                          lokasi_kegiatan: formData.lokasi_kegiatan,
-                          kuota_peserta: Number(formData.kuota_peserta),
-                      }
-                    : item,
-            ),
+        router.put(
+            `/pengurus/kegiatan/${activeActivity.id_kegiatan}`,
+            {
+                nama_kegiatan: formData.nama_kegiatan,
+                jenis_kegiatan: formData.jenis_kegiatan,
+                deskripsi_kegiatan: formData.deskripsi_kegiatan,
+                biaya_pendaftaran: Number(formData.biaya_pendaftaran),
+                tanggal_pelaksanaan: formData.tanggal_pelaksanaan,
+                lokasi_kegiatan: formData.lokasi_kegiatan,
+                kuota_peserta: Number(formData.kuota_peserta),
+            },
+            {
+                onSuccess: () => {
+                    setIsEditModalOpen(false);
+                    setActiveActivity(null);
+                },
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message ||
+                            'Terjadi kesalahan saat memperbarui kegiatan.',
+                    );
+                },
+            },
         );
-        setIsEditModalOpen(false);
-        setActiveActivity(null);
     };
 
     const openCancelModal = (activity: Activity) => {
@@ -319,26 +246,36 @@ export default function ManajemenKegiatan() {
             return;
         }
 
-        setActivities((prev) =>
-            prev.map((item) =>
-                item.id_kegiatan === activeActivity.id_kegiatan
-                    ? {
-                          ...item,
-                          status_kegiatan: 'Dibatalkan',
-                          alasan_pembatalan: cancellationReasonInput,
-                      }
-                    : item,
-            ),
+        router.put(
+            `/pengurus/kegiatan/${activeActivity.id_kegiatan}`,
+            {
+                status_kegiatan: 'Dibatalkan',
+                alasan_pembatalan: cancellationReasonInput,
+            },
+            {
+                onSuccess: () => {
+                    setIsCancelModalOpen(false);
+                    setActiveActivity(null);
+                },
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message ||
+                            'Terjadi kesalahan saat membatalkan kegiatan.',
+                    );
+                },
+            },
         );
-        setIsCancelModalOpen(false);
-        setActiveActivity(null);
     };
 
     const handleDeleteActivity = (id: number) => {
         if (confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
-            setActivities((prev) =>
-                prev.filter((item) => item.id_kegiatan !== id),
-            );
+            router.delete(`/pengurus/kegiatan/${id}`, {
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(message || 'Gagal menghapus kegiatan.');
+                },
+            });
         }
     };
 
@@ -356,16 +293,21 @@ export default function ManajemenKegiatan() {
             nextStatus = 'Mendatang';
         }
 
-        setActivities((prev) =>
-            prev.map((item) =>
-                item.id_kegiatan === id
-                    ? {
-                          ...item,
-                          status_kegiatan: nextStatus,
-                          alasan_pembatalan: null,
-                      }
-                    : item,
-            ),
+        router.put(
+            `/pengurus/kegiatan/${id}`,
+            {
+                status_kegiatan: nextStatus,
+                alasan_pembatalan: null,
+            },
+            {
+                onError: (errors) => {
+                    const message = Object.values(errors).join('\n');
+                    alert(
+                        message ||
+                            'Terjadi kesalahan saat memperbarui status kegiatan.',
+                    );
+                },
+            },
         );
     };
 
@@ -632,6 +574,19 @@ export default function ManajemenKegiatan() {
                                     {/* Actions */}
                                     <td className="px-unit-lg py-4 text-right">
                                         <div className="flex justify-end gap-1.5">
+                                            {/* View Participants Button */}
+                                            <button
+                                                onClick={() =>
+                                                    router.get(
+                                                        `/pengurus/kegiatan/${activity.id_kegiatan}/peserta`,
+                                                    )
+                                                }
+                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                title="Lihat Daftar Peserta"
+                                            >
+                                                <Users className="h-4 w-4" />
+                                            </button>
+
                                             {/* Change Status Switcher */}
                                             {activity.status_kegiatan !==
                                                 'Dibatalkan' && (

@@ -80,32 +80,25 @@ class PesertaKegiatanController extends Controller
             'Kegiatan tidak ditemukan'
         );
 
-        $validated = $request->validate([
+        $rules = [
             'nim' => [
                 'required',
                 'string',
                 'size:9',
                 'exists:mahasiswa,nim',
             ],
-            'id_transaksi' => [
+        ];
+
+        if ($kegiatan->biaya_pendaftaran > 0) {
+            $rules['foto_bukti_transaksi'] = [
                 'required',
-                'integer',
-                'exists:transaksi_keuangan,id_transaksi',
-            ],
-        ]);
+                'file',
+                'mimes:jpg,jpeg,png,pdf',
+                'max:5120',
+            ];
+        }
 
-        $transaksi = TransaksiKeuangan::query()
-            ->where([
-                'id_transaksi' => $validated['id_transaksi'],
-                'id_kegiatan' => $kegiatan->id_kegiatan,
-            ])
-            ->firstOrFail();
-
-        abort_if(
-            ! $transaksi,
-            403,
-            'Transaksi tidak sesuai kegiatan'
-        );
+        $validated = $request->validate($rules);
 
         $user = Auth::user();
 
@@ -137,7 +130,7 @@ class PesertaKegiatanController extends Controller
             ]);
         }
 
-        $jumlahPeserta = Kegiatan::where('id_kegiatan', $id_kegiatan)->count();
+        $jumlahPeserta = PesertaKegiatan::where('id_kegiatan', $id_kegiatan)->count();
 
         if ($jumlahPeserta >= $kegiatan->kuota_peserta) {
             return back()->withErrors([

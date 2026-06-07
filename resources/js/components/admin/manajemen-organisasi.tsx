@@ -78,6 +78,7 @@ export default function ManajemenOrganisasi({
         name: string,
     ) => {
         const actionText = currentStatus ? 'menonaktifkan' : 'mengaktifkan';
+
         if (
             confirm(
                 `Apakah Anda yakin ingin ${actionText} organisasi "${name}"?`,

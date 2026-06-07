@@ -31,6 +31,7 @@ export default function Sidepanel() {
     const menuItems: NavItem[] = [
         { title: 'Dashboard', href: adminDashboard(), icon: LayoutDashboard },
         { title: 'Organisasi', href: adminOrganisasi(), icon: Building2 },
+        { title: 'Pengurus', href: '/admin/pengurus', icon: Users },
         { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },

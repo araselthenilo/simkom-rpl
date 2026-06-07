@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\OrganisasiController;
+use App\Http\Controllers\PengurusOrganisasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(function () {
@@ -19,4 +20,10 @@ Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(functi
     Route::get('/profil-organisasi/{profilOrganisasi}/edit', [OrganisasiController::class, 'editProfil'])->name('profil-organisasi.edit');
     Route::put('/profil-organisasi/{profilOrganisasi}', [OrganisasiController::class, 'updateProfil'])->name('profil-organisasi.update');
     Route::get('/profil-organisasi/{profilOrganisasi}/pengurus', [OrganisasiController::class, 'showPengurus'])->name('profil-organisasi.pengurus');
+
+    // Pengurus management routes
+    Route::get('/pengurus', [PengurusOrganisasiController::class, 'adminIndex'])->name('pengurus.index');
+    Route::post('/pengurus', [PengurusOrganisasiController::class, 'store'])->name('pengurus.store');
+    Route::patch('/pengurus/{pengurus}/toggle', [PengurusOrganisasiController::class, 'toggleStatus'])->name('pengurus.toggle');
+    Route::delete('/pengurus/{pengurus}', [PengurusOrganisasiController::class, 'destroy'])->name('pengurus.destroy');
 });

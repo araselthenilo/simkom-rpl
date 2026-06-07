@@ -2,10 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+#[Fillable([
+    'id_kegiatan',
+    'jenis_transaksi',
+    'nominal_transaksi',
+    'tanggal_transaksi',
+    'sumber_tujuan_transaksi',
+    'foto_bukti_transaksi',
+    'catatan_koreksi',
+])]
 class TransaksiKeuangan extends Model
 {
     protected $table = 'transaksi_keuangan';

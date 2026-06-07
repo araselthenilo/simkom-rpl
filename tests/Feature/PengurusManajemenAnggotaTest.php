@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\AnggotaOrganisasi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia;
@@ -15,7 +14,7 @@ test('guest cannot access pengurus manajemen anggota', function () {
 
 test('non-pengurus student cannot access pengurus manajemen anggota', function () {
     $user = User::factory()->create(['role' => 'Mahasiswa']);
-    
+
     $response = $this->actingAs($user)->get('/pengurus/anggota');
     $response->assertStatus(403);
 });

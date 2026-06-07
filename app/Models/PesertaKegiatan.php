@@ -11,6 +11,12 @@ class PesertaKegiatan extends Model
 
     protected $primaryKey = 'id_peserta';
 
+    protected $fillable = [
+        'id_kegiatan',
+        'nim',
+        'id_transaksi',
+    ];
+
     public function mahasiswa(): BelongsTo
     {
         return $this->belongsTo(Mahasiswa::class, 'nim', 'nim');
@@ -23,6 +29,6 @@ class PesertaKegiatan extends Model
 
     public function transaksiKeuangan(): BelongsTo
     {
-        return $this->belongsTo(Kegiatan::class, 'id_transaksi', 'id_transaksi');
+        return $this->belongsTo(TransaksiKeuangan::class, 'id_transaksi', 'id_transaksi');
     }
 }

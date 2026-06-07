@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organisasi;
-use App\Models\ProfilOrganisasi;
-use App\Models\PengurusOrganisasi;
 use App\Models\PengajuanProfilOrganisasi;
+use App\Models\PengurusOrganisasi;
+use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,7 +15,7 @@ class PengurusProfilOrganisasiController extends Controller
     private function getActivePengurusRecord()
     {
         $user = auth()->user();
-        if (!$user || $user->role !== 'Mahasiswa' || !$user->profilPengguna) {
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -41,14 +39,14 @@ class PengurusProfilOrganisasiController extends Controller
                 ->first();
         }
 
-        if (!isset($pengurusRecord) || !$pengurusRecord) {
+        if (! isset($pengurusRecord) || ! $pengurusRecord) {
             $pengurusRecord = $pengurusRecordQuery->first();
             if ($pengurusRecord && $pengurusRecord->profilOrganisasi) {
                 session(['active_organization_id' => $pengurusRecord->profilOrganisasi->id_organisasi]);
             }
         }
 
-        if (!$pengurusRecord || !$pengurusRecord->profilOrganisasi) {
+        if (! $pengurusRecord || ! $pengurusRecord->profilOrganisasi) {
             abort(403, 'Anda bukan pengurus organisasi yang aktif.');
         }
 
@@ -65,7 +63,7 @@ class PengurusProfilOrganisasiController extends Controller
             ->where('status_aktif', true)
             ->first();
 
-        if (!$profil) {
+        if (! $profil) {
             abort(404, 'Profil organisasi tidak ditemukan.');
         }
 
@@ -90,7 +88,7 @@ class PengurusProfilOrganisasiController extends Controller
             ->where('status_aktif', true)
             ->first();
 
-        if (!$profil) {
+        if (! $profil) {
             abort(404, 'Profil organisasi tidak ditemukan.');
         }
 
@@ -109,7 +107,7 @@ class PengurusProfilOrganisasiController extends Controller
             ->where('status_aktif', true)
             ->first();
 
-        if (!$profil) {
+        if (! $profil) {
             abort(404, 'Profil organisasi tidak ditemukan.');
         }
 

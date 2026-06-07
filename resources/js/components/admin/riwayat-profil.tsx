@@ -14,8 +14,8 @@ import {
     Users,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -82,6 +82,7 @@ export default function RiwayatProfil({
     const handleAddPembina = () => {
         if (!selectedNip) {
             setValidationError('Silakan pilih pembina terlebih dahulu.');
+
             return;
         }
 

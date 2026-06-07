@@ -43,11 +43,12 @@ interface ProfilOrganisasi {
 
 interface PageProps {
     profilOrganisasi: ProfilOrganisasi;
+    anggotaList?: AnggotaOrganisasi[];
     [key: string]: any;
 }
 
 export default function PengurusPeriodePage() {
-    const { profilOrganisasi } = usePage<PageProps>().props;
+    const { profilOrganisasi, anggotaList = [] } = usePage<PageProps>().props;
 
     const orgName = profilOrganisasi?.organisasi?.nama_organisasi || '';
     const period = profilOrganisasi?.periode_kepengurusan || '';
@@ -55,7 +56,7 @@ export default function PengurusPeriodePage() {
     return (
         <>
             <Head title={`Pengurus Periode ${period} - ${orgName}`} />
-            <PengurusPeriode profilOrganisasi={profilOrganisasi} />
+            <PengurusPeriode profilOrganisasi={profilOrganisasi} anggotaList={anggotaList} />
         </>
     );
 }

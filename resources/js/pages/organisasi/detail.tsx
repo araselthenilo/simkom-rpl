@@ -1,6 +1,6 @@
-import ProfilDetail from '@/components/pengurus/profil-detail';
 import { Head } from '@inertiajs/react';
 import React from 'react';
+import ProfilDetail from '@/components/pengurus/profil-detail';
 
 interface Profil {
     id_profil: number;

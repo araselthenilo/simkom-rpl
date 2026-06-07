@@ -6,6 +6,7 @@ import {
     Music,
     Calendar,
     ChevronRight,
+    ArrowRight,
 } from 'lucide-react';
 import { pengurus } from '@/routes';
 import type { Auth } from '@/types/auth';
@@ -89,6 +90,7 @@ const DEFAULT_ORGANIZATIONS: Organization[] = [
 
 const nameToIcon = (name: string): string => {
     const normalized = name.toLowerCase();
+
     if (
         normalized.includes('program') ||
         normalized.includes('robot') ||
@@ -97,6 +99,7 @@ const nameToIcon = (name: string): string => {
     ) {
         return 'code';
     }
+
     if (
         normalized.includes('musik') ||
         normalized.includes('tari') ||
@@ -105,6 +108,7 @@ const nameToIcon = (name: string): string => {
     ) {
         return 'music_note';
     }
+
     if (
         normalized.includes('jurnal') ||
         normalized.includes('pers') ||
@@ -113,11 +117,13 @@ const nameToIcon = (name: string): string => {
     ) {
         return 'campaign';
     }
+
     return 'event';
 };
 
 const nameToBgIcon = (name: string): string | undefined => {
     const normalized = name.toLowerCase();
+
     if (
         normalized.includes('program') ||
         normalized.includes('robot') ||
@@ -126,6 +132,7 @@ const nameToBgIcon = (name: string): string | undefined => {
     ) {
         return 'terminal';
     }
+
     return undefined;
 };
 
@@ -134,7 +141,8 @@ interface OrganisasiSayaProps {
 }
 
 export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
-    const { auth } = usePage<{ auth: Auth }>().props;
+    const { url, props } = usePage<{ auth: Auth }>();
+    const auth = props.auth;
     const user = auth?.user;
 
     const sourceOrgs = organizations || DEFAULT_ORGANIZATIONS;
@@ -177,23 +185,47 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
     const staffOrgs = processedOrgs.filter((org) => org.type === 'staff');
     const memberOrgs = processedOrgs.filter((org) => org.type === 'member');
 
+    const isHomePage = url.startsWith('/home');
+    const isOrganisasiPage = url.startsWith('/organisasi');
+
+    let displayStaffOrgs = staffOrgs;
+    let displayMemberOrgs = memberOrgs;
+
+    if (isHomePage) {
+        const maxCards = 2;
+        displayStaffOrgs = staffOrgs.slice(0, maxCards);
+        const remainingSpace = maxCards - displayStaffOrgs.length;
+        displayMemberOrgs = memberOrgs.slice(0, remainingSpace);
+    }
+
     return (
         <section className="py-unit-xl">
             <div className="mx-auto max-w-container-max px-margin-desktop">
-                <div className="mb-8">
-                    <h2 className="font-headline-md text-headline-md text-primary">
-                        Organisasi Saya
-                    </h2>
-                    <p className="font-body-md text-on-surface-variant">
-                        Status keanggotaan dan aktivitas organisasi Anda
-                    </p>
+                <div className="mb-8 flex items-end justify-between">
+                    <div>
+                        <h2 className="font-headline-md text-headline-md text-primary">
+                            Organisasi Saya
+                        </h2>
+                        <p className="font-body-md text-on-surface-variant">
+                            Status keanggotaan dan aktivitas organisasi Anda
+                        </p>
+                    </div>
+                    {!isOrganisasiPage && (
+                        <Link
+                            className="flex items-center gap-1 font-label-lg text-primary hover:underline"
+                            href="/organisasi"
+                        >
+                            Lihat Semua
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    )}
                 </div>
 
                 {/* Robust 2-column grid */}
                 <div className="grid grid-cols-1 gap-unit-md lg:grid-cols-2">
                     {/* Left Column: Staff Organizations */}
                     <div className="flex flex-col">
-                        {staffOrgs.map((org) => (
+                        {displayStaffOrgs.map((org) => (
                             <div
                                 key={org.id}
                                 className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-primary p-unit-lg text-on-primary shadow-lg"
@@ -259,7 +291,7 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                     {/* Right Column: Member Organizations wrapped in an aligning flex container */}
                     {/* Added: "items-stretch" to allow children flex expansion */}
                     <div className="flex flex-col items-stretch gap-unit-md">
-                        {memberOrgs.map((org) => (
+                        {displayMemberOrgs.map((org) => (
                             <div
                                 key={org.id}
                                 /* Added: "flex-1" to stretch cards into equal heights filling the right container */

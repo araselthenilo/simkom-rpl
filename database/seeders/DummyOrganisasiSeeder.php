@@ -324,6 +324,91 @@ class DummyOrganisasiSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             }
+
+            // Create Dummy Kegiatan (Upcoming/Mendatang)
+            $ukmMusikProfil = DB::table('profil_organisasi')
+                ->join('organisasi', 'profil_organisasi.id_organisasi', '=', 'organisasi.id_organisasi')
+                ->where('organisasi.nama_organisasi', 'UKM Musik')
+                ->value('profil_organisasi.id_profil');
+
+            $ukmRobotikaProfil = DB::table('profil_organisasi')
+                ->join('organisasi', 'profil_organisasi.id_organisasi', '=', 'organisasi.id_organisasi')
+                ->where('organisasi.nama_organisasi', 'UKM Robotika')
+                ->value('profil_organisasi.id_profil');
+
+            $ukmOlahragaProfil = DB::table('profil_organisasi')
+                ->join('organisasi', 'profil_organisasi.id_organisasi', '=', 'organisasi.id_organisasi')
+                ->where('organisasi.nama_organisasi', 'UKM Olahraga')
+                ->value('profil_organisasi.id_profil');
+
+            $ukmRisetProfil = DB::table('profil_organisasi')
+                ->join('organisasi', 'profil_organisasi.id_organisasi', '=', 'organisasi.id_organisasi')
+                ->where('organisasi.nama_organisasi', 'UKM Penalaran & Riset')
+                ->value('profil_organisasi.id_profil');
+
+            if ($ukmMusikProfil) {
+                DB::table('kegiatan')->insert([
+                    'id_profil' => $ukmMusikProfil,
+                    'nama_kegiatan' => 'Konser Harmoni Musik Kampus',
+                    'jenis_kegiatan' => 'Seminar',
+                    'deskripsi_kegiatan' => 'Konser sekaligus talkshow tentang perkembangan seni musik modern dan tradisional di kalangan mahasiswa ITB SIMKOM STIKOM Bali.',
+                    'biaya_pendaftaran' => 0.00,
+                    'tanggal_pelaksanaan' => '2026-07-15',
+                    'lokasi_kegiatan' => 'Aula Utama Kampus',
+                    'kuota_peserta' => 150,
+                    'status_kegiatan' => 'Mendatang',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            if ($ukmRobotikaProfil) {
+                DB::table('kegiatan')->insert([
+                    'id_profil' => $ukmRobotikaProfil,
+                    'nama_kegiatan' => 'Workshop IoT & Smart Device',
+                    'jenis_kegiatan' => 'Pelatihan',
+                    'deskripsi_kegiatan' => 'Pelatihan intensif merakit perangkat pintar berbasis mikrokontroler NodeMCU dan sensor IoT untuk otomatisasi rumah.',
+                    'biaya_pendaftaran' => 75000.00,
+                    'tanggal_pelaksanaan' => '2026-08-10',
+                    'lokasi_kegiatan' => 'Lab Inovasi Robotika',
+                    'kuota_peserta' => 30,
+                    'status_kegiatan' => 'Mendatang',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            if ($ukmOlahragaProfil) {
+                DB::table('kegiatan')->insert([
+                    'id_profil' => $ukmOlahragaProfil,
+                    'nama_kegiatan' => 'Turnamen Futsal Rektor Cup 2026',
+                    'jenis_kegiatan' => 'Lomba',
+                    'deskripsi_kegiatan' => 'Kompetisi futsal bergengsi antar angkatan dan program studi untuk merebut piala bergilir Rektor ITB SIMKOM STIKOM Bali.',
+                    'biaya_pendaftaran' => 150000.00,
+                    'tanggal_pelaksanaan' => '2026-09-05',
+                    'lokasi_kegiatan' => 'Gelanggang Olahraga (GOR) Kampus',
+                    'kuota_peserta' => 16,
+                    'status_kegiatan' => 'Mendatang',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            if ($ukmRisetProfil) {
+                DB::table('kegiatan')->insert([
+                    'id_profil' => $ukmRisetProfil,
+                    'nama_kegiatan' => 'Seminar Penulisan PKM & Karya Ilmiah',
+                    'jenis_kegiatan' => 'Seminar',
+                    'deskripsi_kegiatan' => 'Kupas tuntas strategi lolos pendanaan Program Kreativitas Mahasiswa (PKM) bersama pemateri nasional dan reviewer berpengalaman.',
+                    'biaya_pendaftaran' => 0.00,
+                    'tanggal_pelaksanaan' => '2026-07-28',
+                    'lokasi_kegiatan' => 'Lab Teater Kampus',
+                    'kuota_peserta' => 200,
+                    'status_kegiatan' => 'Mendatang',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         });
     }
 }

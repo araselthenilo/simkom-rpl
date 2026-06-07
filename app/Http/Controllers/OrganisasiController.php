@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnggotaOrganisasi;
 use App\Models\Organisasi;
 use App\Models\Pembinaan;
 use App\Models\PembinaOrganisasi;
@@ -364,8 +365,14 @@ class OrganisasiController extends Controller
             'pengurusOrganisasi.anggotaOrganisasi.mahasiswa',
         ]);
 
+        $anggotaList = AnggotaOrganisasi::where('id_organisasi', $profilOrganisasi->id_organisasi)
+            ->where('status_keanggotaan', 'Aktif')
+            ->with('mahasiswa')
+            ->get();
+
         return Inertia::render('admin/pengurus-periode', [
             'profilOrganisasi' => $profilOrganisasi,
+            'anggotaList' => $anggotaList,
         ]);
     }
 }

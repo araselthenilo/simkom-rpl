@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
     LayoutDashboard,
     Users,
+    Users2,
     Calendar,
     Coins,
     BarChart3,
@@ -27,6 +28,7 @@ export default function Sidepanel() {
     const menuItems: NavItem[] = [
         { title: 'Dashboard', href: pengurus(), icon: LayoutDashboard },
         { title: 'Anggota', href: anggota(), icon: Users },
+        { title: 'Pengurus', href: '/pengurus/staff', icon: Users2 },
         { title: 'Kegiatan', href: kegiatan(), icon: Calendar },
         { title: 'Keuangan', href: keuangan(), icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },

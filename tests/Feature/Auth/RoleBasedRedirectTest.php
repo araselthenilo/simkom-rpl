@@ -151,15 +151,15 @@ test('mahasiswa home page returns correct organizations props based on active st
 
     $id_profilA = DB::table('profil_organisasi')->insertGetId([
         'id_organisasi' => $id_ukmA, 'periode_kepengurusan' => '2026/2027', 'logo_organisasi' => 'a.png',
-        'deskripsi_organisasi' => 'Desc A', 'visi_organisasi' => 'V', 'misi_organisasi' => 'M', 'status_aktif' => true
+        'deskripsi_organisasi' => 'Desc A', 'visi_organisasi' => 'V', 'misi_organisasi' => 'M', 'status_aktif' => true,
     ]);
     $id_profilC = DB::table('profil_organisasi')->insertGetId([
         'id_organisasi' => $id_ukmC, 'periode_kepengurusan' => '2026/2027', 'logo_organisasi' => 'c.png',
-        'deskripsi_organisasi' => 'Desc C', 'visi_organisasi' => 'V', 'misi_organisasi' => 'M', 'status_aktif' => false
+        'deskripsi_organisasi' => 'Desc C', 'visi_organisasi' => 'V', 'misi_organisasi' => 'M', 'status_aktif' => false,
     ]);
     $id_profilD = DB::table('profil_organisasi')->insertGetId([
         'id_organisasi' => $id_ukmD, 'periode_kepengurusan' => '2026/2027', 'logo_organisasi' => 'd.png',
-        'deskripsi_organisasi' => 'Desc D', 'visi_organisasi' => 'V', 'misi_organisasi' => 'M', 'status_aktif' => true
+        'deskripsi_organisasi' => 'Desc D', 'visi_organisasi' => 'V', 'misi_organisasi' => 'M', 'status_aktif' => true,
     ]);
 
     // memberships

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organisasi;
 use App\Models\AnggotaOrganisasi;
+use App\Models\Organisasi;
 use App\Models\ProfilOrganisasi;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +14,7 @@ class UserOrganisasiController extends Controller
     public function index(Request $request): Response
     {
         $user = auth()->user();
-        if (!$user || $user->role !== 'Mahasiswa' || !$user->profilPengguna) {
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
             abort(403);
         }
 
@@ -33,7 +33,7 @@ class UserOrganisasiController extends Controller
                 },
                 'pengurusOrganisasi' => function ($q) {
                     $q->where('status_aktif', true);
-                }
+                },
             ])
             ->get();
 
@@ -75,7 +75,7 @@ class UserOrganisasiController extends Controller
             ->with([
                 'organisasi.profilOrganisasi' => function ($q) {
                     $q->where('status_aktif', true);
-                }
+                },
             ])
             ->get();
 
@@ -103,14 +103,14 @@ class UserOrganisasiController extends Controller
             ->with([
                 'profilOrganisasi' => function ($q) {
                     $q->where('status_aktif', true);
-                }
+                },
             ])
             ->get();
 
         $joinableOrganizations = [];
         foreach ($joinableList as $org) {
             $activeProfile = $org->profilOrganisasi->first();
-            
+
             // Check if they had a previous status (e.g. 'Ditolak' or 'Tidak Aktif')
             $previousRecord = AnggotaOrganisasi::where('nim', $nim)
                 ->where('id_organisasi', $org->id_organisasi)
@@ -136,7 +136,7 @@ class UserOrganisasiController extends Controller
     public function showProfil(Organisasi $organisasi): Response
     {
         $user = auth()->user();
-        if (!$user || $user->role !== 'Mahasiswa' || !$user->profilPengguna) {
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
             abort(403);
         }
 
@@ -147,10 +147,10 @@ class UserOrganisasiController extends Controller
             ->where('status_aktif', true)
             ->first();
 
-        if (!$profil) {
-            $profil = new ProfilOrganisasi();
+        if (! $profil) {
+            $profil = new ProfilOrganisasi;
             $profil->id_organisasi = $organisasi->id_organisasi;
-            $profil->periode_kepengurusan = date('Y') . '/' . (date('Y') + 1);
+            $profil->periode_kepengurusan = date('Y').'/'.(date('Y') + 1);
             $profil->deskripsi_organisasi = 'Organisasi ini belum mengisi profil.';
             $profil->visi_organisasi = '';
             $profil->misi_organisasi = '';

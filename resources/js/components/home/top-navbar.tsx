@@ -55,8 +55,8 @@ export default function TopNavbar({
     const isHome = url === '/home' || component === 'home';
     const isOrganisasi =
         url.startsWith('/organisasi') || component.startsWith('organisasi/');
-    const isProfil =
-        url.startsWith('/settings') || component.startsWith('settings/');
+    const isKegiatan =
+        url.startsWith('/kegiatan') || component.startsWith('kegiatan/');
 
     const activeClass =
         'border-b-2 border-primary pb-1 font-body-md text-body-md font-bold text-primary';
@@ -91,18 +91,18 @@ export default function TopNavbar({
                             Beranda
                         </Link>
                         <Link
+                            className={isKegiatan ? activeClass : inactiveClass}
+                            href="/kegiatan"
+                        >
+                            Kegiatan
+                        </Link>
+                        <Link
                             className={
                                 isOrganisasi ? activeClass : inactiveClass
                             }
                             href="/organisasi"
                         >
                             Organisasi
-                        </Link>
-                        <Link
-                            className={isProfil ? activeClass : inactiveClass}
-                            href="/settings/profile"
-                        >
-                            Profil
                         </Link>
                     </div>
 
