@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminKegiatanController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PengurusOrganisasiController;
+use App\Http\Controllers\TransaksiKeuanganController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(function () {
@@ -34,4 +35,7 @@ Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(functi
     Route::put('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
     Route::delete('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'destroy'])->name('kegiatan.destroy');
     Route::get('/kegiatan/{kegiatan}/peserta', [AdminKegiatanController::class, 'peserta'])->name('kegiatan.peserta');
+
+    // Keuangan management routes (read-only overview for admin)
+    Route::get('/keuangan', [TransaksiKeuanganController::class, 'adminIndex'])->name('keuangan.index');
 });

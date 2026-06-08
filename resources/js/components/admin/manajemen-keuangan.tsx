@@ -1,6 +1,5 @@
 import {
     Wallet,
-    PlusCircle,
     TrendingUp,
     Search,
     Filter,
@@ -9,75 +8,297 @@ import {
     Receipt,
     ChevronLeft,
     ChevronRight,
+    Eye,
+    Building2,
+    Coins,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 interface Transaction {
-    date: string;
-    time: string;
-    type: 'pemasukan' | 'pengeluaran';
-    nominal: number;
-    purpose: string;
-    invoice: string;
+    id_transaksi: number;
+    id_kegiatan: number;
+    jenis_transaksi: 'Pemasukan' | 'Pengeluaran';
+    nominal_transaksi: number;
+    tanggal_transaksi: string;
+    sumber_tujuan_transaksi: string;
+    foto_bukti_transaksi: string | null;
+    catatan_koreksi: string | null;
+    created_at: string | null;
+    kegiatan: {
+        id_kegiatan: number;
+        nama_kegiatan: string;
+        profil_organisasi?: {
+            id_profil: number;
+            organisasi?: {
+                id_organisasi: number;
+                nama_organisasi: string;
+            };
+        };
+    } | null;
 }
 
-export default function ManajemenKeuangan() {
-    const [searchQuery, setSearchQuery] = useState('');
+interface Stats {
+    total_saldo: number;
+    total_pemasukan: number;
+    total_pengeluaran: number;
+}
 
-    const transactions: Transaction[] = [
-        {
-            date: '15 Okt 2024',
-            time: '14:20 WITA',
-            type: 'pemasukan',
-            nominal: 5000000,
-            purpose:
-                'Sponsorship Acara Seminar IT Nasional 2024 - PT Digital Solusi',
-            invoice: 'nota_552.pdf',
-        },
-        {
-            date: '12 Okt 2024',
-            time: '09:15 WITA',
-            type: 'pengeluaran',
-            nominal: 1250000,
-            purpose: 'Pembelian ATK dan Konsumsi Rapat Koordinasi Bulanan',
-            invoice: 'nota_551.jpg',
-        },
-        {
-            date: '08 Okt 2024',
-            time: '16:45 WITA',
-            type: 'pengeluaran',
-            nominal: 3000000,
-            purpose: 'DP Sewa Aula untuk Kegiatan Pengabdian Masyarakat',
-            invoice: 'nota_550.pdf',
-        },
-        {
-            date: '05 Okt 2024',
-            time: '10:00 WITA',
-            type: 'pemasukan',
-            nominal: 7500000,
-            purpose:
-                'Iuran Anggota Tahunan Gelombang I Tahun Akademik 2024/2025',
-            invoice: 'iuran_batch1.xlsx',
-        },
-    ];
+interface ActivityOption {
+    id_kegiatan: number;
+    nama_kegiatan: string;
+}
 
-    const formatRupiah = (value: number) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-        })
+interface OrganisasiOption {
+    id_organisasi: number;
+    nama_organisasi: string;
+}
+
+interface ManajemenKeuanganProps {
+    transactions?: Transaction[];
+    activities?: ActivityOption[];
+    organisasiList?: OrganisasiOption[];
+    stats?: Stats;
+}
+
+// Modal for viewing transaction detail (read-only)
+interface DetailModalProps {
+    transaction: Transaction;
+    onClose: () => void;
+}
+
+function TransactionDetailModal({ transaction, onClose }: DetailModalProps) {
+    const formatRupiah = (value: number) =>
+        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })
             .format(value)
             .replace('IDR', 'Rp');
+
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const day = parseInt(parts[2], 10);
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            return `${day} ${months[monthIdx]} ${parts[0]}`;
+        }
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? dateStr : `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     };
 
-    const filteredTransactions = transactions.filter(
-        (t) =>
-            t.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.invoice.toLowerCase().includes(searchQuery.toLowerCase()),
+    const isPemasukan = transaction.jenis_transaksi.toLowerCase() === 'pemasukan';
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={onClose} />
+            <div className="relative z-10 w-full max-w-md animate-in rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                    <h3 className="font-headline-sm font-bold text-primary flex items-center gap-2">
+                        <Coins className="h-5 w-5" />
+                        Detail Transaksi
+                    </h3>
+                    <button
+                        onClick={onClose}
+                        className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                <div className="mt-4 space-y-4">
+                    {/* Jenis badge */}
+                    <div className="flex items-center justify-between">
+                        <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-bold ${
+                                isPemasukan
+                                    ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
+                                    : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
+                            }`}
+                        >
+                            {isPemasukan ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+                            {transaction.jenis_transaksi}
+                        </span>
+                        <span className={`text-xl font-bold ${isPemasukan ? 'text-green-700 dark:text-green-400' : 'text-error'}`}>
+                            {isPemasukan ? '+' : '-'} {formatRupiah(transaction.nominal_transaksi)}
+                        </span>
+                    </div>
+
+                    {/* Details grid */}
+                    <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low/30 divide-y divide-outline-variant/20">
+                        <div className="flex items-start justify-between px-4 py-3 gap-4">
+                            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Tanggal</span>
+                            <span className="text-sm font-medium text-right">{formatDate(transaction.tanggal_transaksi)}</span>
+                        </div>
+                        <div className="flex items-start justify-between px-4 py-3 gap-4">
+                            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Sumber / Tujuan</span>
+                            <span className="text-sm text-right max-w-[60%]">{transaction.sumber_tujuan_transaksi}</span>
+                        </div>
+                        <div className="flex items-start justify-between px-4 py-3 gap-4">
+                            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Kegiatan</span>
+                            <span className="text-sm font-medium text-primary text-right max-w-[60%]">
+                                {transaction.kegiatan?.nama_kegiatan || '-'}
+                            </span>
+                        </div>
+                        <div className="flex items-start justify-between px-4 py-3 gap-4">
+                            <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Organisasi</span>
+                            <span className="text-sm font-medium text-right max-w-[60%]">
+                                {transaction.kegiatan?.profil_organisasi?.organisasi?.nama_organisasi || '-'}
+                            </span>
+                        </div>
+                        {transaction.catatan_koreksi && (
+                            <div className="flex items-start justify-between px-4 py-3 gap-4">
+                                <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Catatan</span>
+                                <span className="text-sm text-right max-w-[60%]">{transaction.catatan_koreksi}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Bukti Nota */}
+                    {transaction.foto_bukti_transaksi && (
+                        <div className="space-y-2">
+                            <p className="text-xs font-semibold text-primary uppercase tracking-wide">Bukti Nota</p>
+                            <Button
+                                variant="outline"
+                                className="flex h-auto items-center gap-2 rounded-lg border border-outline-variant/50 px-4 py-2 text-sm text-primary cursor-pointer"
+                                onClick={() => transaction.foto_bukti_transaksi && window.open(transaction.foto_bukti_transaksi, '_blank')}
+                            >
+                                <Receipt className="h-4 w-4" />
+                                {transaction.foto_bukti_transaksi.split('/').pop()}
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* Close */}
+                    <div className="flex justify-end pt-3 border-t border-outline-variant/30">
+                        <Button
+                            type="button"
+                            onClick={onClose}
+                            className="px-6 cursor-pointer h-9 text-xs font-semibold"
+                        >
+                            Tutup
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
+}
+
+export default function ManajemenKeuangan({
+    transactions = [],
+    activities = [],
+    organisasiList = [],
+    stats,
+}: ManajemenKeuanganProps) {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isFilterVisible, setIsFilterVisible] = useState(false);
+    const [selectedKegiatanId, setSelectedKegiatanId] = useState<string>('all');
+    const [selectedOrganisasiId, setSelectedOrganisasiId] = useState<string>('all');
+    const [selectedJenis, setSelectedJenis] = useState<string>('all');
+    const [sortBy, setSortBy] = useState<string>('newest');
+    const [selectedStatsOrganisasiId, setSelectedStatsOrganisasiId] = useState<string>('all');
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+
+    // Dynamic stats computation based on selected organisasi
+    const computedStats = React.useMemo(() => {
+        if (selectedStatsOrganisasiId === 'all' && stats) {
+            return {
+                totalSaldo: stats.total_saldo,
+                totalPemasukan: stats.total_pemasukan,
+                totalPengeluaran: stats.total_pengeluaran,
+            };
+        }
+
+        const filtered = transactions.filter((t) => {
+            if (selectedStatsOrganisasiId === 'all') return true;
+            return (
+                t.kegiatan?.profil_organisasi?.organisasi?.id_organisasi === parseInt(selectedStatsOrganisasiId, 10)
+            );
+        });
+
+        const totalPemasukan = filtered
+            .filter((t) => t.jenis_transaksi === 'Pemasukan')
+            .reduce((sum, t) => sum + t.nominal_transaksi, 0);
+
+        const totalPengeluaran = filtered
+            .filter((t) => t.jenis_transaksi === 'Pengeluaran')
+            .reduce((sum, t) => sum + t.nominal_transaksi, 0);
+
+        return {
+            totalSaldo: totalPemasukan - totalPengeluaran,
+            totalPemasukan,
+            totalPengeluaran,
+        };
+    }, [transactions, selectedStatsOrganisasiId, stats]);
+
+    const formatRupiah = (value: number) =>
+        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })
+            .format(value)
+            .replace('IDR', 'Rp');
+
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const day = parseInt(parts[2], 10);
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            return `${day} ${months[monthIdx]} ${parts[0]}`;
+        }
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? dateStr : `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    };
+
+    const formatTime = (timeStr?: string | null) => {
+        if (!timeStr) return '--:-- WITA';
+        const d = new Date(timeStr);
+        if (isNaN(d.getTime())) return '';
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return `${pad(d.getHours())}:${pad(d.getMinutes())} WITA`;
+    };
+
+    const filteredTransactions = transactions
+        .filter((t) => {
+            const query = searchQuery.toLowerCase();
+            const purpose = (t.sumber_tujuan_transaksi || '').toLowerCase();
+            const kegiatanName = (t.kegiatan?.nama_kegiatan || '').toLowerCase();
+            const orgName = (t.kegiatan?.profil_organisasi?.organisasi?.nama_organisasi || '').toLowerCase();
+            const matchesQuery = purpose.includes(query) || kegiatanName.includes(query) || orgName.includes(query);
+
+            const matchesKegiatan =
+                selectedKegiatanId === 'all' || t.id_kegiatan === parseInt(selectedKegiatanId, 10);
+
+            const matchesOrganisasi =
+                selectedOrganisasiId === 'all' ||
+                t.kegiatan?.profil_organisasi?.organisasi?.id_organisasi === parseInt(selectedOrganisasiId, 10);
+
+            const matchesJenis =
+                selectedJenis === 'all' || t.jenis_transaksi.toLowerCase() === selectedJenis.toLowerCase();
+
+            return matchesQuery && matchesKegiatan && matchesOrganisasi && matchesJenis;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.tanggal_transaksi).getTime();
+            const dateB = new Date(b.tanggal_transaksi).getTime();
+
+            if (sortBy === 'newest') {
+                if (dateA !== dateB) return dateB - dateA;
+                return b.id_transaksi - a.id_transaksi;
+            } else {
+                if (dateA !== dateB) return dateA - dateB;
+                return a.id_transaksi - b.id_transaksi;
+            }
+        });
+
+    const totalStatsAmount = computedStats.totalPemasukan + computedStats.totalPengeluaran;
+    const pemasukanPercent = totalStatsAmount > 0 ? (computedStats.totalPemasukan / totalStatsAmount) * 100 : 0;
+    const pengeluaranPercent = totalStatsAmount > 0 ? (computedStats.totalPengeluaran / totalStatsAmount) * 100 : 0;
+
+    let financialStatus = 'Seimbang';
+    if (computedStats.totalSaldo > 0) financialStatus = 'Sehat & Stabil';
+    else if (computedStats.totalSaldo < 0) financialStatus = 'Defisit (Evaluasi)';
 
     return (
         <div className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
@@ -88,7 +309,7 @@ export default function ManajemenKeuangan() {
                         Manajemen Buku Kas
                     </h2>
                     <p className="font-body-md text-body-md text-on-surface-variant">
-                        Lacak dan kelola semua mutasi keuangan organisasi.
+                        Pantau seluruh mutasi keuangan semua organisasi kemahasiswaan.
                     </p>
                 </div>
                 <div className="flex w-full flex-col items-stretch gap-gutter sm:flex-row sm:items-center md:w-auto">
@@ -98,42 +319,58 @@ export default function ManajemenKeuangan() {
                         </div>
                         <div>
                             <p className="font-label-md text-label-md text-on-surface-variant">
-                                Total Saldo Saat Ini
+                                Total Saldo Keseluruhan
                             </p>
                             <p className="font-headline-sm text-headline-sm font-bold text-primary">
-                                Rp 45.750.000
+                                {formatRupiah(computedStats.totalSaldo)}
                             </p>
                         </div>
                     </Card>
-                    <Button className="flex h-auto cursor-pointer items-center gap-2 rounded-lg bg-primary px-6 py-3 font-label-lg text-label-lg !text-on-primary transition-all duration-100 hover:bg-primary/95 hover:shadow-lg active:scale-95">
-                        <PlusCircle className="h-5 w-5" />
-                        Catat Transaksi
-                    </Button>
                 </div>
             </section>
+
+            {/* Stats Filter Section */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-sm">
+                <div className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    <span className="font-semibold text-sm text-primary">Filter Statistik per Organisasi</span>
+                </div>
+                <select
+                    value={selectedStatsOrganisasiId}
+                    onChange={(e) => setSelectedStatsOrganisasiId(e.target.value)}
+                    className="w-full sm:w-72 cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                >
+                    <option value="all">Semua Organisasi (Total)</option>
+                    {organisasiList.map((org) => (
+                        <option key={org.id_organisasi} value={org.id_organisasi}>
+                            {org.nama_organisasi}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
             {/* Stats Bento Grid */}
             <section className="grid grid-cols-1 gap-unit-lg md:grid-cols-4">
                 <Card className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-unit-lg shadow-sm ring-0 md:col-span-1">
                     <p className="mb-1 font-label-md text-label-md tracking-wider text-on-surface-variant uppercase">
-                        Bulan Ini
+                        Total Pemasukan
                     </p>
                     <p className="font-headline-md text-headline-md font-bold text-green-600">
-                        + Rp 12.500k
+                        + {formatRupiah(computedStats.totalPemasukan)}
                     </p>
                     <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-green-100 dark:bg-green-950">
-                        <div className="h-full w-[65%] bg-green-500" />
+                        <div className="h-full bg-green-500" style={{ width: `${pemasukanPercent}%` }} />
                     </div>
                 </Card>
                 <Card className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-unit-lg shadow-sm ring-0 md:col-span-1">
                     <p className="mb-1 font-label-md text-label-md tracking-wider text-on-surface-variant uppercase">
-                        Pengeluaran
+                        Total Pengeluaran
                     </p>
                     <p className="font-headline-md text-headline-md font-bold text-error">
-                        - Rp 4.200k
+                        - {formatRupiah(computedStats.totalPengeluaran)}
                     </p>
                     <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-red-100 dark:bg-red-950">
-                        <div className="h-full w-[30%] bg-error" />
+                        <div className="h-full bg-error" style={{ width: `${pengeluaranPercent}%` }} />
                     </div>
                 </Card>
                 <Card className="group relative overflow-hidden rounded-xl border-none bg-primary p-unit-lg shadow-lg ring-0 md:col-span-2">
@@ -143,12 +380,11 @@ export default function ManajemenKeuangan() {
                                 Status Keuangan
                             </p>
                             <p className="font-headline-md text-headline-md font-bold text-on-primary">
-                                Sehat &amp; Stabil
+                                {financialStatus}
                             </p>
                         </div>
                         <TrendingUp className="h-16 w-16 text-white/20 transition-transform group-hover:scale-110" />
                     </div>
-                    {/* Abstract visual effect */}
                     <div className="absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-secondary-container/10 blur-2xl" />
                 </Card>
             </section>
@@ -157,27 +393,95 @@ export default function ManajemenKeuangan() {
             <Card className="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-sm ring-0">
                 <div className="flex flex-col items-stretch justify-between gap-4 border-b border-outline-variant/30 bg-surface-container-low/30 px-unit-lg py-4 sm:flex-row sm:items-center">
                     <h3 className="font-headline-sm text-headline-sm text-primary">
-                        Riwayat Mutasi Kas
+                        Riwayat Mutasi Kas — Semua Organisasi
                     </h3>
                     <div className="flex gap-2">
                         <div className="relative flex-1 sm:flex-none">
                             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
                             <input
                                 className="w-full rounded-lg border border-outline-variant/50 bg-surface-container-lowest py-2 pr-4 pl-10 text-body-sm outline-none focus:ring-2 focus:ring-primary/20 sm:w-64"
-                                placeholder="Cari mutasi..."
+                                placeholder="Cari mutasi, kegiatan, organisasi..."
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <Button
-                            variant="outline"
-                            className="h-auto cursor-pointer rounded-lg border border-outline-variant/50 p-2 shadow-none transition-colors hover:bg-surface-container-low"
+                            variant={isFilterVisible ? 'default' : 'outline'}
+                            onClick={() => setIsFilterVisible(!isFilterVisible)}
+                            className="group h-auto cursor-pointer rounded-lg border border-outline-variant/50 p-2 shadow-none transition-colors hover:bg-surface-container-low"
                         >
-                            <Filter className="h-5 w-5 text-on-surface-variant" />
+                            <Filter className={`h-5 w-5 ${isFilterVisible ? 'text-white group-hover:text-primary' : 'text-primary'}`} />
                         </Button>
                     </div>
                 </div>
+
+                {isFilterVisible && (
+                    <div className="grid grid-cols-1 gap-4 border-b border-outline-variant/30 bg-surface-container-low/20 px-unit-lg py-4 sm:grid-cols-4">
+                        <div>
+                            <label className="mb-1 block text-xs font-semibold text-primary">
+                                Filter Organisasi
+                            </label>
+                            <select
+                                value={selectedOrganisasiId}
+                                onChange={(e) => setSelectedOrganisasiId(e.target.value)}
+                                className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            >
+                                <option value="all">Semua Organisasi</option>
+                                {organisasiList.map((org) => (
+                                    <option key={org.id_organisasi} value={org.id_organisasi}>
+                                        {org.nama_organisasi}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-xs font-semibold text-primary">
+                                Filter Kegiatan
+                            </label>
+                            <select
+                                value={selectedKegiatanId}
+                                onChange={(e) => setSelectedKegiatanId(e.target.value)}
+                                className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            >
+                                <option value="all">Semua Kegiatan</option>
+                                {activities.map((act) => (
+                                    <option key={act.id_kegiatan} value={act.id_kegiatan}>
+                                        {act.nama_kegiatan}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-xs font-semibold text-primary">
+                                Jenis Transaksi
+                            </label>
+                            <select
+                                value={selectedJenis}
+                                onChange={(e) => setSelectedJenis(e.target.value)}
+                                className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            >
+                                <option value="all">Semua Jenis</option>
+                                <option value="pemasukan">Pemasukan</option>
+                                <option value="pengeluaran">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-xs font-semibold text-primary">
+                                Urutkan Tanggal
+                            </label>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            >
+                                <option value="newest">Terbaru (Terbaru ke Terlama)</option>
+                                <option value="oldest">Terlama (Terlama ke Terbaru)</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
+
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-left">
                         <thead>
@@ -195,6 +499,12 @@ export default function ManajemenKeuangan() {
                                     Keperluan
                                 </th>
                                 <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Kegiatan
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
+                                    Organisasi
+                                </th>
+                                <th className="px-unit-lg py-4 font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
                                     Bukti Nota
                                 </th>
                                 <th className="px-unit-lg py-4 text-right font-label-lg text-label-lg tracking-wider text-on-surface-variant uppercase">
@@ -203,65 +513,86 @@ export default function ManajemenKeuangan() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/20">
-                            {filteredTransactions.map((transaction, idx) => (
+                            {filteredTransactions.map((transaction) => (
                                 <tr
-                                    key={idx}
+                                    key={transaction.id_transaksi}
                                     className="transition-colors hover:bg-surface-container-low/20"
                                 >
                                     <td className="px-unit-lg py-4">
                                         <p className="font-body-md text-body-md font-medium">
-                                            {transaction.date}
+                                            {formatDate(transaction.tanggal_transaksi)}
                                         </p>
                                         <p className="font-label-md text-label-md text-on-surface-variant">
-                                            {transaction.time}
+                                            {formatTime(transaction.created_at)}
                                         </p>
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <span
                                             className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${
-                                                transaction.type === 'pemasukan'
+                                                transaction.jenis_transaksi.toLowerCase() === 'pemasukan'
                                                     ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
                                                     : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
                                             }`}
                                         >
-                                            {transaction.type ===
-                                            'pemasukan' ? (
+                                            {transaction.jenis_transaksi.toLowerCase() === 'pemasukan' ? (
                                                 <ArrowUp className="h-3.5 w-3.5" />
                                             ) : (
                                                 <ArrowDown className="h-3.5 w-3.5" />
                                             )}
-                                            {transaction.type === 'pemasukan'
-                                                ? 'Pemasukan'
-                                                : 'Pengeluaran'}
+                                            {transaction.jenis_transaksi}
                                         </span>
                                     </td>
                                     <td
                                         className={`px-unit-lg py-4 font-headline-sm font-semibold ${
-                                            transaction.type === 'pemasukan'
+                                            transaction.jenis_transaksi.toLowerCase() === 'pemasukan'
                                                 ? 'text-green-700 dark:text-green-400'
                                                 : 'text-error'
                                         }`}
                                     >
-                                        {formatRupiah(transaction.nominal)}
+                                        {formatRupiah(transaction.nominal_transaksi)}
                                     </td>
                                     <td
                                         className="max-w-xs truncate px-unit-lg py-4 font-body-md text-body-md"
-                                        title={transaction.purpose}
+                                        title={transaction.sumber_tujuan_transaksi}
                                     >
-                                        {transaction.purpose}
+                                        {transaction.sumber_tujuan_transaksi}
+                                    </td>
+                                    <td
+                                        className="max-w-[180px] truncate px-unit-lg py-4 font-body-md text-body-md font-medium text-primary"
+                                        title={transaction.kegiatan?.nama_kegiatan || '-'}
+                                    >
+                                        {transaction.kegiatan?.nama_kegiatan || '-'}
+                                    </td>
+                                    <td
+                                        className="max-w-[160px] truncate px-unit-lg py-4 font-body-md text-body-md text-on-surface-variant"
+                                        title={transaction.kegiatan?.profil_organisasi?.organisasi?.nama_organisasi || '-'}
+                                    >
+                                        {transaction.kegiatan?.profil_organisasi?.organisasi?.nama_organisasi || '-'}
                                     </td>
                                     <td className="px-unit-lg py-4">
-                                        <Button
-                                            variant="link"
-                                            className="flex h-auto cursor-pointer items-center gap-2 p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
-                                        >
-                                            <Receipt className="h-4 w-4" />
-                                            {transaction.invoice}
-                                        </Button>
+                                        {transaction.foto_bukti_transaksi ? (
+                                            <Button
+                                                variant="link"
+                                                className="flex h-auto cursor-pointer items-center gap-2 p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
+                                                onClick={() =>
+                                                    transaction.foto_bukti_transaksi &&
+                                                    window.open(transaction.foto_bukti_transaksi, '_blank')
+                                                }
+                                            >
+                                                <Receipt className="h-4 w-4" />
+                                                {transaction.foto_bukti_transaksi.split('/').pop()}
+                                            </Button>
+                                        ) : (
+                                            <span className="font-body-md text-body-md text-on-surface-variant">Tidak ada</span>
+                                        )}
                                     </td>
                                     <td className="px-unit-lg py-4 text-right">
-                                        <Button className="h-auto cursor-pointer rounded-lg border-none bg-surface-container-low px-4 py-2 font-label-lg text-label-lg text-primary shadow-none transition-all hover:bg-primary hover:text-on-primary">
-                                            Koreksi
+                                        <Button
+                                            onClick={() => setSelectedTransaction(transaction)}
+                                            className="h-auto cursor-pointer rounded-lg border-none bg-surface-container-low px-4 py-2 font-label-lg text-label-lg text-primary shadow-none transition-all hover:bg-primary hover:text-on-primary flex items-center gap-1.5"
+                                        >
+                                            <Eye className="h-4 w-4" />
+                                            Detail
                                         </Button>
                                     </td>
                                 </tr>
@@ -269,7 +600,7 @@ export default function ManajemenKeuangan() {
                             {filteredTransactions.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={8}
                                         className="px-unit-lg py-8 text-center font-body-md text-on-surface-variant"
                                     >
                                         Tidak ada transaksi yang ditemukan.
@@ -279,10 +610,11 @@ export default function ManajemenKeuangan() {
                         </tbody>
                     </table>
                 </div>
+
                 {/* Table Footer */}
                 <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant/30 px-unit-lg py-4 text-on-surface-variant md:flex-row">
                     <p className="font-body-sm text-body-sm">
-                        Menampilkan 1-4 dari 128 transaksi
+                        Menampilkan {filteredTransactions.length > 0 ? 1 : 0}–{filteredTransactions.length} dari {transactions.length} transaksi
                     </p>
                     <div className="flex items-center gap-2">
                         <Button
@@ -296,35 +628,25 @@ export default function ManajemenKeuangan() {
                             <Button className="h-8 h-auto w-8 cursor-pointer rounded-lg bg-primary p-0 font-label-lg text-label-lg !text-on-primary">
                                 1
                             </Button>
-                            <Button
-                                variant="ghost"
-                                className="h-8 h-auto w-8 cursor-pointer rounded-lg p-0 font-label-lg text-label-lg shadow-none hover:bg-surface-container-low"
-                            >
-                                2
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                className="h-8 h-auto w-8 cursor-pointer rounded-lg p-0 font-label-lg text-label-lg shadow-none hover:bg-surface-container-low"
-                            >
-                                3
-                            </Button>
-                            <span className="px-2">...</span>
-                            <Button
-                                variant="ghost"
-                                className="h-8 h-auto w-8 cursor-pointer rounded-lg p-0 font-label-lg text-label-lg shadow-none hover:bg-surface-container-low"
-                            >
-                                32
-                            </Button>
                         </div>
                         <Button
                             variant="ghost"
                             className="h-auto cursor-pointer rounded-lg p-2 shadow-none hover:bg-surface-container-low"
+                            disabled
                         >
                             <ChevronRight className="h-5 w-5" />
                         </Button>
                     </div>
                 </div>
             </Card>
+
+            {/* Detail Modal */}
+            {selectedTransaction && (
+                <TransactionDetailModal
+                    transaction={selectedTransaction}
+                    onClose={() => setSelectedTransaction(null)}
+                />
+            )}
         </div>
     );
 }

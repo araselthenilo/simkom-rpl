@@ -399,4 +399,76 @@ class TransaksiKeuanganController extends Controller
             ->route('pengurus.keuangan')
             ->with('success', 'Transaksi berhasil diperbarui.');
     }
+
+    public function adminIndex(): Response
+    {
+        Gate::authorize('is-admin');
+
+        // Fetch all transactions with kegiatan → profilOrganisasi → organisasi
+        $transactions = TransaksiKeuangan::with([
+            'kegiatan.profilOrganisasi.organisasi',
+        ])
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function (TransaksiKeuangan $t) {
+                /** @var FilesystemAdapter $disk */
+                $disk = Storage::disk('public');
+
+                return [
+                    'id_transaksi'           => $t->id_transaksi,
+                    'id_kegiatan'            => $t->id_kegiatan,
+                    'jenis_transaksi'        => $t->jenis_transaksi,
+                    'nominal_transaksi'      => (float) $t->nominal_transaksi,
+                    'tanggal_transaksi'      => $t->tanggal_transaksi,
+                    'sumber_tujuan_transaksi'=> $t->sumber_tujuan_transaksi,
+                    'foto_bukti_transaksi'   => $t->foto_bukti_transaksi
+                        ? $disk->url($t->foto_bukti_transaksi)
+                        : null,
+                    'catatan_koreksi'        => $t->catatan_koreksi,
+                    'created_at'             => $t->created_at ? $t->created_at->toIso8601String() : null,
+                    'kegiatan'               => $t->kegiatan ? [
+                        'id_kegiatan'       => $t->kegiatan->id_kegiatan,
+                        'nama_kegiatan'     => $t->kegiatan->nama_kegiatan,
+                        'profil_organisasi' => $t->kegiatan->profilOrganisasi ? [
+                            'id_profil'    => $t->kegiatan->profilOrganisasi->id_profil,
+                            'organisasi'   => $t->kegiatan->profilOrganisasi->organisasi ? [
+                                'id_organisasi'   => $t->kegiatan->profilOrganisasi->organisasi->id_organisasi,
+                                'nama_organisasi' => $t->kegiatan->profilOrganisasi->organisasi->nama_organisasi,
+                            ] : null,
+                        ] : null,
+                    ] : null,
+                ];
+            });
+
+        // Aggregate stats across all transactions
+        $totalPemasukan   = TransaksiKeuangan::where('jenis_transaksi', 'Pemasukan')->sum('nominal_transaksi');
+        $totalPengeluaran = TransaksiKeuangan::where('jenis_transaksi', 'Pengeluaran')->sum('nominal_transaksi');
+        $totalSaldo       = $totalPemasukan - $totalPengeluaran;
+
+        // All activities that have transactions
+        $activities = Kegiatan::whereHas('transaksiKeuangan')->get()->map(fn (Kegiatan $k) => [
+            'id_kegiatan'   => $k->id_kegiatan,
+            'nama_kegiatan' => $k->nama_kegiatan,
+        ]);
+
+        // All unique organisations represented in transactions
+        $organisasiList = \App\Models\Organisasi::whereHas('profilOrganisasi.kegiatan.transaksiKeuangan')
+            ->get()
+            ->map(fn ($org) => [
+                'id_organisasi'   => $org->id_organisasi,
+                'nama_organisasi' => $org->nama_organisasi,
+            ]);
+
+        return Inertia::render('admin/manajemen-keuangan', [
+            'transactions'   => $transactions,
+            'activities'     => $activities,
+            'organisasiList' => $organisasiList,
+            'stats'          => [
+                'total_saldo'        => (float) $totalSaldo,
+                'total_pemasukan'    => (float) $totalPemasukan,
+                'total_pengeluaran'  => (float) $totalPengeluaran,
+            ],
+        ]);
+    }
 }

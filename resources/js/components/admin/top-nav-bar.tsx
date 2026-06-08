@@ -29,11 +29,11 @@ export default function TopNavBar() {
             <div className="flex w-full items-center justify-between px-margin-mobile md:px-margin-desktop">
                 <div className="flex items-center gap-unit-md">
                     <span className="font-headline-md text-headline-md font-bold text-primary">
-                        SIMKOM STIKOM Bali
+                        SIMKOM ITB STIKOM Bali
                     </span>
                 </div>
                 <div className="flex items-center gap-unit-lg">
-                    <div className="hidden gap-unit-lg md:flex">
+                    {/* <div className="hidden gap-unit-lg md:flex">
                         <a
                             className="border-b-2 border-primary pb-1 font-body-md text-body-md font-bold text-primary"
                             href="#"
@@ -52,7 +52,7 @@ export default function TopNavBar() {
                         >
                             Profil
                         </a>
-                    </div>
+                    </div> */}
                     <div className="ml-6 flex items-center gap-4">
                         <button className="relative cursor-pointer rounded-full p-2 transition-all duration-100 hover:bg-surface-container-low active:scale-95">
                             <Bell className="h-6 w-6 text-primary" />

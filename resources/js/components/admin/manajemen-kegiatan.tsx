@@ -18,8 +18,13 @@ import {
     AlertCircle,
     Info,
     RefreshCw,
+    Download,
+    FileSpreadsheet,
+    FileText,
+    SlidersHorizontal,
+    ArrowUpDown,
 } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -85,7 +90,158 @@ export default function ManajemenKegiatan({
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
     const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
+
+    // Export filter & sort state
+    const [exportFilters, setExportFilters] = useState({
+        status: 'Semua' as 'Semua' | Activity['status_kegiatan'],
+        jenis: 'Semua' as 'Semua' | Activity['jenis_kegiatan'],
+        tanggalMulai: '',
+        tanggalAkhir: '',
+    });
+    const [exportSort, setExportSort] = useState({
+        field: 'tanggal_pelaksanaan' as keyof Pick<Activity, 'nama_kegiatan' | 'tanggal_pelaksanaan' | 'biaya_pendaftaran' | 'kuota_peserta'>,
+        direction: 'asc' as 'asc' | 'desc',
+    });
+    const [isExporting, setIsExporting] = useState(false);
+
+    // Compute the data to export based on filters & sort
+    const getExportData = useCallback(() => {
+        let data = [...activities];
+
+        // Filter by status
+        if (exportFilters.status !== 'Semua') {
+            data = data.filter((a) => a.status_kegiatan === exportFilters.status);
+        }
+        // Filter by jenis
+        if (exportFilters.jenis !== 'Semua') {
+            data = data.filter((a) => a.jenis_kegiatan === exportFilters.jenis);
+        }
+        // Filter by date range
+        if (exportFilters.tanggalMulai) {
+            data = data.filter((a) => a.tanggal_pelaksanaan >= exportFilters.tanggalMulai);
+        }
+        if (exportFilters.tanggalAkhir) {
+            data = data.filter((a) => a.tanggal_pelaksanaan <= exportFilters.tanggalAkhir);
+        }
+
+        // Sort
+        data.sort((a, b) => {
+            const valA = a[exportSort.field];
+            const valB = b[exportSort.field];
+            if (typeof valA === 'number' && typeof valB === 'number') {
+                return exportSort.direction === 'asc' ? valA - valB : valB - valA;
+            }
+            const sA = String(valA ?? '');
+            const sB = String(valB ?? '');
+            return exportSort.direction === 'asc'
+                ? sA.localeCompare(sB, 'id')
+                : sB.localeCompare(sA, 'id');
+        });
+
+        return data;
+    }, [activities, exportFilters, exportSort]);
+
+    const handleExportPDF = async () => {
+        setIsExporting(true);
+        try {
+            const { default: jsPDF } = await import('jspdf');
+            const { default: autoTable } = await import('jspdf-autotable');
+            const data = getExportData();
+
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+            // Header
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.setTextColor(26, 54, 93);
+            doc.text('SIMKOM - Laporan Data Kegiatan', 14, 18);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 120);
+            const subtitle = [
+                exportFilters.status !== 'Semua' ? `Status: ${exportFilters.status}` : null,
+                exportFilters.jenis !== 'Semua' ? `Jenis: ${exportFilters.jenis}` : null,
+                exportFilters.tanggalMulai ? `Dari: ${exportFilters.tanggalMulai}` : null,
+                exportFilters.tanggalAkhir ? `s/d: ${exportFilters.tanggalAkhir}` : null,
+            ].filter(Boolean).join('  |  ') || 'Semua data';
+            doc.text(`Filter: ${subtitle}`, 14, 25);
+            doc.text(
+                `Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}  |  Total: ${data.length} kegiatan`,
+                14,
+                30,
+            );
+
+            autoTable(doc, {
+                startY: 35,
+                head: [['No', 'Nama Kegiatan', 'Penyelenggara', 'Jenis', 'Tgl Pelaksanaan', 'Lokasi', 'Biaya', 'Kuota', 'Status']],
+                body: data.map((a, i) => [
+                    i + 1,
+                    a.nama_kegiatan,
+                    a.profil_organisasi?.organisasi?.nama_organisasi ?? '-',
+                    a.jenis_kegiatan,
+                    a.tanggal_pelaksanaan,
+                    a.lokasi_kegiatan,
+                    a.biaya_pendaftaran === 0 ? 'Gratis' : formatRupiah(a.biaya_pendaftaran),
+                    a.kuota_peserta,
+                    a.status_kegiatan,
+                ]),
+                styles: { fontSize: 8, cellPadding: 3 },
+                headStyles: { fillColor: [26, 54, 93], textColor: 255, fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [245, 247, 252] },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 10 },
+                    6: { halign: 'right' },
+                    7: { halign: 'center' },
+                },
+            });
+
+            doc.save(`laporan-kegiatan-${new Date().toISOString().split('T')[0]}.pdf`);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const handleExportExcel = async () => {
+        setIsExporting(true);
+        try {
+            const XLSX = await import('xlsx');
+            const data = getExportData();
+
+            const wsData = [
+                ['No', 'Nama Kegiatan', 'Penyelenggara', 'Jenis Kegiatan', 'Tanggal Pelaksanaan', 'Lokasi', 'Biaya Pendaftaran (Rp)', 'Kuota Peserta', 'Status', 'Alasan Pembatalan'],
+                ...data.map((a, i) => [
+                    i + 1,
+                    a.nama_kegiatan,
+                    a.profil_organisasi?.organisasi?.nama_organisasi ?? '-',
+                    a.jenis_kegiatan,
+                    a.tanggal_pelaksanaan,
+                    a.lokasi_kegiatan,
+                    a.biaya_pendaftaran,
+                    a.kuota_peserta,
+                    a.status_kegiatan,
+                    a.alasan_pembatalan ?? '',
+                ]),
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+            // Column widths
+            ws['!cols'] = [
+                { wch: 5 }, { wch: 35 }, { wch: 28 }, { wch: 20 },
+                { wch: 18 }, { wch: 30 }, { wch: 22 }, { wch: 14 },
+                { wch: 18 }, { wch: 35 },
+            ];
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Kegiatan');
+            XLSX.writeFile(wb, `laporan-kegiatan-${new Date().toISOString().split('T')[0]}.xlsx`);
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
     // Form inputs state
     const [formData, setFormData] = useState({
@@ -356,11 +512,11 @@ export default function ManajemenKegiatan({
                 </div>
                 <div className="flex w-full gap-unit-sm md:w-auto">
                     <Button
-                        onClick={openCreateModal}
+                        onClick={() => setIsExportModalOpen(true)}
                         className="flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"
                     >
-                        <PlusCircle className="h-[18px] w-[18px]" />
-                        Kegiatan Baru
+                        <Download className="h-[18px] w-[18px]" />
+                        Export Data
                     </Button>
                 </div>
             </header>
@@ -482,13 +638,13 @@ export default function ManajemenKegiatan({
                         <thead>
                             <tr className="border-b border-outline-variant bg-surface-container-low">
                                 <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
-                                    Nama & Penyelenggara
+                                    Nama &amp; Penyelenggara
                                 </th>
                                 <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
-                                    Pelaksanaan & Tempat
+                                    Pelaksanaan &amp; Tempat
                                 </th>
                                 <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
-                                    Biaya & Kuota
+                                    Biaya &amp; Kuota
                                 </th>
                                 <th className="px-unit-lg py-4 font-label-lg tracking-wider text-primary uppercase">
                                     Status
@@ -1248,6 +1404,215 @@ export default function ManajemenKegiatan({
                                 </Button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ===================== Export Modal ===================== */}
+            {isExportModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16">
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setIsExportModalOpen(false)}
+                    />
+
+                    <div className="relative z-10 mb-8 w-full max-w-2xl animate-in rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-2xl duration-200 fade-in-50 zoom-in-95">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 px-6 py-5">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                                    <Download className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="font-headline-sm font-bold text-primary">Export Data Kegiatan</h3>
+                                    <p className="text-xs text-on-surface-variant">Pilih filter &amp; pengurutan sebelum mengunduh</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsExportModalOpen(false)}
+                                className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
+                            >
+                                <XCircle className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-6 p-6">
+                            {/* ── Filter Section ── */}
+                            <section>
+                                <div className="mb-3 flex items-center gap-2">
+                                    <SlidersHorizontal className="h-4 w-4 text-primary" />
+                                    <span className="font-label-lg font-semibold text-primary">Filter Data</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    {/* Status Filter */}
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                            Status Kegiatan
+                                        </label>
+                                        <select
+                                            value={exportFilters.status}
+                                            onChange={(e) => setExportFilters({ ...exportFilters, status: e.target.value as typeof exportFilters.status })}
+                                            className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        >
+                                            <option value="Semua">Semua Status</option>
+                                            <option value="Mendatang">Mendatang</option>
+                                            <option value="Sedang berlangsung">Sedang Berlangsung</option>
+                                            <option value="Selesai">Selesai</option>
+                                            <option value="Dibatalkan">Dibatalkan</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Jenis Filter */}
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                            Jenis Kegiatan
+                                        </label>
+                                        <select
+                                            value={exportFilters.jenis}
+                                            onChange={(e) => setExportFilters({ ...exportFilters, jenis: e.target.value as typeof exportFilters.jenis })}
+                                            className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        >
+                                            <option value="Semua">Semua Jenis</option>
+                                            <option value="Seminar">Seminar</option>
+                                            <option value="Pelatihan">Pelatihan</option>
+                                            <option value="Lomba">Lomba</option>
+                                            <option value="Pengabdian Masyarakat">Pengabdian Masyarakat</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Date From */}
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                            Tanggal Mulai
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={exportFilters.tanggalMulai}
+                                            onChange={(e) => setExportFilters({ ...exportFilters, tanggalMulai: e.target.value })}
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        />
+                                    </div>
+
+                                    {/* Date To */}
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                            Tanggal Akhir
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={exportFilters.tanggalAkhir}
+                                            onChange={(e) => setExportFilters({ ...exportFilters, tanggalAkhir: e.target.value })}
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        />
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Divider */}
+                            <div className="border-t border-outline-variant/40" />
+
+                            {/* ── Sort Section ── */}
+                            <section>
+                                <div className="mb-3 flex items-center gap-2">
+                                    <ArrowUpDown className="h-4 w-4 text-primary" />
+                                    <span className="font-label-lg font-semibold text-primary">Pengurutan</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                            Urutkan Berdasarkan
+                                        </label>
+                                        <select
+                                            value={exportSort.field}
+                                            onChange={(e) => setExportSort({ ...exportSort, field: e.target.value as typeof exportSort.field })}
+                                            className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        >
+                                            <option value="tanggal_pelaksanaan">Tanggal Pelaksanaan</option>
+                                            <option value="nama_kegiatan">Nama Kegiatan (A–Z)</option>
+                                            <option value="biaya_pendaftaran">Biaya Pendaftaran</option>
+                                            <option value="kuota_peserta">Kuota Peserta</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                            Arah Urutan
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setExportSort({ ...exportSort, direction: 'asc' })}
+                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
+                                                    exportSort.direction === 'asc'
+                                                        ? 'border-primary bg-primary text-on-primary'
+                                                        : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
+                                                }`}
+                                            >
+                                                ↑ A–Z / Terkecil
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setExportSort({ ...exportSort, direction: 'desc' })}
+                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
+                                                    exportSort.direction === 'desc'
+                                                        ? 'border-primary bg-primary text-on-primary'
+                                                        : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
+                                                }`}
+                                            >
+                                                ↓ Z–A / Terbesar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Divider */}
+                            <div className="border-t border-outline-variant/40" />
+
+                            {/* ── Preview Count ── */}
+                            <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+                                <Info className="h-4 w-4 shrink-0 text-primary" />
+                                <span className="text-sm text-on-surface-variant">
+                                    Berdasarkan filter ini,{' '}
+                                    <strong className="text-primary">{getExportData().length} kegiatan</strong>{' '}
+                                    akan diikutsertakan dalam ekspor dari total{' '}
+                                    <strong>{activities.length}</strong> data.
+                                </span>
+                            </div>
+
+                            {/* ── Action Buttons ── */}
+                            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsExportModalOpen(false)}
+                                    className="cursor-pointer"
+                                    disabled={isExporting}
+                                >
+                                    Tutup
+                                </Button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleExportExcel}
+                                    disabled={isExporting || getExportData().length === 0}
+                                    className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <FileSpreadsheet className="h-4 w-4" />
+                                    {isExporting ? 'Mengekspor...' : 'Export Excel (.xlsx)'}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleExportPDF}
+                                    disabled={isExporting || getExportData().length === 0}
+                                    className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    {isExporting ? 'Mengekspor...' : 'Export PDF'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
