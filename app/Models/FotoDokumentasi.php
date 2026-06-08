@@ -2,9 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable([
+    'id_dokumentasi',
+    'foto_dokumentasi',
+])]
 class FotoDokumentasi extends Model
 {
     protected $table = 'foto_dokumentasi';

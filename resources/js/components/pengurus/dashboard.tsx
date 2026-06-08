@@ -14,6 +14,7 @@ import {
     MoreVertical,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { Link } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -24,27 +25,76 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
-export default function Dashboard() {
+interface DashboardProps {
+    stats: {
+        totalAnggota: number;
+        percentageIncrease: number;
+        kegiatanAktif: number;
+        saldoKas: number;
+        menungguVerifikasi: number;
+        menungguVerifikasiBaru: number;
+    };
+    recentActivities: Array<{
+        id_kegiatan: number;
+        nama_kegiatan: string;
+        jenis_kegiatan: string;
+        status_kegiatan: string;
+        time: string;
+    }>;
+    recentMembers: Array<{
+        id_keanggotaan: number;
+        name: string;
+        initials: string;
+        initialsBg: string;
+        nim: string;
+        status: string;
+        date: string;
+    }>;
+    trendData7Days: Array<{
+        day: string;
+        count: number;
+        height: string;
+    }>;
+    trendData30Days: Array<{
+        day: string;
+        count: number;
+        height: string;
+    }>;
+}
+
+export default function Dashboard({
+    stats: statsData,
+    recentActivities,
+    recentMembers,
+    trendData7Days,
+    trendData30Days,
+}: DashboardProps) {
     const [trendPeriod, setTrendPeriod] = useState('7-days');
     const [isSaldoVisible, setIsSaldoVisible] = useState(false);
 
     const stats = [
         {
             title: 'Total Anggota',
-            value: '1,248',
+            value: statsData.totalAnggota.toLocaleString(),
             icon: Users,
             iconBg: 'bg-primary/10 text-primary dark:bg-primary-container dark:text-on-primary-container',
             badge: (
                 <span className="text-success flex items-center gap-1 text-label-md font-bold text-green-600 dark:text-green-400">
                     <TrendingUp className="h-3.5 w-3.5" />
-                    +12%
+                    +{statsData.percentageIncrease}%
                 </span>
             ),
         },
         {
             title: 'Kegiatan Aktif',
-            value: '24',
+            value: statsData.kegiatanAktif.toString(),
             icon: CalendarCheck,
             iconBg: 'bg-secondary-container/20 text-secondary dark:bg-secondary-container dark:text-on-secondary-container',
             badge: (
@@ -58,7 +108,13 @@ export default function Dashboard() {
         },
         {
             title: 'Saldo Kas',
-            value: isSaldoVisible ? 'Rp 12.5M' : 'Rp *********',
+            value: isSaldoVisible
+                ? new Intl.NumberFormat('id-ID', {
+                      style: 'currency',
+                      currency: 'IDR',
+                      minimumFractionDigits: 0,
+                  }).format(statsData.saldoKas).replace('IDR', 'Rp')
+                : 'Rp *********',
             icon: Wallet,
             iconBg: 'bg-tertiary-container/10 text-tertiary dark:bg-tertiary-container dark:text-on-tertiary-container',
             badge: (
@@ -76,68 +132,47 @@ export default function Dashboard() {
         },
         {
             title: 'Menunggu Verifikasi',
-            value: '42',
+            value: statsData.menungguVerifikasi.toString(),
             icon: Clock,
             iconBg: 'bg-error-container/50 text-error dark:bg-error-container dark:text-on-error-container',
-            badge: (
+            badge: statsData.menungguVerifikasiBaru > 0 ? (
                 <Badge className="h-auto animate-pulse rounded-full border-none bg-error px-2 py-0.5 font-bold text-on-error">
-                    8 Baru
+                    {statsData.menungguVerifikasiBaru} Baru
+                </Badge>
+            ) : (
+                <Badge className="h-auto rounded-full border-none bg-outline-variant/30 px-2 py-0.5 font-bold text-on-surface-variant">
+                    0 Baru
                 </Badge>
             ),
         },
     ];
 
-    const trendData = [
-        { day: 'Sen', height: '45%' },
-        { day: 'Sel', height: '60%' },
-        { day: 'Rab', height: '85%' },
-        { day: 'Kam', height: '40%' },
-        { day: 'Jum', height: '95%' },
-        { day: 'Sab', height: '70%' },
-        { day: 'Min', height: '55%' },
-    ];
+    const trendData = trendPeriod === '7-days' ? trendData7Days : trendData30Days;
 
-    const activities = [
-        {
-            title: 'Workshop Flutter Advanced',
-            time: '15 Menit yang lalu',
-            icon: Code,
-            iconBg: 'bg-primary/10 text-primary dark:bg-primary-container dark:text-on-primary-container',
-        },
-        {
-            title: 'Lomba Desain UI/UX',
-            time: '2 Jam yang lalu',
-            icon: Palette,
-            iconBg: 'bg-secondary-container/20 text-secondary dark:bg-secondary-container dark:text-on-secondary-container',
-        },
-        {
-            title: 'Seminar AI & Future',
-            time: 'Kemarin',
-            icon: Bot,
-            iconBg: 'bg-tertiary-container/10 text-tertiary dark:bg-tertiary-container dark:text-on-tertiary-container',
-        },
-    ];
-
-    const members = [
-        {
-            name: 'Arya Damar',
-            initials: 'AD',
-            initialsBg:
-                'bg-primary/10 text-primary dark:bg-primary-container dark:text-on-primary-container',
-            nim: '210010123',
-            status: 'Approved',
-            date: '12 Okt 2023',
-        },
-        {
-            name: 'Bagus Satria',
-            initials: 'BS',
-            initialsBg:
-                'bg-secondary-container/20 text-secondary dark:bg-secondary-container dark:text-on-secondary-container',
-            nim: '210010456',
-            status: 'Pending',
-            date: '14 Okt 2023',
-        },
-    ];
+    const getActivityIconConfig = (jenis: string) => {
+        switch (jenis) {
+            case 'Pelatihan':
+                return {
+                    icon: Code,
+                    iconBg: 'bg-primary/10 text-primary dark:bg-primary-container dark:text-on-primary-container',
+                };
+            case 'Lomba':
+                return {
+                    icon: Palette,
+                    iconBg: 'bg-secondary-container/20 text-secondary dark:bg-secondary-container dark:text-on-secondary-container',
+                };
+            case 'Seminar':
+                return {
+                    icon: Bot,
+                    iconBg: 'bg-tertiary-container/10 text-tertiary dark:bg-tertiary-container dark:text-on-tertiary-container',
+                };
+            default:
+                return {
+                    icon: Users,
+                    iconBg: 'bg-error-container/50 text-error dark:bg-error-container dark:text-on-error-container',
+                };
+        }
+    };
 
     return (
         <div className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
@@ -152,10 +187,6 @@ export default function Dashboard() {
                     </p>
                 </div>
                 <div className="flex gap-unit-sm">
-                    <Button className="h-auto cursor-pointer gap-2 rounded-lg px-6 py-2.5 font-label-lg text-label-lg !text-on-primary transition-all hover:shadow-md active:scale-95">
-                        <Plus className="h-5 w-5" />
-                        Kegiatan Baru
-                    </Button>
                     <Button
                         variant="outline"
                         className="h-auto cursor-pointer gap-2 rounded-lg border border-primary bg-surface px-6 py-2.5 font-label-lg text-label-lg text-primary transition-all hover:bg-primary/5"
@@ -227,24 +258,48 @@ export default function Dashboard() {
                         </Select>
                     </div>
 
-                    <div className="mt-8 flex h-64 items-end justify-between gap-2 px-2">
-                        {trendData.map((data, idx) => (
-                            <div
-                                key={idx}
-                                className="group flex flex-1 flex-col items-center"
-                            >
-                                <div className="relative h-2/3 w-full rounded-t-lg bg-primary/10 transition-all group-hover:bg-primary/20 dark:bg-primary-container/45 dark:group-hover:bg-primary-container/60">
-                                    <div
-                                        className="absolute bottom-0 w-full rounded-t-lg bg-primary transition-all duration-700 ease-out"
-                                        style={{ height: data.height }}
-                                    />
-                                </div>
-                                <span className="mt-3 text-label-md text-on-surface-variant">
-                                    {data.day}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+                    <TooltipProvider>
+                        <div 
+                            className="mt-8 h-64 px-2"
+                            style={{ 
+                                display: 'grid', 
+                                gridTemplateColumns: `repeat(${trendData.length}, minmax(0, 1fr))`,
+                                gap: trendPeriod === '7-days' ? '8px' : '4px'
+                            }}
+                        >
+                            {trendData.map((data, idx) => {
+                                const showLabel = trendPeriod === '7-days' || (trendData.length - 1 - idx) % 5 === 0;
+
+                                return (
+                                    <Tooltip key={idx}>
+                                        <TooltipTrigger asChild>
+                                            <div
+                                                className="group flex h-full flex-col items-center justify-end w-full cursor-pointer"
+                                            >
+                                                <div className={`relative h-2/3 w-full rounded-t-lg transition-all ${
+                                                    data.count > 0 
+                                                        ? 'bg-primary/10 dark:bg-primary-container/45' 
+                                                        : 'bg-transparent'
+                                                } group-hover:bg-primary/5 dark:group-hover:bg-primary-container/10`}>
+                                                    <div
+                                                        className="absolute bottom-0 w-full rounded-t-lg bg-primary transition-all duration-700 ease-out"
+                                                        style={{ height: data.height }}
+                                                    />
+                                                </div>
+                                                <span className="mt-2 text-[9px] md:text-label-md text-on-surface-variant h-4 flex items-center justify-center whitespace-nowrap">
+                                                    {showLabel ? data.day : ''}
+                                                </span>
+                                            </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top">
+                                            <p className="font-semibold text-xs">{data.day}</p>
+                                            <p className="text-[11px]">{data.count} Pendaftaran</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                );
+                            })}
+                        </div>
+                    </TooltipProvider>
                 </Card>
 
                 {/* Recent Activities Card */}
@@ -253,8 +308,9 @@ export default function Dashboard() {
                         Kegiatan Terbaru
                     </h4>
                     <div className="custom-scrollbar max-h-64 space-y-unit-md overflow-y-auto pr-2">
-                        {activities.map((activity, idx) => {
-                            const ActivityIcon = activity.icon;
+                        {recentActivities.map((activity, idx) => {
+                            const config = getActivityIconConfig(activity.jenis_kegiatan);
+                            const ActivityIcon = config.icon;
 
                             return (
                                 <div
@@ -262,13 +318,13 @@ export default function Dashboard() {
                                     className="flex items-center gap-4 rounded-lg border-b border-outline-variant/20 p-3 transition-all last:border-0 hover:bg-surface-container-low"
                                 >
                                     <div
-                                        className={`flex h-12 w-12 items-center justify-center rounded ${activity.iconBg}`}
+                                        className={`flex h-12 w-12 items-center justify-center rounded ${config.iconBg}`}
                                     >
                                         <ActivityIcon className="h-6 w-6" />
                                     </div>
                                     <div className="flex-1">
                                         <p className="truncate font-label-lg text-label-lg text-primary">
-                                            {activity.title}
+                                            {activity.nama_kegiatan}
                                         </p>
                                         <p className="text-label-md text-on-surface-variant">
                                             {activity.time}
@@ -277,12 +333,20 @@ export default function Dashboard() {
                                 </div>
                             );
                         })}
+                        {recentActivities.length === 0 && (
+                            <p className="text-center font-body-md text-on-surface-variant py-8">
+                                Belum ada kegiatan.
+                            </p>
+                        )}
                     </div>
                     <Button
                         variant="link"
                         className="mt-auto cursor-pointer pt-6 text-center text-label-lg font-bold text-primary shadow-none hover:text-primary/80 hover:underline"
+                        asChild
                     >
-                        Lihat Semua Kegiatan
+                        <Link href="/pengurus/kegiatan">
+                            Lihat Semua Kegiatan
+                        </Link>
                     </Button>
                 </Card>
             </section>
@@ -296,8 +360,11 @@ export default function Dashboard() {
                     <Button
                         variant="link"
                         className="h-auto cursor-pointer p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
+                        asChild
                     >
-                        Kelola Semua
+                        <Link href="/pengurus/anggota">
+                            Kelola Semua
+                        </Link>
                     </Button>
                 </div>
                 <div className="overflow-x-auto">
@@ -320,7 +387,7 @@ export default function Dashboard() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/20">
-                            {members.map((member, idx) => (
+                            {recentMembers.map((member, idx) => (
                                 <tr
                                     key={idx}
                                     className="transition-all hover:bg-surface-container/30"
@@ -343,10 +410,12 @@ export default function Dashboard() {
                                     <td className="px-unit-lg py-4">
                                         <Badge
                                             className={`h-auto rounded-full border-none px-3 py-1 text-[12px] font-bold shadow-none ${
-                                                member.status === 'Approved'
+                                                member.status === 'Approved' || member.status === 'Aktif'
                                                     ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-950/50'
+                                                    : member.status === 'Ditolak'
+                                                    ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
                                                     : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
-                                            }`}
+                                                }`}
                                         >
                                             {member.status}
                                         </Badge>
@@ -365,6 +434,16 @@ export default function Dashboard() {
                                     </td>
                                 </tr>
                             ))}
+                            {recentMembers.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={5}
+                                        className="px-unit-lg py-8 text-center font-body-md text-on-surface-variant"
+                                    >
+                                        Belum ada anggota terdaftar.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

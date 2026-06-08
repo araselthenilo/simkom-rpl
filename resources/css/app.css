@@ -147,6 +147,7 @@
     --color-tertiary-fixed-dim: var(--tertiary-fixed-dim);
     --color-on-secondary-fixed: var(--on-secondary-fixed);
     --color-on-primary-fixed: var(--on-primary-fixed);
+    --color-primary-fixed: var(--primary-fixed);
     --color-primary-fixed-dim: var(--primary-fixed-dim);
     --color-secondary-fixed: var(--secondary-fixed);
     --color-tertiary-fixed: var(--tertiary-fixed);
@@ -229,6 +230,7 @@
     --tertiary-fixed-dim: #c1c7cf;
     --on-secondary-fixed: #241a00;
     --on-primary-fixed: #001b3c;
+    --primary-fixed: #d6e3ff;
     --primary-fixed-dim: #adc7f7;
     --secondary-fixed: #ffe088;
     --tertiary-fixed: #dde3eb;
@@ -303,6 +305,7 @@
     --tertiary-fixed-dim: #c1c7cf;
     --on-secondary-fixed: #241a00;
     --on-primary-fixed: #001b3c;
+    --primary-fixed: #d6e3ff;
     --primary-fixed-dim: #adc7f7;
     --secondary-fixed: #ffe088;
     --tertiary-fixed: #dde3eb;

@@ -511,10 +511,10 @@ export default function ManajemenKegiatan({
                                                 {activity.nama_kegiatan}
                                             </span>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary">
+                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed dark:bg-primary-container dark:text-on-primary-container dark:border-primary-container/30">
                                                     {activity.jenis_kegiatan}
                                                 </span>
-                                                <span className="bg-secondary-fixed rounded border border-secondary/10 px-2 py-0.5 text-[11px] font-medium text-on-secondary-fixed">
+                                                <span className="bg-secondary-fixed rounded border border-secondary/10 px-2 py-0.5 text-[11px] font-medium text-on-secondary-fixed dark:bg-secondary-container dark:text-on-secondary-container dark:border-secondary-container/30">
                                                     {activity.profil_organisasi?.organisasi?.nama_organisasi || 'Organisasi'}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">

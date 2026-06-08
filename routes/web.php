@@ -93,6 +93,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Mahasiswa Organization Routes
     Route::get('/organisasi', [UserOrganisasiController::class, 'index'])->name('organisasi.index')->middleware('can:is-mahasiswa');
     Route::get('/organisasi/{organisasi}/detail', [UserOrganisasiController::class, 'showProfil'])->name('organisasi.detail')->middleware('can:is-mahasiswa');
+    Route::get('/organisasi/{organisasi}/pengurus', [UserOrganisasiController::class, 'showPengurus'])->name('organisasi.pengurus')->middleware('can:is-mahasiswa');
+    Route::get('/organisasi/{organisasi}/kegiatan', [UserOrganisasiController::class, 'showKegiatan'])->name('organisasi.kegiatan')->middleware('can:is-mahasiswa');
+    Route::get('/organisasi/{organisasi}/keuangan', [UserOrganisasiController::class, 'showKeuangan'])->name('organisasi.keuangan')->middleware('can:is-mahasiswa');
     Route::post('/organisasi/daftar', [AnggotaOrganisasiController::class, 'store'])->name('organisasi.daftar')->middleware('can:is-mahasiswa');
 
     // Mahasiswa Kegiatan Routes

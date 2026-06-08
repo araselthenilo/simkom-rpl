@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Building2, Clock, ChevronRight, Compass, XCircle } from 'lucide-react';
 import React from 'react';
 import OrganisasiSaya from '@/components/beranda/organisasi-saya';
-import { detail } from '@/routes/organisasi';
+import { detail, pengurus as organisasiPengurus, kegiatan as organisasiKegiatan, keuangan as organisasiKeuangan } from '@/routes/organisasi';
 
 interface Organization {
     id: number;
@@ -102,13 +102,33 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                             <span className="text-label-sm text-on-surface-variant/80">
                                                 Diajukan: {org.tanggal_daftar}
                                             </span>
-                                            <Link
-                                                href={detail(org.id)}
-                                                className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
-                                            >
-                                                Lihat Detail{' '}
-                                                <ChevronRight className="h-4 w-4" />
-                                            </Link>
+                                            <div className="flex items-center gap-4">
+                                                <Link
+                                                    href={organisasiKeuangan(org.id).url}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                >
+                                                    Lihat Keuangan
+                                                </Link>
+                                                <Link
+                                                    href={organisasiKegiatan(org.id).url}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                >
+                                                    Lihat Kegiatan
+                                                </Link>
+                                                <Link
+                                                    href={organisasiPengurus(org.id).url}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                >
+                                                    Lihat Pengurus
+                                                </Link>
+                                                <Link
+                                                    href={detail(org.id)}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
+                                                >
+                                                    Lihat Detail{' '}
+                                                    <ChevronRight className="h-4 w-4" />
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -188,7 +208,27 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                             )}
                                         </div>
 
-                                        <div className="mt-6 flex justify-end border-t border-outline-variant/30 pt-4">
+                                        <div className="mt-6 flex items-center justify-between border-t border-outline-variant/30 pt-4">
+                                            <div className="flex items-center gap-4">
+                                                <Link
+                                                    href={organisasiKeuangan(org.id).url}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                >
+                                                    Lihat Keuangan
+                                                </Link>
+                                                <Link
+                                                    href={organisasiKegiatan(org.id).url}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                >
+                                                    Lihat Kegiatan
+                                                </Link>
+                                                <Link
+                                                    href={organisasiPengurus(org.id).url}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                >
+                                                    Lihat Pengurus
+                                                </Link>
+                                            </div>
                                             <Link
                                                 href={detail(org.id)}
                                                 className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"

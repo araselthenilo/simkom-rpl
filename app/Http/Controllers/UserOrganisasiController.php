@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\AnggotaOrganisasi;
+use App\Models\Kegiatan;
 use App\Models\Organisasi;
+use App\Models\PengurusOrganisasi;
+use App\Models\PesertaKegiatan;
 use App\Models\ProfilOrganisasi;
+use App\Models\TransaksiKeuangan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -171,6 +175,116 @@ class UserOrganisasiController extends Controller
             ],
             'statusKeanggotaan' => $statusKeanggotaan,
             'isReadOnly' => true,
+        ]);
+    }
+
+    public function showPengurus(Organisasi $organisasi): Response
+    {
+        $user = auth()->user();
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
+            abort(403);
+        }
+
+        $nim = $user->profilPengguna->nim;
+
+        // Check active profile
+        $profil = $organisasi->profilOrganisasi()
+            ->where('status_aktif', true)
+            ->first();
+
+        $pengurusList = [];
+        if ($profil) {
+            $pengurusList = PengurusOrganisasi::where('id_profil', $profil->id_profil)
+                ->where('status_aktif', true)
+                ->with(['anggotaOrganisasi.mahasiswa'])
+                ->get();
+        }
+
+        // Check membership status
+        $anggota = AnggotaOrganisasi::where('id_organisasi', $organisasi->id_organisasi)
+            ->where('nim', $nim)
+            ->first();
+
+        $statusKeanggotaan = $anggota ? $anggota->status_keanggotaan : null;
+
+        return Inertia::render('organisasi/pengurus', [
+            'profil' => $profil,
+            'organisasi' => [
+                'id_organisasi' => $organisasi->id_organisasi,
+                'nama_organisasi' => $organisasi->nama_organisasi,
+            ],
+            'pengurusList' => $pengurusList,
+            'statusKeanggotaan' => $statusKeanggotaan,
+        ]);
+    }
+
+    public function showKegiatan(Organisasi $organisasi): Response
+    {
+        $user = auth()->user();
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
+            abort(403);
+        }
+
+        $nim = $user->profilPengguna->nim;
+
+        // Check active profile
+        $profil = $organisasi->profilOrganisasi()
+            ->where('status_aktif', true)
+            ->first();
+
+        // Fetch all kegiatan for this organization
+        $kegiatanList = Kegiatan::whereHas('profilOrganisasi', function ($q) use ($organisasi) {
+            $q->where('id_organisasi', $organisasi->id_organisasi);
+        })
+            ->withCount('pesertaKegiatan')
+            ->orderBy('tanggal_pelaksanaan', 'desc')
+            ->get();
+
+        // Fetch registered kegiatan mapped to their id_peserta
+        $registrations = PesertaKegiatan::where('nim', $nim)
+            ->get()
+            ->pluck('id_peserta', 'id_kegiatan')
+            ->toArray();
+
+        return Inertia::render('organisasi/kegiatan', [
+            'profil' => $profil,
+            'organisasi' => [
+                'id_organisasi' => $organisasi->id_organisasi,
+                'nama_organisasi' => $organisasi->nama_organisasi,
+            ],
+            'kegiatanList' => $kegiatanList,
+            'registrations' => (object) $registrations,
+            'nim' => $nim,
+        ]);
+    }
+
+    public function showKeuangan(Organisasi $organisasi): Response
+    {
+        $user = auth()->user();
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
+            abort(403);
+        }
+
+        // Check active profile
+        $profil = $organisasi->profilOrganisasi()
+            ->where('status_aktif', true)
+            ->first();
+
+        // Fetch all financial transactions of this organization (via kegiatan relationship)
+        $transaksiList = TransaksiKeuangan::whereHas('kegiatan.profilOrganisasi', function ($q) use ($organisasi) {
+            $q->where('id_organisasi', $organisasi->id_organisasi);
+        })
+            ->with('kegiatan')
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->get();
+
+        return Inertia::render('organisasi/keuangan', [
+            'profil' => $profil,
+            'organisasi' => [
+                'id_organisasi' => $organisasi->id_organisasi,
+                'nama_organisasi' => $organisasi->nama_organisasi,
+            ],
+            'transaksiList' => $transaksiList,
         ]);
     }
 }

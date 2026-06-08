@@ -19,6 +19,7 @@ import {
     AlertCircle,
     Info,
     RefreshCw,
+    FileText,
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -482,7 +483,7 @@ export default function ManajemenKegiatan({
                                                 {activity.nama_kegiatan}
                                             </span>
                                             <div className="flex items-center gap-2">
-                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed">
+                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed dark:bg-primary-container dark:text-on-primary-container dark:border-primary-container/30">
                                                     {activity.jenis_kegiatan}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">
@@ -585,6 +586,32 @@ export default function ManajemenKegiatan({
                                                 title="Lihat Daftar Peserta"
                                             >
                                                 <Users className="h-4 w-4" />
+                                            </button>
+
+                                            {/* Manage Documentation & Revisions Button */}
+                                            <button
+                                                onClick={() =>
+                                                    router.get(
+                                                        `/pengurus/kegiatan/${activity.id_kegiatan}/dokumentasi`,
+                                                    )
+                                                }
+                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                title="Kelola Dokumentasi & Revisi"
+                                            >
+                                                <FileText className="h-4 w-4" />
+                                            </button>
+
+                                            {/* Add Transaction Button */}
+                                            <button
+                                                onClick={() =>
+                                                    router.get(
+                                                        `/pengurus/keuangan?create=true&id_kegiatan=${activity.id_kegiatan}`,
+                                                    )
+                                                }
+                                                className="hover:bg-green-50 dark:hover:bg-green-950/40 cursor-pointer rounded-lg p-2 text-green-600 dark:text-green-400 transition-colors"
+                                                title="Catat Transaksi Keuangan"
+                                            >
+                                                <DollarSign className="h-4 w-4" />
                                             </button>
 
                                             {/* Change Status Switcher */}

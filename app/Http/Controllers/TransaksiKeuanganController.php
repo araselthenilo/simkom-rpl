@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
+use App\Models\PengurusOrganisasi;
 use App\Models\TransaksiKeuangan;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
@@ -211,5 +212,191 @@ class TransaksiKeuanganController extends Controller
                 : null,
             'catatan_koreksi' => $transaksi->catatan_koreksi,
         ];
+    }
+
+    private function getActivePengurusRecord()
+    {
+        $user = auth()->user();
+        if (! $user || $user->role !== 'Mahasiswa' || ! $user->profilPengguna) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $nim = $user->profilPengguna->nim;
+        $activeOrgId = session('active_organization_id');
+
+        $pengurusRecordQuery = PengurusOrganisasi::where('status_aktif', true)
+            ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
+                $q->where('nim', $nim);
+            })
+            ->whereHas('profilOrganisasi.organisasi', function ($q) {
+                $q->where('status_aktif', true);
+            })
+            ->with(['profilOrganisasi.organisasi']);
+
+        if ($activeOrgId) {
+            $pengurusRecord = (clone $pengurusRecordQuery)
+                ->whereHas('profilOrganisasi', function ($q) use ($activeOrgId) {
+                    $q->where('id_organisasi', $activeOrgId);
+                })
+                ->first();
+        }
+
+        if (! isset($pengurusRecord) || ! $pengurusRecord) {
+            $pengurusRecord = $pengurusRecordQuery->first();
+            if ($pengurusRecord && $pengurusRecord->profilOrganisasi) {
+                session(['active_organization_id' => $pengurusRecord->profilOrganisasi->id_organisasi]);
+            }
+        }
+
+        if (! $pengurusRecord || ! $pengurusRecord->profilOrganisasi) {
+            abort(403, 'Anda bukan pengurus organisasi yang aktif.');
+        }
+
+        return $pengurusRecord;
+    }
+
+    public function pengurusIndex(): Response
+    {
+        Gate::authorize('is-pengurus');
+
+        $pengurusRecord = $this->getActivePengurusRecord();
+        $id_profil = $pengurusRecord->id_profil;
+
+        // Fetch activities belonging to the active profile
+        $activities = Kegiatan::where('id_profil', $id_profil)->get();
+        $activityIds = $activities->pluck('id_kegiatan');
+
+        // Fetch transactions for these activities with kegiatan details
+        $transactions = TransaksiKeuangan::whereIn('id_kegiatan', $activityIds)
+            ->with('kegiatan')
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function (TransaksiKeuangan $t) {
+                return [
+                    'id_transaksi' => $t->id_transaksi,
+                    'id_kegiatan' => $t->id_kegiatan,
+                    'jenis_transaksi' => $t->jenis_transaksi,
+                    'nominal_transaksi' => (float) $t->nominal_transaksi,
+                    'tanggal_transaksi' => $t->tanggal_transaksi,
+                    'sumber_tujuan_transaksi' => $t->sumber_tujuan_transaksi,
+                    'foto_bukti_transaksi' => $t->foto_bukti_transaksi
+                        ? Storage::disk('public')->url($t->foto_bukti_transaksi)
+                        : null,
+                    'catatan_koreksi' => $t->catatan_koreksi,
+                    'created_at' => $t->created_at ? $t->created_at->toIso8601String() : null,
+                    'kegiatan' => $t->kegiatan ? $t->kegiatan->only('id_kegiatan', 'nama_kegiatan') : null,
+                ];
+            });
+
+        // Compute statistics
+        $totalPemasukan = TransaksiKeuangan::whereIn('id_kegiatan', $activityIds)
+            ->where('jenis_transaksi', 'Pemasukan')
+            ->sum('nominal_transaksi');
+
+        $totalPengeluaran = TransaksiKeuangan::whereIn('id_kegiatan', $activityIds)
+            ->where('jenis_transaksi', 'Pengeluaran')
+            ->sum('nominal_transaksi');
+
+        $totalSaldo = $totalPemasukan - $totalPengeluaran;
+
+        return Inertia::render('pengurus/manajemen-keuangan', [
+            'transactions' => $transactions,
+            'activities' => $activities->map(fn (Kegiatan $k) => [
+                'id_kegiatan' => $k->id_kegiatan,
+                'nama_kegiatan' => $k->nama_kegiatan,
+            ]),
+            'stats' => [
+                'total_saldo' => (float) $totalSaldo,
+                'total_pemasukan' => (float) $totalPemasukan,
+                'total_pengeluaran' => (float) $totalPengeluaran,
+            ],
+        ]);
+    }
+
+    public function pengurusStore(Request $request): RedirectResponse
+    {
+        Gate::authorize('is-pengurus');
+
+        $pengurusRecord = $this->getActivePengurusRecord();
+        $id_profil = $pengurusRecord->id_profil;
+
+        // Verify the kegiatan belongs to the profile
+        $validated = $request->validate([
+            'id_kegiatan' => [
+                'required',
+                Rule::exists('kegiatan', 'id_kegiatan')->where('id_profil', $id_profil),
+            ],
+            'jenis_transaksi' => ['required', Rule::in(['Pemasukan', 'Pengeluaran'])],
+            'nominal_transaksi' => ['required', 'numeric', 'min:0'],
+            'tanggal_transaksi' => ['required', 'date'],
+            'sumber_tujuan_transaksi' => ['required', 'string', 'max:200'],
+            'foto_bukti_transaksi' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'catatan_koreksi' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $path = $request->file('foto_bukti_transaksi')
+            ->store('transaksi_keuangan/bukti', 'public');
+
+        TransaksiKeuangan::create([
+            'id_kegiatan' => $validated['id_kegiatan'],
+            'jenis_transaksi' => $validated['jenis_transaksi'],
+            'nominal_transaksi' => $validated['nominal_transaksi'],
+            'tanggal_transaksi' => $validated['tanggal_transaksi'],
+            'sumber_tujuan_transaksi' => $validated['sumber_tujuan_transaksi'],
+            'foto_bukti_transaksi' => $path,
+            'catatan_koreksi' => $validated['catatan_koreksi'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('pengurus.keuangan')
+            ->with('success', 'Transaksi berhasil ditambahkan.');
+    }
+
+    public function pengurusUpdate(Request $request, TransaksiKeuangan $transaksi): RedirectResponse
+    {
+        Gate::authorize('is-pengurus');
+
+        $pengurusRecord = $this->getActivePengurusRecord();
+        $id_profil = $pengurusRecord->id_profil;
+
+        // Verify the transaction belongs to activities managed by the active profile
+        $activities = Kegiatan::where('id_profil', $id_profil)->get();
+        $activityIds = $activities->pluck('id_kegiatan');
+
+        abort_unless($activityIds->contains($transaksi->id_kegiatan), 403, 'Anda tidak memiliki akses ke transaksi ini.');
+
+        // Validate the incoming request
+        $validated = $request->validate([
+            'id_kegiatan' => [
+                'required',
+                Rule::exists('kegiatan', 'id_kegiatan')->where('id_profil', $id_profil),
+            ],
+            'jenis_transaksi' => ['required', Rule::in(['Pemasukan', 'Pengeluaran'])],
+            'nominal_transaksi' => ['required', 'numeric', 'min:0'],
+            'tanggal_transaksi' => ['required', 'date'],
+            'sumber_tujuan_transaksi' => ['required', 'string', 'max:200'],
+            'foto_bukti_transaksi' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'catatan_koreksi' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        if ($request->hasFile('foto_bukti_transaksi')) {
+            // Delete old file
+            if ($transaksi->foto_bukti_transaksi) {
+                Storage::disk('public')->delete($transaksi->foto_bukti_transaksi);
+            }
+
+            $validated['foto_bukti_transaksi'] = $request
+                ->file('foto_bukti_transaksi')
+                ->store('transaksi_keuangan/bukti', 'public');
+        } else {
+            unset($validated['foto_bukti_transaksi']); // Keep existing
+        }
+
+        $transaksi->update($validated);
+
+        return redirect()
+            ->route('pengurus.keuangan')
+            ->with('success', 'Transaksi berhasil diperbarui.');
     }
 }

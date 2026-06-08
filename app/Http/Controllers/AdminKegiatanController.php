@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DokumentasiKegiatan;
 use App\Models\Kegiatan;
+use App\Models\PesertaKegiatan;
 use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -137,7 +138,7 @@ class AdminKegiatanController extends Controller
     {
         Gate::authorize('is-admin');
 
-        $pesertaList = \App\Models\PesertaKegiatan::where('id_kegiatan', $kegiatan->id_kegiatan)
+        $pesertaList = PesertaKegiatan::where('id_kegiatan', $kegiatan->id_kegiatan)
             ->with(['mahasiswa', 'transaksiKeuangan'])
             ->get();
 

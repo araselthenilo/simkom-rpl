@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable([
+    'id_organisasi',
+    'username_petugas',
+    'jenis_laporan',
+    'file_laporan',
+])]
 class ArsipLaporan extends Model
 {
     protected $table = 'arsip_laporan';
