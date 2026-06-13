@@ -33,6 +33,16 @@ interface ManajemenKeuanganPageProps {
     stats?: Stats;
 }
 
-export default function ManajemenKeuanganPage({ transactions, activities, stats }: ManajemenKeuanganPageProps) {
-    return <ManajemenKeuangan transactions={transactions} activities={activities} stats={stats} />;
+export default function ManajemenKeuanganPage({
+    transactions,
+    activities,
+    stats,
+}: ManajemenKeuanganPageProps) {
+    return (
+        <ManajemenKeuangan
+            transactions={transactions}
+            activities={activities}
+            stats={stats}
+        />
+    );
 }

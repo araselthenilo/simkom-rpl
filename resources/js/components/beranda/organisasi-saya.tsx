@@ -9,7 +9,12 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import { pengurus } from '@/routes';
-import { index as organisasiIndex, pengurus as organisasiPengurus, kegiatan as organisasiKegiatan, keuangan as organisasiKeuangan } from '@/routes/organisasi';
+import {
+    index as organisasiIndex,
+    pengurus as organisasiPengurus,
+    kegiatan as organisasiKegiatan,
+    keuangan as organisasiKeuangan,
+} from '@/routes/organisasi';
 import { switchOrganisasi } from '@/routes/pengurus';
 import type { Auth } from '@/types/auth';
 
@@ -275,7 +280,11 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    router.visit(organisasiKeuangan(org.id).url);
+                                                    router.visit(
+                                                        organisasiKeuangan(
+                                                            org.id,
+                                                        ).url,
+                                                    );
                                                 }}
                                                 className="flex-1 cursor-pointer rounded-lg border border-on-primary/20 bg-on-primary/10 py-2.5 text-center font-label-md font-medium text-on-primary transition-all hover:bg-on-primary/20"
                                             >
@@ -284,7 +293,11 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    router.visit(organisasiKegiatan(org.id).url);
+                                                    router.visit(
+                                                        organisasiKegiatan(
+                                                            org.id,
+                                                        ).url,
+                                                    );
                                                 }}
                                                 className="flex-1 cursor-pointer rounded-lg border border-on-primary/20 bg-on-primary/10 py-2.5 text-center font-label-md font-medium text-on-primary transition-all hover:bg-on-primary/20"
                                             >
@@ -293,7 +306,11 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    router.visit(organisasiPengurus(org.id).url);
+                                                    router.visit(
+                                                        organisasiPengurus(
+                                                            org.id,
+                                                        ).url,
+                                                    );
                                                 }}
                                                 className="flex-1 cursor-pointer rounded-lg border border-on-primary/20 bg-on-primary/10 py-2.5 text-center font-label-md font-medium text-on-primary transition-all hover:bg-on-primary/20"
                                             >
@@ -342,37 +359,52 @@ export default function OrganisasiSaya({ organizations }: OrganisasiSayaProps) {
                                     <h4 className="font-headline-sm text-headline-sm text-primary">
                                         {org.name}
                                     </h4>
-                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                                    <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
                                         <p className="text-body-sm text-on-surface-variant">
                                             {org.statusText}
                                         </p>
-                                        <span className="hidden sm:inline text-on-surface-variant/40">•</span>
+                                        <span className="hidden text-on-surface-variant/40 sm:inline">
+                                            •
+                                        </span>
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                router.visit(organisasiKeuangan(org.id).url);
+                                                router.visit(
+                                                    organisasiKeuangan(org.id)
+                                                        .url,
+                                                );
                                             }}
-                                            className="text-body-sm font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer"
+                                            className="cursor-pointer text-body-sm font-semibold text-primary/80 transition-colors hover:text-primary"
                                         >
                                             Lihat Keuangan
                                         </button>
-                                        <span className="text-on-surface-variant/40">•</span>
+                                        <span className="text-on-surface-variant/40">
+                                            •
+                                        </span>
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                router.visit(organisasiKegiatan(org.id).url);
+                                                router.visit(
+                                                    organisasiKegiatan(org.id)
+                                                        .url,
+                                                );
                                             }}
-                                            className="text-body-sm font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer"
+                                            className="cursor-pointer text-body-sm font-semibold text-primary/80 transition-colors hover:text-primary"
                                         >
                                             Lihat Kegiatan
                                         </button>
-                                        <span className="text-on-surface-variant/40">•</span>
+                                        <span className="text-on-surface-variant/40">
+                                            •
+                                        </span>
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                router.visit(organisasiPengurus(org.id).url);
+                                                router.visit(
+                                                    organisasiPengurus(org.id)
+                                                        .url,
+                                                );
                                             }}
-                                            className="text-body-sm font-semibold text-primary/80 hover:text-primary transition-colors cursor-pointer"
+                                            className="cursor-pointer text-body-sm font-semibold text-primary/80 transition-colors hover:text-primary"
                                         >
                                             Lihat Pengurus
                                         </button>

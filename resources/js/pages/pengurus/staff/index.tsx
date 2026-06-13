@@ -47,7 +47,12 @@ interface PageProps {
 }
 
 export default function StaffIndexPage() {
-    const { pengurusList = [], anggotaList = [], organisasi, profil } = usePage<PageProps>().props;
+    const {
+        pengurusList = [],
+        anggotaList = [],
+        organisasi,
+        profil,
+    } = usePage<PageProps>().props;
 
     return (
         <>

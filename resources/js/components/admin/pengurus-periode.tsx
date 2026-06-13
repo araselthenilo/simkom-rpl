@@ -1,5 +1,15 @@
 import { Link, router } from '@inertiajs/react';
-import { ArrowLeft, Building2, Phone, Search, Users2, Plus, Trash2, Power, AlertCircle } from 'lucide-react';
+import {
+    ArrowLeft,
+    Building2,
+    Phone,
+    Search,
+    Users2,
+    Plus,
+    Trash2,
+    Power,
+    AlertCircle,
+} from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -64,7 +74,9 @@ export default function PengurusPeriode({
     anggotaList = [],
 }: PengurusPeriodeProps) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+    const [statusFilter, setStatusFilter] = useState<
+        'all' | 'active' | 'inactive'
+    >('all');
 
     // Dialog state
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -167,36 +179,56 @@ export default function PengurusPeriode({
                 onFinish: () => {
                     setIsSubmitting(false);
                 },
-            }
+            },
         );
     };
 
     // Toggle active status handler
-    const handleToggleStatus = (id: number, currentStatus: boolean, name: string) => {
+    const handleToggleStatus = (
+        id: number,
+        currentStatus: boolean,
+        name: string,
+    ) => {
         const actionText = currentStatus ? 'menonaktifkan' : 'mengaktifkan';
 
-        if (confirm(`Apakah Anda yakin ingin ${actionText} pengurus "${name}"?`)) {
-            router.patch(admin.pengurus.toggle(id).url, {}, { preserveScroll: true });
+        if (
+            confirm(`Apakah Anda yakin ingin ${actionText} pengurus "${name}"?`)
+        ) {
+            router.patch(
+                admin.pengurus.toggle(id).url,
+                {},
+                { preserveScroll: true },
+            );
         }
     };
 
     // Delete officer handler
     const handleDeleteOfficer = (id: number, name: string) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus/mengeluarkan pengurus "${name}"?`)) {
-            router.delete(admin.pengurus.destroy(id).url, { preserveScroll: true });
+        if (
+            confirm(
+                `Apakah Anda yakin ingin menghapus/mengeluarkan pengurus "${name}"?`,
+            )
+        ) {
+            router.delete(admin.pengurus.destroy(id).url, {
+                preserveScroll: true,
+            });
         }
     };
 
     // Filter available candidates from anggotaList that are not already officers in this profile
     const existingMemberIds = officers.map((o) => o.id_keanggotaan);
-    const availableCandidates = anggotaList.filter((a) => !existingMemberIds.includes(a.id_keanggotaan));
+    const availableCandidates = anggotaList.filter(
+        (a) => !existingMemberIds.includes(a.id_keanggotaan),
+    );
 
     return (
         <main className="mx-auto flex w-full max-w-container-max flex-col gap-gutter p-margin-desktop">
             {/* Header / Breadcrumb */}
             <header className="flex flex-col gap-4">
                 <Link
-                    href={admin.organisasi.profil(organisasi?.id_organisasi ?? 0)}
+                    href={admin.organisasi.profil(
+                        organisasi?.id_organisasi ?? 0,
+                    )}
                     className="decoration-none inline-flex cursor-pointer items-center gap-2 font-label-lg font-semibold text-primary transition-colors hover:text-primary/80"
                 >
                     <ArrowLeft className="h-4 w-4" />
@@ -209,7 +241,7 @@ export default function PengurusPeriode({
                             <h2 className="font-headline-lg text-headline-lg text-primary">
                                 Pengurus Organisasi
                             </h2>
-                            <span className="bg-primary-fixed flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold text-primary">
+                            <span className="flex w-fit items-center gap-1.5 rounded-full bg-primary-fixed px-3 py-1 text-[12px] font-semibold text-primary">
                                 Periode {profilOrganisasi?.periode_kepengurusan}
                             </span>
                             <span
@@ -242,7 +274,7 @@ export default function PengurusPeriode({
                                 setValidationError('');
                                 setIsAddOpen(true);
                             }}
-                            className="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95"
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95"
                         >
                             <Plus className="h-4 w-4" />
                             Tambah Pengurus
@@ -328,8 +360,12 @@ export default function PengurusPeriode({
                                     <th className="px-6 py-4">Program Studi</th>
                                     <th className="px-6 py-4">Jabatan</th>
                                     <th className="px-6 py-4">No. Telepon</th>
-                                    <th className="px-6 py-4 text-center">Status</th>
-                                    <th className="px-6 py-4 text-right">Aksi</th>
+                                    <th className="px-6 py-4 text-center">
+                                        Status
+                                    </th>
+                                    <th className="px-6 py-4 text-right">
+                                        Aksi
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-outline-variant/60 font-body-sm text-sm text-on-surface">
@@ -345,7 +381,7 @@ export default function PengurusPeriode({
                                         >
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="bg-primary-fixed/30 border-primary-fixed flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-bold text-primary">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary-fixed bg-primary-fixed/30 text-sm font-bold text-primary">
                                                         {getInitials(
                                                             student?.nama_lengkap ||
                                                                 '',
@@ -411,7 +447,8 @@ export default function PengurusPeriode({
                                                             handleToggleStatus(
                                                                 officer.id_pengurus,
                                                                 officer.status_aktif,
-                                                                student?.nama_lengkap || '',
+                                                                student?.nama_lengkap ||
+                                                                    '',
                                                             )
                                                         }
                                                         className={`cursor-pointer rounded-lg p-2 transition-colors ${
@@ -419,7 +456,11 @@ export default function PengurusPeriode({
                                                                 ? 'text-amber-600 hover:bg-amber-50'
                                                                 : 'text-green-700 hover:bg-green-50'
                                                         }`}
-                                                        title={officer.status_aktif ? 'Nonaktifkan Pengurus' : 'Aktifkan Pengurus'}
+                                                        title={
+                                                            officer.status_aktif
+                                                                ? 'Nonaktifkan Pengurus'
+                                                                : 'Aktifkan Pengurus'
+                                                        }
                                                     >
                                                         <Power className="h-4 w-4" />
                                                     </button>
@@ -427,10 +468,11 @@ export default function PengurusPeriode({
                                                         onClick={() =>
                                                             handleDeleteOfficer(
                                                                 officer.id_pengurus,
-                                                                student?.nama_lengkap || '',
+                                                                student?.nama_lengkap ||
+                                                                    '',
                                                             )
                                                         }
-                                                        className="cursor-pointer rounded-lg p-2 text-red-600 hover:bg-red-50 transition-colors"
+                                                        className="cursor-pointer rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
                                                         title="Keluarkan / Hapus Pengurus"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -452,13 +494,21 @@ export default function PengurusPeriode({
                     <DialogHeader>
                         <DialogTitle>Tambah Pengurus Organisasi</DialogTitle>
                         <DialogDescription>
-                            Pilih mahasiswa untuk ditugaskan sebagai pengurus pada periode <strong>{profilOrganisasi?.periode_kepengurusan}</strong>.
+                            Pilih mahasiswa untuk ditugaskan sebagai pengurus
+                            pada periode{' '}
+                            <strong>
+                                {profilOrganisasi?.periode_kepengurusan}
+                            </strong>
+                            .
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="flex flex-col gap-4 py-4">
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="member-select" className="text-xs font-semibold text-on-surface-variant">
+                            <label
+                                htmlFor="member-select"
+                                className="text-xs font-semibold text-on-surface-variant"
+                            >
                                 Pilih Anggota Organisasi
                             </label>
                             {availableCandidates.length > 0 ? (
@@ -471,22 +521,32 @@ export default function PengurusPeriode({
                                     }}
                                     className="w-full cursor-pointer rounded-lg border border-outline bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary focus:outline-none"
                                 >
-                                    <option value="">-- Pilih Anggota --</option>
+                                    <option value="">
+                                        -- Pilih Anggota --
+                                    </option>
                                     {availableCandidates.map((c) => (
-                                        <option key={c.id_keanggotaan} value={c.id_keanggotaan}>
-                                            {c.mahasiswa?.nama_lengkap} ({c.mahasiswa?.nim})
+                                        <option
+                                            key={c.id_keanggotaan}
+                                            value={c.id_keanggotaan}
+                                        >
+                                            {c.mahasiswa?.nama_lengkap} (
+                                            {c.mahasiswa?.nim})
                                         </option>
                                     ))}
                                 </select>
                             ) : (
                                 <p className="text-sm text-on-surface-variant italic">
-                                    Semua anggota aktif telah ditugaskan sebagai pengurus untuk periode ini.
+                                    Semua anggota aktif telah ditugaskan sebagai
+                                    pengurus untuk periode ini.
                                 </p>
                             )}
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="jabatan-input" className="text-xs font-semibold text-on-surface-variant">
+                            <label
+                                htmlFor="jabatan-input"
+                                className="text-xs font-semibold text-on-surface-variant"
+                            >
                                 Jabatan / Posisi
                             </label>
                             <Input
@@ -510,13 +570,16 @@ export default function PengurusPeriode({
                                 onChange={(e) => setIsActive(e.target.checked)}
                                 className="h-4 w-4 cursor-pointer rounded border-outline-variant text-primary focus:ring-primary"
                             />
-                            <label htmlFor="status-aktif-checkbox" className="text-sm font-medium text-on-surface cursor-pointer select-none">
+                            <label
+                                htmlFor="status-aktif-checkbox"
+                                className="cursor-pointer text-sm font-medium text-on-surface select-none"
+                            >
                                 Status Aktif
                             </label>
                         </div>
 
                         {validationError && (
-                            <p className="flex items-center gap-1.5 text-xs font-semibold text-red-600 pt-2">
+                            <p className="flex items-center gap-1.5 pt-2 text-xs font-semibold text-red-600">
                                 <AlertCircle className="h-4 w-4 shrink-0" />
                                 {validationError}
                             </p>
@@ -534,7 +597,11 @@ export default function PengurusPeriode({
                         </Button>
                         <Button
                             onClick={handleAddOfficer}
-                            disabled={isSubmitting || !selectedMemberId || !position.trim()}
+                            disabled={
+                                isSubmitting ||
+                                !selectedMemberId ||
+                                !position.trim()
+                            }
                             className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/95"
                         >
                             {isSubmitting ? 'Menyimpan...' : 'Simpan'}

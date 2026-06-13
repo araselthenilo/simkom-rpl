@@ -8,7 +8,7 @@ import {
     CheckCircle2,
     XCircle,
     Phone,
-    AlertCircle
+    AlertCircle,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -77,8 +77,11 @@ export default function PengurusManagement({
 }: PengurusManagementProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOrgFilter, setSelectedOrgFilter] = useState<string>('all');
-    const [selectedPeriodFilter, setSelectedPeriodFilter] = useState<string>('all');
-    const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+    const [selectedPeriodFilter, setSelectedPeriodFilter] =
+        useState<string>('all');
+    const [statusFilter, setStatusFilter] = useState<
+        'all' | 'active' | 'inactive'
+    >('all');
 
     // Dialog state for Add Officer
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -92,8 +95,8 @@ export default function PengurusManagement({
 
     // Metrics
     const totalPengurus = pengurusList.length;
-    const totalActive = pengurusList.filter(p => p.status_aktif).length;
-    const totalInactive = pengurusList.filter(p => !p.status_aktif).length;
+    const totalActive = pengurusList.filter((p) => p.status_aktif).length;
+    const totalInactive = pengurusList.filter((p) => !p.status_aktif).length;
 
     // Filtered lists for rendering
     const filteredPengurus = pengurusList.filter((officer) => {
@@ -102,17 +105,25 @@ export default function PengurusManagement({
         const profile = officer.profil_organisasi;
 
         const matchesSearch =
-            (student?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-            (student?.nim?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-            (officer.jabatan?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+            student?.nama_lengkap
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase()) ||
+            false ||
+            student?.nim?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            false ||
+            officer.jabatan?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            false;
 
-        const matchesOrg = selectedOrgFilter === 'all' || 
+        const matchesOrg =
+            selectedOrgFilter === 'all' ||
             org?.id_organisasi === parseInt(selectedOrgFilter);
 
-        const matchesPeriod = selectedPeriodFilter === 'all' || 
+        const matchesPeriod =
+            selectedPeriodFilter === 'all' ||
             profile?.periode_kepengurusan === selectedPeriodFilter;
 
-        const matchesStatus = statusFilter === 'all' ||
+        const matchesStatus =
+            statusFilter === 'all' ||
             (statusFilter === 'active' && officer.status_aktif) ||
             (statusFilter === 'inactive' && !officer.status_aktif);
 
@@ -128,57 +139,66 @@ export default function PengurusManagement({
     };
 
     // Candidate members for modal based on chosen organization
-    const activeCandidates = modalOrgId 
-        ? anggotaList.filter(a => a.id_organisasi === parseInt(modalOrgId))
+    const activeCandidates = modalOrgId
+        ? anggotaList.filter((a) => a.id_organisasi === parseInt(modalOrgId))
         : [];
 
     // Filter candidate members to avoid duplicate entries for the selected profile period
     const candidateMembersFiltered = activeCandidates.filter((candidate) => {
         if (!modalPeriodId) {
-return true;
-}
+            return true;
+        }
 
         // Find if this member is already an officer for the selected period
         return !pengurusList.some(
-            p => p.id_profil === parseInt(modalPeriodId) && p.id_keanggotaan === candidate.id_keanggotaan
+            (p) =>
+                p.id_profil === parseInt(modalPeriodId) &&
+                p.id_keanggotaan === candidate.id_keanggotaan,
         );
     });
 
     // Profile periods list for modal based on chosen organization
-    const selectedOrg = organisasiList.find(o => o.id_organisasi === parseInt(modalOrgId));
+    const selectedOrg = organisasiList.find(
+        (o) => o.id_organisasi === parseInt(modalOrgId),
+    );
     const modalPeriods = selectedOrg?.profil_organisasi || [];
 
     // Distinct periods for global filter dropdown
     const distinctPeriods = Array.from(
         new Set(
             pengurusList
-                .map(p => p.profil_organisasi?.periode_kepengurusan)
-                .filter((p): p is string => !!p)
-        )
+                .map((p) => p.profil_organisasi?.periode_kepengurusan)
+                .filter((p): p is string => !!p),
+        ),
     ).sort();
 
     const getInitials = (name: string) => {
         if (!name) {
-return '?';
-}
+            return '?';
+        }
 
-        return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        return name
+            .split(' ')
+            .map((n) => n[0])
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
     };
 
     const getRoleBadgeClass = (role: string) => {
         const r = role.toLowerCase();
 
         if (r.includes('ketua')) {
-return 'bg-blue-100 text-blue-700 border border-blue-200';
-}
+            return 'bg-blue-100 text-blue-700 border border-blue-200';
+        }
 
         if (r.includes('sekretaris')) {
-return 'bg-purple-100 text-purple-700 border border-purple-200';
-}
+            return 'bg-purple-100 text-purple-700 border border-purple-200';
+        }
 
         if (r.includes('bendahara')) {
-return 'bg-amber-100 text-amber-700 border border-amber-200';
-}
+            return 'bg-amber-100 text-amber-700 border border-amber-200';
+        }
 
         return 'bg-slate-100 text-slate-700 border border-slate-200';
     };
@@ -241,21 +261,37 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                 onFinish: () => {
                     setIsSubmitting(false);
                 },
-            }
+            },
         );
     };
 
-    const handleToggleStatus = (id: number, currentStatus: boolean, name: string) => {
+    const handleToggleStatus = (
+        id: number,
+        currentStatus: boolean,
+        name: string,
+    ) => {
         const actionText = currentStatus ? 'menonaktifkan' : 'mengaktifkan';
 
-        if (confirm(`Apakah Anda yakin ingin ${actionText} pengurus "${name}"?`)) {
-            router.patch(admin.pengurus.toggle(id).url, {}, { preserveScroll: true });
+        if (
+            confirm(`Apakah Anda yakin ingin ${actionText} pengurus "${name}"?`)
+        ) {
+            router.patch(
+                admin.pengurus.toggle(id).url,
+                {},
+                { preserveScroll: true },
+            );
         }
     };
 
     const handleDeleteOfficer = (id: number, name: string) => {
-        if (confirm(`Apakah Anda yakin ingin menghapus/mengeluarkan pengurus "${name}"?`)) {
-            router.delete(admin.pengurus.destroy(id).url, { preserveScroll: true });
+        if (
+            confirm(
+                `Apakah Anda yakin ingin menghapus/mengeluarkan pengurus "${name}"?`,
+            )
+        ) {
+            router.delete(admin.pengurus.destroy(id).url, {
+                preserveScroll: true,
+            });
         }
     };
 
@@ -268,7 +304,8 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                         Manajemen Pengurus Organisasi
                     </h2>
                     <p className="mt-1 font-body-md text-body-md text-on-surface-variant">
-                        Kelola staff kepengurusan (officers) seluruh Unit Kegiatan Mahasiswa (UKM) SIMKOM.
+                        Kelola staff kepengurusan (officers) seluruh Unit
+                        Kegiatan Mahasiswa (UKM) SIMKOM.
                     </p>
                 </div>
                 <div className="flex w-full gap-unit-sm md:w-auto">
@@ -329,7 +366,7 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
 
             {/* Filters Bar */}
             <div className="mb-unit-lg flex flex-col items-center justify-between gap-unit-md rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-md shadow-[0px_2px_4px_rgba(26,54,93,0.05)] sm:flex-row">
-                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
                     {/* Organization Filter */}
                     <select
                         value={selectedOrgFilter}
@@ -338,7 +375,10 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                     >
                         <option value="all">Semua Organisasi</option>
                         {organisasiList.map((o) => (
-                            <option key={o.id_organisasi} value={o.id_organisasi}>
+                            <option
+                                key={o.id_organisasi}
+                                value={o.id_organisasi}
+                            >
                                 {o.nama_organisasi}
                             </option>
                         ))}
@@ -347,7 +387,9 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                     {/* Period Filter */}
                     <select
                         value={selectedPeriodFilter}
-                        onChange={(e) => setSelectedPeriodFilter(e.target.value)}
+                        onChange={(e) =>
+                            setSelectedPeriodFilter(e.target.value)
+                        }
                         className="cursor-pointer rounded-lg border border-outline bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary focus:outline-none"
                     >
                         <option value="all">Semua Periode</option>
@@ -359,7 +401,7 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                     </select>
 
                     {/* Status filter buttons */}
-                    <div className="flex items-center gap-1 bg-surface-container-low rounded-lg p-1">
+                    <div className="flex items-center gap-1 rounded-lg bg-surface-container-low p-1">
                         {(['all', 'active', 'inactive'] as const).map((tab) => (
                             <button
                                 key={tab}
@@ -370,7 +412,11 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                                         : 'bg-transparent text-on-surface-variant hover:text-primary'
                                 }`}
                             >
-                                {tab === 'all' ? 'Semua' : tab === 'active' ? 'Aktif' : 'Nonaktif'}
+                                {tab === 'all'
+                                    ? 'Semua'
+                                    : tab === 'active'
+                                      ? 'Aktif'
+                                      : 'Nonaktif'}
                             </button>
                         ))}
                     </div>
@@ -420,9 +466,14 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                         </thead>
                         <tbody className="divide-y divide-outline-variant/50">
                             {filteredPengurus.map((officer) => {
-                                const student = officer.anggota_organisasi?.mahasiswa;
-                                const orgName = officer.profil_organisasi?.organisasi?.nama_organisasi || 'Tidak Diketahui';
-                                const period = officer.profil_organisasi?.periode_kepengurusan || '-';
+                                const student =
+                                    officer.anggota_organisasi?.mahasiswa;
+                                const orgName =
+                                    officer.profil_organisasi?.organisasi
+                                        ?.nama_organisasi || 'Tidak Diketahui';
+                                const period =
+                                    officer.profil_organisasi
+                                        ?.periode_kepengurusan || '-';
                                 const phone = student?.nomor_telepon;
 
                                 return (
@@ -432,12 +483,16 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                                     >
                                         <td className="px-unit-lg py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="bg-primary-fixed/30 border-primary-fixed flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-bold text-primary">
-                                                    {getInitials(student?.nama_lengkap || '')}
+                                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary-fixed bg-primary-fixed/30 text-sm font-bold text-primary">
+                                                    {getInitials(
+                                                        student?.nama_lengkap ||
+                                                            '',
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <div className="font-semibold text-on-surface">
-                                                        {student?.nama_lengkap || 'Tidak Diketahui'}
+                                                        {student?.nama_lengkap ||
+                                                            'Tidak Diketahui'}
                                                     </div>
                                                     <div className="mt-0.5 font-mono text-xs text-on-surface-variant/80">
                                                         {student?.nim || '-'}
@@ -446,17 +501,28 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                                             </div>
                                         </td>
                                         <td className="px-unit-lg py-4 font-medium text-primary hover:underline">
-                                            {officer.profil_organisasi?.id_profil ? (
-                                                <Link href={admin.profilOrganisasi.pengurus(officer.profil_organisasi.id_profil)}>
+                                            {officer.profil_organisasi
+                                                ?.id_profil ? (
+                                                <Link
+                                                    href={admin.profilOrganisasi.pengurus(
+                                                        officer
+                                                            .profil_organisasi
+                                                            .id_profil,
+                                                    )}
+                                                >
                                                     {orgName}
                                                 </Link>
-                                            ) : orgName}
+                                            ) : (
+                                                orgName
+                                            )}
                                         </td>
                                         <td className="px-unit-lg py-4 font-body-sm text-on-surface-variant">
                                             {period}
                                         </td>
                                         <td className="px-unit-lg py-4">
-                                            <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${getRoleBadgeClass(officer.jabatan)}`}>
+                                            <span
+                                                className={`rounded-md px-2.5 py-1 text-xs font-semibold ${getRoleBadgeClass(officer.jabatan)}`}
+                                            >
                                                 {officer.jabatan}
                                             </span>
                                         </td>
@@ -476,31 +542,54 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                                             )}
                                         </td>
                                         <td className="px-unit-lg py-4 text-center">
-                                            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                officer.status_aktif
-                                                    ? 'border border-green-200 bg-green-50 text-green-700'
-                                                    : 'border border-red-200 bg-red-50 text-red-700'
-                                            }`}>
-                                                <span className={`h-1.5 w-1.5 rounded-full ${officer.status_aktif ? 'bg-green-600' : 'bg-red-600'}`} />
-                                                {officer.status_aktif ? 'Aktif' : 'Nonaktif'}
+                                            <span
+                                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                                    officer.status_aktif
+                                                        ? 'border border-green-200 bg-green-50 text-green-700'
+                                                        : 'border border-red-200 bg-red-50 text-red-700'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`h-1.5 w-1.5 rounded-full ${officer.status_aktif ? 'bg-green-600' : 'bg-red-600'}`}
+                                                />
+                                                {officer.status_aktif
+                                                    ? 'Aktif'
+                                                    : 'Nonaktif'}
                                             </span>
                                         </td>
                                         <td className="px-unit-lg py-4 text-right">
                                             <div className="flex justify-end gap-1">
                                                 <button
-                                                    onClick={() => handleToggleStatus(officer.id_pengurus, officer.status_aktif, student?.nama_lengkap || '')}
+                                                    onClick={() =>
+                                                        handleToggleStatus(
+                                                            officer.id_pengurus,
+                                                            officer.status_aktif,
+                                                            student?.nama_lengkap ||
+                                                                '',
+                                                        )
+                                                    }
                                                     className={`cursor-pointer rounded-lg p-2 transition-colors ${
                                                         officer.status_aktif
                                                             ? 'text-amber-600 hover:bg-amber-50'
                                                             : 'text-green-700 hover:bg-green-50'
                                                     }`}
-                                                    title={officer.status_aktif ? 'Nonaktifkan Pengurus' : 'Aktifkan Pengurus'}
+                                                    title={
+                                                        officer.status_aktif
+                                                            ? 'Nonaktifkan Pengurus'
+                                                            : 'Aktifkan Pengurus'
+                                                    }
                                                 >
                                                     <Power className="h-4 w-4" />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDeleteOfficer(officer.id_pengurus, student?.nama_lengkap || '')}
-                                                    className="cursor-pointer rounded-lg p-2 text-red-600 hover:bg-red-50 transition-colors"
+                                                    onClick={() =>
+                                                        handleDeleteOfficer(
+                                                            officer.id_pengurus,
+                                                            student?.nama_lengkap ||
+                                                                '',
+                                                        )
+                                                    }
+                                                    className="cursor-pointer rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
                                                     title="Keluarkan / Hapus Pengurus"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -531,25 +620,34 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                     <DialogHeader>
                         <DialogTitle>Tambah Pengurus Baru</DialogTitle>
                         <DialogDescription>
-                            Tugaskan mahasiswa sebagai pengurus untuk organisasi dan periode kepengurusan tertentu.
+                            Tugaskan mahasiswa sebagai pengurus untuk organisasi
+                            dan periode kepengurusan tertentu.
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="flex flex-col gap-4 py-4">
                         {/* Organisasi Select */}
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="modal-org-select" className="text-xs font-semibold text-on-surface-variant">
+                            <label
+                                htmlFor="modal-org-select"
+                                className="text-xs font-semibold text-on-surface-variant"
+                            >
                                 Pilih Organisasi (UKM)
                             </label>
                             <select
                                 id="modal-org-select"
                                 value={modalOrgId}
-                                onChange={(e) => handleModalOrgChange(e.target.value)}
+                                onChange={(e) =>
+                                    handleModalOrgChange(e.target.value)
+                                }
                                 className="w-full cursor-pointer rounded-lg border border-outline bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary focus:outline-none"
                             >
                                 <option value="">-- Pilih Organisasi --</option>
                                 {organisasiList.map((o) => (
-                                    <option key={o.id_organisasi} value={o.id_organisasi}>
+                                    <option
+                                        key={o.id_organisasi}
+                                        value={o.id_organisasi}
+                                    >
                                         {o.nama_organisasi}
                                     </option>
                                 ))}
@@ -558,7 +656,10 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
 
                         {/* Periode Select */}
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="modal-period-select" className="text-xs font-semibold text-on-surface-variant">
+                            <label
+                                htmlFor="modal-period-select"
+                                className="text-xs font-semibold text-on-surface-variant"
+                            >
                                 Pilih Periode Kepengurusan
                             </label>
                             <select
@@ -574,8 +675,12 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                             >
                                 <option value="">-- Pilih Periode --</option>
                                 {modalPeriods.map((p) => (
-                                    <option key={p.id_profil} value={p.id_profil}>
-                                        Periode {p.periode_kepengurusan} {p.status_aktif ? '(Aktif)' : ''}
+                                    <option
+                                        key={p.id_profil}
+                                        value={p.id_profil}
+                                    >
+                                        Periode {p.periode_kepengurusan}{' '}
+                                        {p.status_aktif ? '(Aktif)' : ''}
                                     </option>
                                 ))}
                             </select>
@@ -583,7 +688,10 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
 
                         {/* Anggota Select */}
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="modal-member-select" className="text-xs font-semibold text-on-surface-variant">
+                            <label
+                                htmlFor="modal-member-select"
+                                className="text-xs font-semibold text-on-surface-variant"
+                            >
                                 Pilih Anggota Organisasi
                             </label>
                             <select
@@ -598,21 +706,30 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                             >
                                 <option value="">-- Pilih Anggota --</option>
                                 {candidateMembersFiltered.map((c) => (
-                                    <option key={c.id_keanggotaan} value={c.id_keanggotaan}>
-                                        {c.mahasiswa?.nama_lengkap} ({c.mahasiswa?.nim})
+                                    <option
+                                        key={c.id_keanggotaan}
+                                        value={c.id_keanggotaan}
+                                    >
+                                        {c.mahasiswa?.nama_lengkap} (
+                                        {c.mahasiswa?.nim})
                                     </option>
                                 ))}
                             </select>
-                            {modalPeriodId && candidateMembersFiltered.length === 0 && (
-                                <p className="text-[11px] text-amber-600 italic">
-                                    Semua anggota aktif telah ditugaskan atau tidak ada anggota aktif.
-                                </p>
-                            )}
+                            {modalPeriodId &&
+                                candidateMembersFiltered.length === 0 && (
+                                    <p className="text-[11px] text-amber-600 italic">
+                                        Semua anggota aktif telah ditugaskan
+                                        atau tidak ada anggota aktif.
+                                    </p>
+                                )}
                         </div>
 
                         {/* Jabatan Input */}
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="modal-jabatan-input" className="text-xs font-semibold text-on-surface-variant">
+                            <label
+                                htmlFor="modal-jabatan-input"
+                                className="text-xs font-semibold text-on-surface-variant"
+                            >
                                 Jabatan / Posisi
                             </label>
                             <Input
@@ -635,17 +752,22 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                                 id="modal-status-aktif-checkbox"
                                 type="checkbox"
                                 checked={modalIsActive}
-                                onChange={(e) => setModalIsActive(e.target.checked)}
+                                onChange={(e) =>
+                                    setModalIsActive(e.target.checked)
+                                }
                                 disabled={!modalMemberId}
                                 className="h-4 w-4 cursor-pointer rounded border-outline-variant text-primary focus:ring-primary disabled:opacity-50"
                             />
-                            <label htmlFor="modal-status-aktif-checkbox" className="text-sm font-medium text-on-surface cursor-pointer select-none">
+                            <label
+                                htmlFor="modal-status-aktif-checkbox"
+                                className="cursor-pointer text-sm font-medium text-on-surface select-none"
+                            >
                                 Status Aktif
                             </label>
                         </div>
 
                         {validationError && (
-                            <p className="flex items-center gap-1.5 text-xs font-semibold text-red-600 pt-2">
+                            <p className="flex items-center gap-1.5 pt-2 text-xs font-semibold text-red-600">
                                 <AlertCircle className="h-4 w-4 shrink-0" />
                                 {validationError}
                             </p>
@@ -663,7 +785,11 @@ return 'bg-amber-100 text-amber-700 border border-amber-200';
                         </Button>
                         <Button
                             onClick={handleAddOfficer}
-                            disabled={isSubmitting || !modalMemberId || !modalPosition.trim()}
+                            disabled={
+                                isSubmitting ||
+                                !modalMemberId ||
+                                !modalPosition.trim()
+                            }
                             className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/95"
                         >
                             {isSubmitting ? 'Menyimpan...' : 'Simpan'}

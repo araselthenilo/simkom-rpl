@@ -19,13 +19,82 @@ interface DashboardProps {
     totalOrganisasiAktif: number;
     totalMahasiswaAktif: number;
     totalAnggotaAktif: number;
+    pengajuanProfilList?: any[];
+    totalPendingPengajuan?: number;
+    pendingDokumentasiList?: any[];
+    totalPendingDokumentasi?: number;
+    kegiatanBulanIni?: number;
+    perubahanKegiatanBulanLalu?: number;
+    agendaTerdekat?: any[];
 }
 
 export default function Dashboard({
     totalOrganisasiAktif = 0,
     totalMahasiswaAktif = 0,
     totalAnggotaAktif = 0,
+    pengajuanProfilList = [],
+    totalPendingPengajuan = 0,
+    pendingDokumentasiList = [],
+    totalPendingDokumentasi = 0,
+    kegiatanBulanIni = 0,
+    perubahanKegiatanBulanLalu = 0,
+    agendaTerdekat = [],
 }: DashboardProps) {
+    const getRelativeTime = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffMins < 1) return 'Baru saja';
+        if (diffMins < 60) return `${diffMins} menit yang lalu`;
+        if (diffHours < 24) return `${diffHours} jam yang lalu`;
+        if (diffDays === 1) return 'Kemarin';
+        return `${diffDays} hari yang lalu`;
+    };
+
+    const getFormatDate = (dateStr: string) => {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const year = parseInt(parts[0], 10);
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            const day = parseInt(parts[2], 10);
+            const months = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Agt',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des',
+            ];
+            return { day, month: months[monthIdx] };
+        }
+        const date = new Date(dateStr);
+        const day = date.getDate();
+        const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agt',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des',
+        ];
+        return { day, month: months[date.getMonth()] };
+    };
     return (
         <div className="mx-auto max-w-container-max space-y-unit-lg p-margin-desktop">
             <section className="flex flex-col items-start justify-between gap-unit-md md:flex-row md:items-center">
@@ -61,7 +130,7 @@ export default function Dashboard({
                                 </span>
                             </h3>
                         </div>
-                        <div className="bg-primary-fixed rounded-lg p-3 text-primary">
+                        <div className="rounded-lg bg-primary-fixed p-3 text-primary">
                             <Building2 className="h-6 w-6" />
                         </div>
                     </div>
@@ -97,30 +166,13 @@ export default function Dashboard({
                             Kegiatan Bulan Ini
                         </p>
                         <h3 className="mt-2 font-headline-lg text-headline-lg">
-                            18
+                            {kegiatanBulanIni}
                         </h3>
                         <p className="mt-1 font-body-sm text-body-sm text-on-primary-container">
-                            +4 dibandingkan bulan lalu
-                        </p>
-                    </div>
-                    <div className="relative z-10 mt-8">
-                        <div className="flex -space-x-2">
-                            <img
-                                className="h-8 w-8 rounded-full border-2 border-primary-container object-cover"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhqncHAb0mkuk4zJanDLqLD50FNSlNL17-ddhCuZ9Lb3r1QSSC7-dIm0tG0MOLxLlxz0rWECMH4eV9Gca7xIAvWM-KekVw_WNCUvnrevfjH6nsiw0OyAomCRGOvuXz9qwwA4nbqgkCjh-DsjbFwZLopAIjbNJgPKSaCfFReJS-lFjNuQFBtRdl_DnfUS_4rO_g_aWncboRlz1EFshOa9n57OMqI52jGDdelX-eMCCd6ZeSDiWKOa9VuIlwobHvIyZy6bpHldQ_R14"
-                                alt="Student Avatar 1"
-                            />
-                            <img
-                                className="h-8 w-8 rounded-full border-2 border-primary-container object-cover"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC04wi3gb6Q1Btb23dNw9kXY1l9LTyLDtSmM3Dt9h3JrqNatvC795GmgtusAkreR3_LtOmN0Tga0AvXSBL_btDyEcRlVPiJN9Sf41EhzyPqqraGeKu9SdmgDlUYtMuQC9skEsgzzN2WEl6NyKDeCwVPhOj2pCThWyQf4IMaMv6ep4EEOuKw6-Fj6Se31Ar_QpmZt7EpOPjcKm7GInisaOFqZ-WRfqZGlAKABUl9qo-47TlAwhyWvY-ztYNBMfA5jMMhucbxyqBgoe8"
-                                alt="Student Avatar 2"
-                            />
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary-container bg-secondary-fixed font-label-md text-xs text-on-secondary-fixed">
-                                +12
-                            </div>
-                        </div>
-                        <p className="mt-2 font-label-md text-label-md opacity-80">
-                            Aktif dalam persiapan
+                            {perubahanKegiatanBulanLalu >= 0
+                                ? `+${perubahanKegiatanBulanLalu}`
+                                : perubahanKegiatanBulanLalu}{' '}
+                            dibandingkan bulan lalu
                         </p>
                     </div>
                     <div className="absolute -right-4 -bottom-4 opacity-10">
@@ -129,109 +181,158 @@ export default function Dashboard({
                 </div>
             </section>
             <section className="grid grid-cols-1 items-start gap-unit-lg lg:grid-cols-3">
-                <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-[0px_2px_4px_rgba(26,54,93,0.05)] lg:col-span-2">
-                    <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-unit-lg py-4">
-                        <h4 className="flex items-center gap-2 font-headline-sm text-headline-sm text-primary">
-                            <Clock className="h-5 w-5" />
-                            Antrean Persetujuan
-                        </h4>
-                        <span className="rounded-full bg-error-container px-3 py-1 font-label-lg text-label-lg text-on-error-container">
-                            3 Proposal Menunggu Revisi
-                        </span>
-                    </div>
-                    <div className="divide-y divide-outline-variant">
-                        <div className="group flex items-start gap-4 p-unit-lg transition-colors hover:bg-surface-container-low">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-container-high">
-                                <FileText className="h-6 w-6 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between">
-                                    <h5 className="font-label-lg text-label-lg text-on-surface">
-                                        Proposal Seminar Nasional IT 2024
-                                    </h5>
-                                    <span className="font-label-md text-label-md text-on-surface-variant">
-                                        2 jam yang lalu
-                                    </span>
-                                </div>
-                                <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-                                    Diajukan oleh:{' '}
-                                    <span className="font-medium">
-                                        UKM Computer Club
-                                    </span>
-                                </p>
-                                <div className="mt-3 flex gap-2">
-                                    <button className="cursor-pointer rounded-lg bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-all duration-100 hover:bg-primary-container active:scale-95">
-                                        Review Sekarang
-                                    </button>
-                                    <button className="hover:bg-surface-variant cursor-pointer rounded-lg border border-outline px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-all duration-100 active:scale-95">
-                                        Simpan Draft
-                                    </button>
-                                </div>
-                            </div>
+                <div className="space-y-unit-lg lg:col-span-2">
+                    {/* Antrean Persetujuan Dokumentasi Kegiatan */}
+                    <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
+                        <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-unit-lg py-4">
+                            <h4 className="flex items-center gap-2 font-headline-sm text-headline-sm text-primary">
+                                <Clock className="h-5 w-5" />
+                                Antrean Persetujuan Dokumentasi Kegiatan
+                            </h4>
+                            {totalPendingDokumentasi > 0 && (
+                                <span className="rounded-full bg-error-container px-3 py-1 font-label-lg text-label-lg text-on-error-container">
+                                    {totalPendingDokumentasi} Dokumentasi Baru
+                                </span>
+                            )}
                         </div>
-                        <div className="group flex items-start gap-4 p-unit-lg transition-colors hover:bg-surface-container-low">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-container-high">
-                                <CreditCard className="h-6 w-6 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between">
-                                    <h5 className="font-label-lg text-label-lg text-on-surface">
-                                        Laporan Keuangan LKMM-TD
-                                    </h5>
-                                    <span className="font-label-md text-label-md text-on-surface-variant">
-                                        Kemarin, 14:20
-                                    </span>
+                        <div className="divide-y divide-outline-variant">
+                            {pendingDokumentasiList.length === 0 ? (
+                                <div className="p-8 text-center font-body-md text-on-surface-variant">
+                                    Tidak ada pengajuan dokumentasi kegiatan
+                                    baru.
                                 </div>
-                                <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-                                    Diajukan oleh:{' '}
-                                    <span className="font-medium">
-                                        HIMA Sistem Informasi
-                                    </span>
-                                </p>
-                                <div className="mt-3 flex gap-2">
-                                    <button className="cursor-pointer rounded-lg bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-all duration-100 hover:bg-primary-container active:scale-95">
-                                        Review Sekarang
-                                    </button>
-                                    <button className="hover:bg-surface-variant cursor-pointer rounded-lg border border-outline px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-all duration-100 active:scale-95">
-                                        Detail Laporan
-                                    </button>
-                                </div>
-                            </div>
+                            ) : (
+                                pendingDokumentasiList.map((item) => (
+                                    <div
+                                        key={item.id_dokumentasi}
+                                        className="group flex items-start gap-4 p-unit-lg transition-colors hover:bg-surface-container-low"
+                                    >
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-container-high">
+                                            <FileText className="h-6 w-6 text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between">
+                                                <h5 className="font-label-lg text-label-lg font-semibold text-on-surface">
+                                                    Persetujuan Dokumentasi:{' '}
+                                                    {
+                                                        item.kegiatan
+                                                            ?.nama_kegiatan
+                                                    }
+                                                </h5>
+                                                <span className="font-label-md text-label-md font-medium text-on-surface-variant">
+                                                    {getRelativeTime(
+                                                        item.created_at,
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
+                                                Diajukan oleh:{' '}
+                                                <span className="font-medium">
+                                                    {item.kegiatan
+                                                        ?.profilOrganisasi
+                                                        ?.organisasi
+                                                        ?.nama_organisasi ||
+                                                        'Organisasi'}
+                                                </span>
+                                            </p>
+                                            <div className="mt-3 flex gap-2">
+                                                <Link
+                                                    href={
+                                                        admin.dokumentasiKegiatan.show(
+                                                            item.id_dokumentasi,
+                                                        ).url
+                                                    }
+                                                    className="decoration-none cursor-pointer rounded-lg bg-primary px-4 py-2 text-center font-label-md text-label-md text-on-primary transition-all duration-100 hover:bg-primary-container active:scale-95"
+                                                >
+                                                    Review Sekarang
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
-                        <div className="group flex items-start gap-4 p-unit-lg transition-colors hover:bg-surface-container-low">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-container-high">
-                                <Megaphone className="h-6 w-6 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between">
-                                    <h5 className="font-label-lg text-label-lg text-on-surface">
-                                        Permohonan Izin Ruang Aula
-                                    </h5>
-                                    <span className="font-label-md text-label-md text-on-surface-variant">
-                                        Senin, 09:00
-                                    </span>
-                                </div>
-                                <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
-                                    Diajukan oleh:{' '}
-                                    <span className="font-medium">
-                                        Seni Teater Kampus
-                                    </span>
-                                </p>
-                                <div className="mt-3 flex gap-2">
-                                    <button className="cursor-pointer rounded-lg bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-all duration-100 hover:bg-primary-container active:scale-95">
-                                        Setujui Segera
-                                    </button>
-                                    <button className="hover:bg-surface-variant cursor-pointer rounded-lg border border-outline px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-all duration-100 active:scale-95">
-                                        Tolak
-                                    </button>
-                                </div>
-                            </div>
+                        <div className="bg-surface-container-low p-4 text-center">
+                            <Link
+                                href={admin.dokumentasiKegiatan.index().url}
+                                className="decoration-none cursor-pointer font-label-lg text-label-lg text-primary transition-all hover:underline"
+                            >
+                                Lihat Selengkapnya
+                            </Link>
                         </div>
                     </div>
-                    <div className="bg-surface-container-low p-4 text-center">
-                        <button className="cursor-pointer font-label-lg text-label-lg text-primary transition-all hover:underline">
-                            Lihat Semua Antrean (12)
-                        </button>
+
+                    <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
+                        <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-unit-lg py-4">
+                            <h4 className="flex items-center gap-2 font-headline-sm text-headline-sm text-primary">
+                                <Clock className="h-5 w-5" />
+                                Antrean Persetujuan
+                            </h4>
+                            {totalPendingPengajuan > 0 && (
+                                <span className="rounded-full bg-error-container px-3 py-1 font-label-lg text-label-lg text-on-error-container">
+                                    {totalPendingPengajuan} Pengajuan Baru
+                                </span>
+                            )}
+                        </div>
+                        <div className="divide-y divide-outline-variant">
+                            {pengajuanProfilList.length === 0 ? (
+                                <div className="p-8 text-center font-body-md text-on-surface-variant">
+                                    Tidak ada pengajuan profil baru.
+                                </div>
+                            ) : (
+                                pengajuanProfilList.map((item) => (
+                                    <div
+                                        key={item.id_pengajuan}
+                                        className="group flex items-start gap-4 p-unit-lg transition-colors hover:bg-surface-container-low"
+                                    >
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-surface-container-high">
+                                            <FileText className="h-6 w-6 text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between">
+                                                <h5 className="font-label-lg text-label-lg font-semibold text-on-surface">
+                                                    Pengajuan Profil Periode{' '}
+                                                    {item.periode_kepengurusan}
+                                                </h5>
+                                                <span className="font-label-md text-label-md font-medium text-on-surface-variant">
+                                                    {getRelativeTime(
+                                                        item.created_at,
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <p className="mt-1 font-body-sm text-body-sm text-on-surface-variant">
+                                                Diajukan oleh:{' '}
+                                                <span className="font-medium">
+                                                    {item.organisasi
+                                                        ?.nama_organisasi ||
+                                                        'Organisasi'}
+                                                </span>
+                                            </p>
+                                            <div className="mt-3 flex gap-2">
+                                                <Link
+                                                    href={
+                                                        admin.pengajuanProfil.show(
+                                                            item.id_pengajuan,
+                                                        ).url
+                                                    }
+                                                    className="decoration-none cursor-pointer rounded-lg bg-primary px-4 py-2 text-center font-label-md text-label-md text-on-primary transition-all duration-100 hover:bg-primary-container active:scale-95"
+                                                >
+                                                    Review Sekarang
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <div className="bg-surface-container-low p-4 text-center">
+                            <Link
+                                href={admin.pengajuanProfil.index().url}
+                                className="decoration-none cursor-pointer font-label-lg text-label-lg text-primary transition-all hover:underline"
+                            >
+                                Lihat Selengkapnya
+                            </Link>
+                        </div>
                     </div>
                 </div>
                 <div className="space-y-unit-lg">
@@ -239,14 +340,8 @@ export default function Dashboard({
                         <h4 className="font-headline-sm text-headline-sm text-on-secondary-container">
                             Aksi Cepat
                         </h4>
-                        <div className="mt-4 grid grid-cols-2 gap-3">
-                            <button className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface p-4 text-center shadow-sm transition-all hover:bg-secondary-fixed/20">
-                                <Mail className="h-5 w-5 text-secondary" />
-                                <span className="font-label-md text-label-md text-on-surface">
-                                    Kirim Broadcast
-                                </span>
-                            </button>
-                            <button className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface p-4 text-center shadow-sm transition-all hover:bg-secondary-fixed/20">
+                        <div className="mt-4 flex items-center justify-center">
+                            <button className="flex w-full cursor-pointer flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface p-4 text-center shadow-sm transition-all hover:bg-secondary-fixed/20">
                                 <BookOpen className="h-5 w-5 text-secondary" />
                                 <span className="font-label-md text-label-md text-on-surface">
                                     Log Aktivitas
@@ -259,42 +354,40 @@ export default function Dashboard({
                             Agenda Kampus Terdekat
                         </h4>
                         <div className="space-y-4">
-                            <div className="flex gap-3">
-                                <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg border border-outline-variant bg-surface-container">
-                                    <span className="text-[10px] leading-none font-bold uppercase">
-                                        Mei
-                                    </span>
-                                    <span className="text-lg leading-none font-bold">
-                                        24
-                                    </span>
+                            {agendaTerdekat.length === 0 ? (
+                                <div className="py-4 text-center font-body-sm text-on-surface-variant">
+                                    Tidak ada agenda terdekat.
                                 </div>
-                                <div>
-                                    <p className="font-label-lg text-label-lg text-on-surface">
-                                        Wisuda Periode I 2024
-                                    </p>
-                                    <p className="font-label-md text-label-md text-on-surface-variant">
-                                        Gedung Serbaguna
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex gap-3">
-                                <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg border border-outline-variant bg-surface-container">
-                                    <span className="text-[10px] leading-none font-bold uppercase">
-                                        Mei
-                                    </span>
-                                    <span className="text-lg leading-none font-bold">
-                                        28
-                                    </span>
-                                </div>
-                                <div>
-                                    <p className="font-label-lg text-label-lg text-on-surface">
-                                        Dies Natalis SIMKOM
-                                    </p>
-                                    <p className="font-label-md text-label-md text-on-surface-variant">
-                                        Seluruh Kampus
-                                    </p>
-                                </div>
-                            </div>
+                            ) : (
+                                agendaTerdekat.map((item) => {
+                                    const { day, month } = getFormatDate(
+                                        item.tanggal_pelaksanaan,
+                                    );
+                                    return (
+                                        <div
+                                            key={item.id_kegiatan}
+                                            className="flex gap-3"
+                                        >
+                                            <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg border border-outline-variant bg-surface-container">
+                                                <span className="text-[10px] leading-none font-bold uppercase">
+                                                    {month}
+                                                </span>
+                                                <span className="text-lg leading-none font-bold">
+                                                    {day}
+                                                </span>
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="truncate font-label-lg text-label-lg font-semibold text-on-surface">
+                                                    {item.nama_kegiatan}
+                                                </p>
+                                                <p className="truncate font-label-md text-label-md text-on-surface-variant">
+                                                    {item.lokasi_kegiatan}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
                         </div>
                     </div>
                 </div>

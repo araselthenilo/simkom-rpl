@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminKegiatanController;
+use App\Http\Controllers\AdminPengajuanProfilController;
+use App\Http\Controllers\AdminDokumentasiKegiatanController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PengurusOrganisasiController;
 use App\Http\Controllers\TransaksiKeuanganController;
@@ -38,4 +40,15 @@ Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(functi
 
     // Keuangan management routes (read-only overview for admin)
     Route::get('/keuangan', [TransaksiKeuanganController::class, 'adminIndex'])->name('keuangan.index');
+
+    // Pengajuan Profil routes
+    Route::get('/pengajuan-profil', [AdminPengajuanProfilController::class, 'index'])->name('pengajuan-profil.index');
+    Route::get('/pengajuan-profil/{submission}', [AdminPengajuanProfilController::class, 'show'])->name('pengajuan-profil.show');
+    Route::post('/pengajuan-profil/{submission}/accept', [AdminPengajuanProfilController::class, 'accept'])->name('pengajuan-profil.accept');
+    Route::post('/pengajuan-profil/{submission}/reject', [AdminPengajuanProfilController::class, 'reject'])->name('pengajuan-profil.reject');
+
+    // Dokumentasi Kegiatan routes
+    Route::get('/dokumentasi-kegiatan', [AdminDokumentasiKegiatanController::class, 'index'])->name('dokumentasi-kegiatan.index');
+    Route::get('/dokumentasi-kegiatan/{dokumentasi}', [AdminDokumentasiKegiatanController::class, 'show'])->name('dokumentasi-kegiatan.show');
+    Route::post('/dokumentasi-kegiatan/{dokumentasi}/update-status', [AdminDokumentasiKegiatanController::class, 'updateStatus'])->name('dokumentasi-kegiatan.update-status');
 });

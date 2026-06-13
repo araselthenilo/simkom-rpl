@@ -1,5 +1,6 @@
 import { Link, router } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -18,6 +19,16 @@ type Props = {
 
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
+    const [settingsHref, setSettingsHref] = useState<string>(edit.url());
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const isStaff =
+                window.location.pathname.includes('/pengurus') ||
+                window.location.pathname.includes('/admin');
+            setSettingsHref(edit.url({ query: { from: isStaff ? 'staff' : 'student' } }));
+        }
+    }, []);
 
     const handleLogout = () => {
         cleanup();
@@ -36,7 +47,7 @@ export function UserMenuContent({ user }: Props) {
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"
-                        href={edit()}
+                        href={settingsHref}
                         prefetch
                         onClick={cleanup}
                     >

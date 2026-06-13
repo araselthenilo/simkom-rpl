@@ -75,7 +75,9 @@ export default function EditProfilOrganisasiForm({
             {/* Header / Breadcrumb navigation */}
             <div className="flex items-center justify-between">
                 <Link
-                    href={admin.organisasi.profil(profilOrganisasi.id_organisasi)}
+                    href={admin.organisasi.profil(
+                        profilOrganisasi.id_organisasi,
+                    )}
                     className="decoration-none inline-flex items-center gap-2 text-sm font-semibold text-primary transition-opacity hover:opacity-80"
                 >
                     <ArrowLeft className="h-4 w-4" />
@@ -86,7 +88,7 @@ export default function EditProfilOrganisasiForm({
             {/* Form Card */}
             <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-md">
                 <div className="flex items-center gap-3 border-b border-outline-variant/60 bg-surface-container-low px-6 py-5">
-                    <div className="bg-primary-fixed rounded-lg p-2.5 text-primary">
+                    <div className="rounded-lg bg-primary-fixed p-2.5 text-primary">
                         <Building2 className="h-6 w-6" />
                     </div>
                     <div>
@@ -325,7 +327,9 @@ export default function EditProfilOrganisasiForm({
                     {/* Submit and Cancel Buttons */}
                     <div className="flex justify-end gap-3 border-t border-outline-variant/60 pt-4">
                         <Link
-                            href={admin.organisasi.profil(profilOrganisasi.id_organisasi)}
+                            href={admin.organisasi.profil(
+                                profilOrganisasi.id_organisasi,
+                            )}
                             className="hover:bg-surface-variant decoration-none inline-flex h-auto cursor-pointer items-center justify-center rounded-lg border border-outline px-6 py-2.5 font-label-lg text-sm font-semibold text-on-surface-variant transition-all"
                         >
                             Batal

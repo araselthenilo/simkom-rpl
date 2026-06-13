@@ -20,10 +20,21 @@ import {
     Info,
     RefreshCw,
     FileText,
+    Eye,
+    X,
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+
+interface DokumentasiKegiatan {
+    id_dokumentasi: number;
+    id_kegiatan: number;
+    dokumen_proposal: string | null;
+    dokumen_lpj: string | null;
+    hasil_evaluasi: string | null;
+    status_dokumentasi: 'Diproses' | 'Butuh Revisi' | 'Diterima';
+}
 
 interface Activity {
     id_kegiatan: number;
@@ -42,6 +53,7 @@ interface Activity {
         | 'Selesai'
         | 'Dibatalkan';
     alasan_pembatalan: string | null;
+    dokumentasi_kegiatan?: DokumentasiKegiatan | null;
 }
 
 export default function ManajemenKegiatan({
@@ -65,7 +77,23 @@ export default function ManajemenKegiatan({
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
     const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
+    const [previewActivity, setPreviewActivity] = useState<Activity | null>(
+        null,
+    );
+
+    const getFileName = (urlPath: string | null) => {
+        if (!urlPath) return '';
+        const parts = urlPath.split('/');
+        return parts[parts.length - 1];
+    };
+
+    const isPdf = (urlPath: string | null) => {
+        if (!urlPath) return false;
+        const cleanPath = urlPath.split('?')[0];
+        return cleanPath.toLowerCase().endsWith('.pdf');
+    };
 
     // Form inputs state
     const [formData, setFormData] = useState({
@@ -127,6 +155,22 @@ export default function ManajemenKegiatan({
 
         return matchesSearch && matchesStatus && matchesCategory;
     });
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    // Reset page to 1 when filters or search query change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, activeTab, selectedCategory]);
+
+    const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(
+        startIndex + itemsPerPage,
+        filteredActivities.length,
+    );
+    const paginatedActivities = filteredActivities.slice(startIndex, endIndex);
 
     // Form handlers
     const openCreateModal = () => {
@@ -301,6 +345,7 @@ export default function ManajemenKegiatan({
                 alasan_pembatalan: null,
             },
             {
+                preserveScroll: true,
                 onError: (errors) => {
                     const message = Object.values(errors).join('\n');
                     alert(
@@ -471,7 +516,7 @@ export default function ManajemenKegiatan({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/50">
-                            {filteredActivities.map((activity) => (
+                            {paginatedActivities.map((activity) => (
                                 <tr
                                     key={activity.id_kegiatan}
                                     className="group transition-colors hover:bg-primary/[0.02]"
@@ -483,7 +528,7 @@ export default function ManajemenKegiatan({
                                                 {activity.nama_kegiatan}
                                             </span>
                                             <div className="flex items-center gap-2">
-                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed dark:bg-primary-container dark:text-on-primary-container dark:border-primary-container/30">
+                                                <span className="rounded border border-primary/10 bg-primary-fixed px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed dark:border-primary-container/30 dark:bg-primary-container dark:text-on-primary-container">
                                                     {activity.jenis_kegiatan}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">
@@ -538,22 +583,38 @@ export default function ManajemenKegiatan({
                                     {/* Status & Cancellation Reason */}
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col items-start gap-1">
-                                            <span
-                                                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${
-                                                    activity.status_kegiatan ===
-                                                    'Selesai'
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : activity.status_kegiatan ===
-                                                            'Sedang berlangsung'
-                                                          ? 'bg-amber-100 text-amber-800'
-                                                          : activity.status_kegiatan ===
-                                                              'Mendatang'
-                                                            ? 'bg-blue-100 text-blue-700'
-                                                            : 'bg-red-100 text-red-700'
-                                                }`}
-                                            >
-                                                {activity.status_kegiatan}
-                                            </span>
+                                            {activity.status_kegiatan ===
+                                            'Dibatalkan' ? (
+                                                <span className="flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-[12px] font-semibold text-red-700">
+                                                    {activity.status_kegiatan}
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    onClick={() =>
+                                                        handleStatusTransition(
+                                                            activity.id_kegiatan,
+                                                            activity.status_kegiatan,
+                                                        )
+                                                    }
+                                                    className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${
+                                                        activity.status_kegiatan ===
+                                                        'Selesai'
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
+                                                            : activity.status_kegiatan ===
+                                                                'Sedang berlangsung'
+                                                              ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
+                                                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
+                                                    }`}
+                                                    title="Klik untuk maju ke tahap selanjutnya"
+                                                >
+                                                    <span>
+                                                        {
+                                                            activity.status_kegiatan
+                                                        }
+                                                    </span>
+                                                    <RefreshCw className="h-3 w-3 opacity-60 transition-transform duration-500 group-hover/status-badge:rotate-180 group-hover/status-badge:opacity-100" />
+                                                </button>
+                                            )}
                                             {activity.status_kegiatan ===
                                                 'Dibatalkan' &&
                                                 activity.alasan_pembatalan && (
@@ -582,7 +643,7 @@ export default function ManajemenKegiatan({
                                                         `/pengurus/kegiatan/${activity.id_kegiatan}/peserta`,
                                                     )
                                                 }
-                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Lihat Daftar Peserta"
                                             >
                                                 <Users className="h-4 w-4" />
@@ -595,11 +656,27 @@ export default function ManajemenKegiatan({
                                                         `/pengurus/kegiatan/${activity.id_kegiatan}/dokumentasi`,
                                                     )
                                                 }
-                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Kelola Dokumentasi & Revisi"
                                             >
                                                 <FileText className="h-4 w-4" />
                                             </button>
+                                            {activity.dokumentasi_kegiatan && (
+                                                <button
+                                                    onClick={() => {
+                                                        setPreviewActivity(
+                                                            activity,
+                                                        );
+                                                        setIsPreviewModalOpen(
+                                                            true,
+                                                        );
+                                                    }}
+                                                    className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
+                                                    title="Preview Dokumen Kegiatan"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </button>
+                                            )}
 
                                             {/* Add Transaction Button */}
                                             <button
@@ -608,35 +685,18 @@ export default function ManajemenKegiatan({
                                                         `/pengurus/keuangan?create=true&id_kegiatan=${activity.id_kegiatan}`,
                                                     )
                                                 }
-                                                className="hover:bg-green-50 dark:hover:bg-green-950/40 cursor-pointer rounded-lg p-2 text-green-600 dark:text-green-400 transition-colors"
+                                                className="cursor-pointer rounded-lg p-2 text-green-600 transition-colors hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/40"
                                                 title="Catat Transaksi Keuangan"
                                             >
                                                 <DollarSign className="h-4 w-4" />
                                             </button>
-
-                                            {/* Change Status Switcher */}
-                                            {activity.status_kegiatan !==
-                                                'Dibatalkan' && (
-                                                <button
-                                                    onClick={() =>
-                                                        handleStatusTransition(
-                                                            activity.id_kegiatan,
-                                                            activity.status_kegiatan,
-                                                        )
-                                                    }
-                                                    className="cursor-pointer rounded-lg p-2 text-secondary transition-colors hover:bg-secondary-fixed"
-                                                    title="Maju ke Tahap Selanjutnya"
-                                                >
-                                                    <RefreshCw className="h-4 w-4" />
-                                                </button>
-                                            )}
 
                                             {/* Edit Button */}
                                             <button
                                                 onClick={() =>
                                                     openEditModal(activity)
                                                 }
-                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Edit Detail Kegiatan"
                                             >
                                                 <Edit2 className="h-4 w-4" />
@@ -691,76 +751,53 @@ export default function ManajemenKegiatan({
                 {/* Pagination */}
                 <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant bg-surface-container-low px-unit-lg py-4 md:flex-row">
                     <span className="font-body-sm text-on-surface-variant">
-                        Menampilkan 1-{filteredActivities.length} dari{' '}
-                        {filteredActivities.length} data
+                        Menampilkan{' '}
+                        {filteredActivities.length === 0 ? 0 : startIndex + 1}-
+                        {endIndex} dari {filteredActivities.length} data
                     </span>
                     <div className="flex items-center gap-1">
                         <button
+                            onClick={() =>
+                                setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
                             className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
-                            disabled
+                            disabled={currentPage === 1}
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </button>
-                        <button className="h-8 w-8 cursor-pointer rounded-lg bg-primary font-label-md text-on-primary">
-                            1
-                        </button>
+                        {Array.from(
+                            { length: Math.max(1, totalPages) },
+                            (_, i) => i + 1,
+                        ).map((page) => (
+                            <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`h-8 w-8 cursor-pointer rounded-lg font-label-md transition-colors ${
+                                    currentPage === page
+                                        ? 'bg-primary text-on-primary'
+                                        : 'text-on-surface-variant hover:bg-surface-container-highest'
+                                }`}
+                                disabled={filteredActivities.length === 0}
+                            >
+                                {page}
+                            </button>
+                        ))}
                         <button
-                            className="h-8 w-8 cursor-pointer rounded-lg font-label-md text-on-surface-variant transition-colors hover:bg-surface-container-highest"
-                            disabled
-                        >
-                            2
-                        </button>
-                        <button
+                            onClick={() =>
+                                setCurrentPage((prev) =>
+                                    Math.min(prev + 1, totalPages),
+                                )
+                            }
                             className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-highest disabled:opacity-30"
-                            disabled
+                            disabled={
+                                currentPage === totalPages || totalPages === 0
+                            }
                         >
                             <ChevronRight className="h-5 w-5" />
                         </button>
                     </div>
                 </div>
             </Card>
-
-            {/* Guide & Informational Section */}
-            <div className="mt-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
-                <div className="relative overflow-hidden rounded-xl bg-primary p-unit-xl text-on-primary shadow-lg md:col-span-2">
-                    <div className="relative z-10 max-w-md">
-                        <h3 className="mb-2 font-headline-md text-headline-md">
-                            Panduan Pengelolaan Event
-                        </h3>
-                        <p className="mb-6 font-body-md font-normal opacity-80">
-                            Pastikan pengurus berkoordinasi dengan Bendahara
-                            terkait biaya pendaftaran sebelum mendaftarkan
-                            kegiatan berbayar baru. Kegiatan yang dibatalkan
-                            wajib dicantumkan alasan pembatalannya demi laporan
-                            pertanggungjawaban.
-                        </p>
-                        <a
-                            className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline"
-                            href="#"
-                        >
-                            Lihat SOP Kegiatan STIKOM
-                            <ArrowRight className="h-[18px] w-[18px]" />
-                        </a>
-                    </div>
-                    <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-white/5"></div>
-                    <div className="absolute right-12 bottom-0 mb-8 h-32 w-32 rounded-full bg-white/5"></div>
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg text-center shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
-                    <div className="bg-primary-fixed mb-4 flex h-16 w-16 items-center justify-center rounded-full text-primary">
-                        <HelpCircle className="h-10 w-10" />
-                    </div>
-                    <h4 className="mb-2 font-headline-sm text-primary">
-                        Butuh Bantuan?
-                    </h4>
-                    <p className="mb-4 font-body-sm text-on-surface-variant">
-                        Hubungi admin kemahasiswaan jika terjadi kendala sewa
-                        aula kampus.
-                    </p>
-                    <button className="hover:bg-primary-fixed w-full cursor-pointer rounded-lg border-2 border-primary py-2 font-label-lg font-semibold text-primary transition-colors">
-                        Panduan Operator
-                    </button>
-                </div>
-            </div>
 
             {/* Create Activity Modal */}
             {isCreateModalOpen && (
@@ -1210,6 +1247,250 @@ export default function ManajemenKegiatan({
                     </div>
                 </div>
             )}
+
+            {/* Preview Document Modal */}
+            {isPreviewModalOpen &&
+                previewActivity &&
+                previewActivity.dokumentasi_kegiatan && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+                            onClick={() => {
+                                setIsPreviewModalOpen(false);
+                                setPreviewActivity(null);
+                            }}
+                        ></div>
+                        <div className="relative z-10 flex max-h-[90vh] w-full max-w-4xl animate-in flex-col rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
+                            {/* Header */}
+                            <div className="flex shrink-0 items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                                <div className="flex items-center gap-2.5">
+                                    <h3 className="font-headline-sm font-bold text-primary">
+                                        Preview Dokumen:{' '}
+                                        {previewActivity.nama_kegiatan}
+                                    </h3>
+                                    <span
+                                        className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                                            previewActivity.dokumentasi_kegiatan
+                                                .status_dokumentasi ===
+                                            'Diterima'
+                                                ? 'bg-green-100 text-green-700'
+                                                : previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .status_dokumentasi ===
+                                                    'Butuh Revisi'
+                                                  ? 'bg-red-100 text-red-700'
+                                                  : 'bg-blue-100 text-blue-700'
+                                        }`}
+                                    >
+                                        Status:{' '}
+                                        {
+                                            previewActivity.dokumentasi_kegiatan
+                                                .status_dokumentasi
+                                        }
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setIsPreviewModalOpen(false);
+                                        setPreviewActivity(null);
+                                    }}
+                                    className="cursor-pointer text-2xl font-bold text-on-surface-variant transition-colors hover:text-primary"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+
+                            {/* Scrollable Content */}
+                            <div className="mt-4 flex-1 space-y-6 overflow-y-auto pr-1">
+                                {/* Proposal Preview Section */}
+                                <div className="space-y-2">
+                                    <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                        <span>Dokumen Proposal</span>
+                                        {previewActivity.dokumentasi_kegiatan
+                                            .dokumen_proposal && (
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .dokumen_proposal
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
+                                    </h4>
+                                    {previewActivity.dokumentasi_kegiatan
+                                        .dokumen_proposal ? (
+                                        isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .dokumen_proposal,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.dokumen_proposal}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Proposal PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .dokumen_proposal,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <p className="rounded-lg border border-outline-variant/40 bg-surface-container-low p-3 text-xs text-on-surface-variant/60 italic">
+                                            Dokumen proposal belum diunggah.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* LPJ Preview Section */}
+                                <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                    <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                        <span>
+                                            Dokumen LPJ (Laporan
+                                            Pertanggungjawaban)
+                                        </span>
+                                        {previewActivity.dokumentasi_kegiatan
+                                            .dokumen_lpj && (
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .dokumen_lpj
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
+                                    </h4>
+                                    {previewActivity.dokumentasi_kegiatan
+                                        .dokumen_lpj ? (
+                                        isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .dokumen_lpj,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.dokumen_lpj}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="LPJ PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .dokumen_lpj,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <p className="rounded-lg border border-outline-variant/40 bg-surface-container-low p-3 text-xs text-on-surface-variant/60 italic">
+                                            Dokumen LPJ belum diunggah.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Hasil Evaluasi Section */}
+                                {previewActivity.dokumentasi_kegiatan
+                                    .hasil_evaluasi && (
+                                    <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                        <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                            <span>
+                                                Hasil Evaluasi Kegiatan (Dari
+                                                Petugas)
+                                            </span>
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .hasil_evaluasi
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        </h4>
+                                        {isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .hasil_evaluasi,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.hasil_evaluasi}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Evaluasi PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .hasil_evaluasi,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="flex shrink-0 justify-end border-t border-outline-variant/60 pt-4">
+                                <Button
+                                    onClick={() => {
+                                        setIsPreviewModalOpen(false);
+                                        setPreviewActivity(null);
+                                    }}
+                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-95"
+                                >
+                                    Tutup
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
         </main>
     );
 }

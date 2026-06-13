@@ -409,6 +409,25 @@ class DummyOrganisasiSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             }
+
+            // Create Dummy Pengajuan Profil Organisasi
+            $pengurusList = DB::table('pengurus_organisasi')->take(3)->get();
+            $index = 1;
+            foreach ($pengurusList as $p) {
+                DB::table('pengajuan_profil_organisasi')->insert([
+                    'id_pengurus' => $p->id_pengurus,
+                    'periode_kepengurusan' => '2026/2027',
+                    'logo_organisasi' => 'default_logo.png',
+                    'deskripsi_organisasi' => 'Deskripsi usulan baru untuk organisasi ini. Kami mengajukan pembaruan karena kepengurusan baru telah resmi dilantik.',
+                    'visi_organisasi' => 'Menjadi organisasi mahasiswa yang unggul, berintegritas, dan inovatif di era digital.',
+                    'misi_organisasi' => "1. Menyelenggarakan kegiatan pengembangan soft skill.\n2. Membangun hubungan kemitraan dengan instansi eksternal.\n3. Meningkatkan rasa kekeluargaan antar anggota.",
+                    'status_pengajuan' => 'Diproses',
+                    'created_at' => now()->subHours($index * 2),
+                    'updated_at' => now()->subHours($index * 2),
+                ]);
+                $index++;
+            }
         });
+
     }
 }

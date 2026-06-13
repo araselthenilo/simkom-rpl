@@ -1,5 +1,14 @@
 import { Link } from '@inertiajs/react';
-import { Calendar, Check, CreditCard, Heart, Laptop, MapPin, Trophy, ArrowRight } from 'lucide-react';
+import {
+    Calendar,
+    Check,
+    CreditCard,
+    Heart,
+    Laptop,
+    MapPin,
+    Trophy,
+    ArrowRight,
+} from 'lucide-react';
 import { index as kegiatan } from '@/routes/kegiatan';
 
 interface Organisasi {
@@ -24,7 +33,11 @@ interface Kegiatan {
     tanggal_pelaksanaan: string;
     lokasi_kegiatan: string;
     kuota_peserta: number;
-    status_kegiatan: 'Mendatang' | 'Sedang berlangsung' | 'Selesai' | 'Dibatalkan';
+    status_kegiatan:
+        | 'Mendatang'
+        | 'Sedang berlangsung'
+        | 'Selesai'
+        | 'Dibatalkan';
     peserta_kegiatan_count: number;
     profil_organisasi: ProfilOrganisasi;
 }
@@ -168,15 +181,24 @@ export default function KegiatanMendatang({
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {kegiatanList.map((item) => {
                         const meta = getCategoryMeta(item.jenis_kegiatan);
-                        const dateBadge = getCalendarBadge(item.tanggal_pelaksanaan);
+                        const dateBadge = getCalendarBadge(
+                            item.tanggal_pelaksanaan,
+                        );
                         const isPaid = Number(item.biaya_pendaftaran) > 0;
-                        const isRegistered = registrations[item.id_kegiatan] !== undefined;
-                        const isFull = item.peserta_kegiatan_count >= item.kuota_peserta;
+                        const isRegistered =
+                            registrations[item.id_kegiatan] !== undefined;
+                        const isFull =
+                            item.peserta_kegiatan_count >= item.kuota_peserta;
                         const percentage = Math.min(
                             100,
-                            Math.round((item.peserta_kegiatan_count / item.kuota_peserta) * 100),
+                            Math.round(
+                                (item.peserta_kegiatan_count /
+                                    item.kuota_peserta) *
+                                    100,
+                            ),
                         );
-                        const barColorClass = percentage >= 85 ? 'bg-amber-500' : 'bg-primary';
+                        const barColorClass =
+                            percentage >= 85 ? 'bg-amber-500' : 'bg-primary';
 
                         return (
                             <div
@@ -212,7 +234,11 @@ export default function KegiatanMendatang({
                                     <div className="space-y-4 px-6">
                                         <div className="space-y-1">
                                             <span className="text-label-sm font-medium text-primary">
-                                                {item.profil_organisasi?.organisasi?.nama_organisasi}
+                                                {
+                                                    item.profil_organisasi
+                                                        ?.organisasi
+                                                        ?.nama_organisasi
+                                                }
                                             </span>
                                             <h3 className="line-clamp-2 font-headline-sm text-headline-sm font-bold text-foreground transition-colors group-hover:text-primary">
                                                 {item.nama_kegiatan}
@@ -233,7 +259,9 @@ export default function KegiatanMendatang({
                                             <div className="flex items-center gap-2.5 text-on-surface-variant/90">
                                                 <Calendar className="h-4 w-4 shrink-0 text-primary" />
                                                 <span className="text-body-sm">
-                                                    {formatDate(item.tanggal_pelaksanaan)}
+                                                    {formatDate(
+                                                        item.tanggal_pelaksanaan,
+                                                    )}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2.5 font-medium text-on-surface-variant/90">
@@ -241,7 +269,9 @@ export default function KegiatanMendatang({
                                                 <span className="text-body-sm text-foreground">
                                                     {isPaid ? (
                                                         <span className="font-semibold text-amber-700 dark:text-amber-400">
-                                                            {formatRupiah(item.biaya_pendaftaran)}
+                                                            {formatRupiah(
+                                                                item.biaya_pendaftaran,
+                                                            )}
                                                         </span>
                                                     ) : (
                                                         <span className="font-semibold text-emerald-700 dark:text-emerald-400">
@@ -259,13 +289,19 @@ export default function KegiatanMendatang({
                                                     Kapasitas
                                                 </span>
                                                 <span className="text-foreground">
-                                                    {item.peserta_kegiatan_count} / {item.kuota_peserta} Terisi
+                                                    {
+                                                        item.peserta_kegiatan_count
+                                                    }{' '}
+                                                    / {item.kuota_peserta}{' '}
+                                                    Terisi
                                                 </span>
                                             </div>
                                             <div className="h-2 w-full overflow-hidden rounded-full bg-outline-variant/30">
                                                 <div
                                                     className={`h-full ${barColorClass} transition-all duration-500`}
-                                                    style={{ width: `${percentage}%` }}
+                                                    style={{
+                                                        width: `${percentage}%`,
+                                                    }}
                                                 ></div>
                                             </div>
                                         </div>
@@ -279,12 +315,13 @@ export default function KegiatanMendatang({
                                             href={kegiatan()}
                                             className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-600 py-2 font-medium text-white shadow-sm hover:bg-emerald-700 hover:text-white hover:no-underline"
                                         >
-                                            <Check className="h-4 w-4 stroke-[3]" /> Terdaftar
+                                            <Check className="h-4 w-4 stroke-[3]" />{' '}
+                                            Terdaftar
                                         </Link>
                                     ) : isFull ? (
                                         <button
                                             disabled
-                                            className="w-full rounded-lg border border-outline-variant bg-outline-variant/50 py-2 font-medium text-on-surface-variant/70 cursor-not-allowed"
+                                            className="w-full cursor-not-allowed rounded-lg border border-outline-variant bg-outline-variant/50 py-2 font-medium text-on-surface-variant/70"
                                         >
                                             Kuota Penuh
                                         </button>

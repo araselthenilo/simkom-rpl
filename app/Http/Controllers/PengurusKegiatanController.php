@@ -63,8 +63,23 @@ class PengurusKegiatanController extends Controller
         $id_profil = $pengurusRecord->id_profil;
 
         $activities = Kegiatan::where('id_profil', $id_profil)
+            ->with('dokumentasiKegiatan')
             ->orderBy('tanggal_pelaksanaan', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($kegiatan) {
+                if ($kegiatan->dokumentasiKegiatan) {
+                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal 
+                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_proposal) 
+                        : null;
+                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj 
+                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_lpj) 
+                        : null;
+                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi 
+                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->hasil_evaluasi) 
+                        : null;
+                }
+                return $kegiatan;
+            });
 
         return Inertia::render('pengurus/manajemen-kegiatan', [
             'initialActivities' => $activities,

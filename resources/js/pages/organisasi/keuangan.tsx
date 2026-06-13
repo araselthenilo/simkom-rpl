@@ -67,7 +67,9 @@ export default function KeuanganPage({
     transaksiList = [],
 }: KeuanganPageProps) {
     const [search, setSearch] = useState('');
-    const [typeFilter, setTypeFilter] = useState<'all' | 'Pemasukan' | 'Pengeluaran'>('all');
+    const [typeFilter, setTypeFilter] = useState<
+        'all' | 'Pemasukan' | 'Pengeluaran'
+    >('all');
     const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null);
 
     // Calculate Summary Metrics
@@ -95,10 +97,15 @@ export default function KeuanganPage({
     const filteredTransactions = useMemo(() => {
         return transaksiList.filter((t) => {
             const matchesSearch =
-                t.sumber_tujuan_transaksi.toLowerCase().includes(search.toLowerCase()) ||
-                (t.kegiatan?.nama_kegiatan || '').toLowerCase().includes(search.toLowerCase());
+                t.sumber_tujuan_transaksi
+                    .toLowerCase()
+                    .includes(search.toLowerCase()) ||
+                (t.kegiatan?.nama_kegiatan || '')
+                    .toLowerCase()
+                    .includes(search.toLowerCase());
 
-            const matchesType = typeFilter === 'all' || t.jenis_transaksi === typeFilter;
+            const matchesType =
+                typeFilter === 'all' || t.jenis_transaksi === typeFilter;
 
             return matchesSearch && matchesType;
         });
@@ -152,7 +159,8 @@ export default function KeuanganPage({
                                     Laporan Keuangan
                                 </h1>
                                 <p className="mt-0.5 font-body-md text-on-surface-variant">
-                                    Transparansi Anggaran {organisasi.nama_organisasi}
+                                    Transparansi Anggaran{' '}
+                                    {organisasi.nama_organisasi}
                                 </p>
                             </div>
                         </div>
@@ -169,7 +177,7 @@ export default function KeuanganPage({
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                     <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
                         <div className="flex items-start justify-between">
-                            <span className="font-label-md text-emerald-700 dark:text-emerald-400 font-semibold">
+                            <span className="font-label-md font-semibold text-emerald-700 dark:text-emerald-400">
                                 Total Pemasukan
                             </span>
                             <TrendingUp className="h-5 w-5 text-emerald-500" />
@@ -181,7 +189,7 @@ export default function KeuanganPage({
 
                     <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
                         <div className="flex items-start justify-between">
-                            <span className="font-label-md text-red-700 dark:text-red-400 font-semibold">
+                            <span className="font-label-md font-semibold text-red-700 dark:text-red-400">
                                 Total Pengeluaran
                             </span>
                             <TrendingDown className="h-5 w-5 text-red-500" />
@@ -193,7 +201,7 @@ export default function KeuanganPage({
 
                     <Card className="flex h-32 flex-col justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
                         <div className="flex items-start justify-between">
-                            <span className="font-label-md text-primary font-semibold">
+                            <span className="font-label-md font-semibold text-primary">
                                 Saldo Akhir
                             </span>
                             <DollarSign className="h-5 w-5 text-primary" />
@@ -225,7 +233,13 @@ export default function KeuanganPage({
                                     : 'border-none bg-transparent text-on-surface-variant hover:text-emerald-700'
                             }`}
                         >
-                            Pemasukan ({transaksiList.filter((t) => t.jenis_transaksi === 'Pemasukan').length})
+                            Pemasukan (
+                            {
+                                transaksiList.filter(
+                                    (t) => t.jenis_transaksi === 'Pemasukan',
+                                ).length
+                            }
+                            )
                         </button>
                         <button
                             onClick={() => setTypeFilter('Pengeluaran')}
@@ -235,7 +249,13 @@ export default function KeuanganPage({
                                     : 'border-none bg-transparent text-on-surface-variant hover:text-red-700'
                             }`}
                         >
-                            Pengeluaran ({transaksiList.filter((t) => t.jenis_transaksi === 'Pengeluaran').length})
+                            Pengeluaran (
+                            {
+                                transaksiList.filter(
+                                    (t) => t.jenis_transaksi === 'Pengeluaran',
+                                ).length
+                            }
+                            )
                         </button>
                     </div>
 
@@ -272,10 +292,14 @@ export default function KeuanganPage({
                                     <tr className="border-b border-outline-variant bg-surface-container-low text-xs font-semibold tracking-wider text-primary uppercase">
                                         <th className="px-6 py-4">Tanggal</th>
                                         <th className="px-6 py-4">Kegiatan</th>
-                                        <th className="px-6 py-4">Sumber / Penerima</th>
+                                        <th className="px-6 py-4">
+                                            Sumber / Penerima
+                                        </th>
                                         <th className="px-6 py-4">Tipe</th>
                                         <th className="px-6 py-4">Nominal</th>
-                                        <th className="px-6 py-4 text-center">Bukti</th>
+                                        <th className="px-6 py-4 text-center">
+                                            Bukti
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-outline-variant/60 font-body-sm text-sm text-on-surface">
@@ -286,32 +310,61 @@ export default function KeuanganPage({
                                                 className="transition-colors hover:bg-surface-container-low/30"
                                             >
                                                 <td className="px-6 py-4 font-medium text-foreground">
-                                                    {formatDate(t.tanggal_transaksi)}
+                                                    {formatDate(
+                                                        t.tanggal_transaksi,
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4 font-medium text-on-surface-variant">
-                                                    {t.kegiatan?.nama_kegiatan || '-'}
+                                                    {t.kegiatan
+                                                        ?.nama_kegiatan || '-'}
                                                 </td>
                                                 <td className="px-6 py-4 text-on-surface-variant">
                                                     {t.sumber_tujuan_transaksi}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                                                        t.jenis_transaksi === 'Pemasukan'
-                                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                                                            : 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
-                                                    }`}>
+                                                    <span
+                                                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                                            t.jenis_transaksi ===
+                                                            'Pemasukan'
+                                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                                                                : 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+                                                        }`}
+                                                    >
                                                         {t.jenis_transaksi}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 font-semibold text-foreground">
                                                     <div className="flex flex-col">
-                                                        <span className={t.jenis_transaksi === 'Pemasukan' ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}>
-                                                            {t.jenis_transaksi === 'Pemasukan' ? '+' : '-'} {formatRupiah(Number(t.nominal_transaksi))}
+                                                        <span
+                                                            className={
+                                                                t.jenis_transaksi ===
+                                                                'Pemasukan'
+                                                                    ? 'text-emerald-700 dark:text-emerald-400'
+                                                                    : 'text-red-700 dark:text-red-400'
+                                                            }
+                                                        >
+                                                            {t.jenis_transaksi ===
+                                                            'Pemasukan'
+                                                                ? '+'
+                                                                : '-'}{' '}
+                                                            {formatRupiah(
+                                                                Number(
+                                                                    t.nominal_transaksi,
+                                                                ),
+                                                            )}
                                                         </span>
                                                         {t.catatan_koreksi && (
-                                                            <span className="flex items-center gap-1 mt-0.5 text-[10px] text-amber-600 dark:text-amber-400 font-normal max-w-[180px]" title={t.catatan_koreksi}>
+                                                            <span
+                                                                className="mt-0.5 flex max-w-[180px] items-center gap-1 text-[10px] font-normal text-amber-600 dark:text-amber-400"
+                                                                title={
+                                                                    t.catatan_koreksi
+                                                                }
+                                                            >
                                                                 <AlertCircle className="h-3 w-3 shrink-0" />
-                                                                Dikoreksi: {t.catatan_koreksi}
+                                                                Dikoreksi:{' '}
+                                                                {
+                                                                    t.catatan_koreksi
+                                                                }
                                                             </span>
                                                         )}
                                                     </div>
@@ -322,7 +375,11 @@ export default function KeuanganPage({
                                                             variant="outline"
                                                             size="sm"
                                                             className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-md px-3 font-semibold text-primary transition-all hover:bg-primary/5"
-                                                            onClick={() => setSelectedReceipt(t.foto_bukti_transaksi)}
+                                                            onClick={() =>
+                                                                setSelectedReceipt(
+                                                                    t.foto_bukti_transaksi,
+                                                                )
+                                                            }
                                                         >
                                                             <Eye className="h-3.5 w-3.5" />
                                                             Lihat
@@ -344,7 +401,10 @@ export default function KeuanganPage({
             </main>
 
             {/* RECEIPT VIEW DIALOG */}
-            <Dialog open={!!selectedReceipt} onOpenChange={(open) => !open && setSelectedReceipt(null)}>
+            <Dialog
+                open={!!selectedReceipt}
+                onOpenChange={(open) => !open && setSelectedReceipt(null)}
+            >
                 <DialogContent className="max-w-md rounded-2xl border border-outline-variant bg-surface-container-lowest p-6">
                     <DialogHeader>
                         <DialogTitle className="font-headline-sm text-headline-sm font-bold text-foreground">
@@ -358,10 +418,14 @@ export default function KeuanganPage({
                     {selectedReceipt && (
                         <div className="flex flex-col items-center justify-center p-2">
                             <div className="w-full overflow-hidden rounded-xl border border-outline-variant/50 bg-surface-container-low p-2">
-                                {selectedReceipt.toLowerCase().endsWith('.pdf') ? (
+                                {selectedReceipt
+                                    .toLowerCase()
+                                    .endsWith('.pdf') ? (
                                     <div className="flex flex-col items-center justify-center py-10 text-center">
-                                        <FileText className="h-16 w-16 text-primary/70 mb-3" />
-                                        <p className="text-sm font-semibold text-foreground mb-4">Dokumen Bukti Transfer (PDF)</p>
+                                        <FileText className="mb-3 h-16 w-16 text-primary/70" />
+                                        <p className="mb-4 text-sm font-semibold text-foreground">
+                                            Dokumen Bukti Transfer (PDF)
+                                        </p>
                                         <a
                                             href={`/storage/${selectedReceipt}`}
                                             target="_blank"
@@ -383,7 +447,11 @@ export default function KeuanganPage({
                     )}
 
                     <DialogFooter>
-                        <Button variant="outline" className="w-full sm:w-auto" onClick={() => setSelectedReceipt(null)}>
+                        <Button
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                            onClick={() => setSelectedReceipt(null)}
+                        >
                             Tutup
                         </Button>
                     </DialogFooter>

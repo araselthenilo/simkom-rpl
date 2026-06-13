@@ -74,7 +74,10 @@ interface Props {
     dokumentasi: Dokumentasi | null;
 }
 
-export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props) {
+export default function DokumentasiKegiatanPage({
+    kegiatan,
+    dokumentasi,
+}: Props) {
     const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
@@ -115,45 +118,56 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
         const formData = new FormData();
         formData.append('foto', file);
 
-        router.post(`/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/foto`, formData, {
-            forceFormData: true,
-            onSuccess: () => {
-                setUploadingPhoto(false);
-                // Reset file input
-                e.target.value = '';
+        router.post(
+            `/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/foto`,
+            formData,
+            {
+                forceFormData: true,
+                onSuccess: () => {
+                    setUploadingPhoto(false);
+                    // Reset file input
+                    e.target.value = '';
+                },
+                onError: (err) => {
+                    setUploadingPhoto(false);
+                    const message = Object.values(err).join('\n');
+                    alert(message || 'Gagal mengunggah foto.');
+                },
             },
-            onError: (err) => {
-                setUploadingPhoto(false);
-                const message = Object.values(err).join('\n');
-                alert(message || 'Gagal mengunggah foto.');
-            },
-        });
+        );
     };
 
     // Handle photo delete
     const handleDeletePhoto = (idFoto: number) => {
         if (confirm('Apakah Anda yakin ingin menghapus foto ini?')) {
-            router.delete(`/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/foto/${idFoto}`, {
-                onSuccess: () => {
-                    if (previewPhoto) setPreviewPhoto(null);
+            router.delete(
+                `/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/foto/${idFoto}`,
+                {
+                    onSuccess: () => {
+                        if (previewPhoto) setPreviewPhoto(null);
+                    },
+                    onError: (err) => {
+                        const message = Object.values(err).join('\n');
+                        alert(message || 'Gagal menghapus foto.');
+                    },
                 },
-                onError: (err) => {
-                    const message = Object.values(err).join('\n');
-                    alert(message || 'Gagal menghapus foto.');
-                },
-            });
+            );
         }
     };
 
     // Handle resolve revision note
     const handleTindaklanjut = (idCatatan: number) => {
         if (confirm('Tandai catatan revisi ini telah ditindaklanjuti?')) {
-            router.post(`/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/revisi/${idCatatan}/tindaklanjut`, {}, {
-                onError: (err) => {
-                    const message = Object.values(err).join('\n');
-                    alert(message || 'Gagal menindaklanjuti catatan.');
+            router.post(
+                `/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/revisi/${idCatatan}/tindaklanjut`,
+                {},
+                {
+                    onError: (err) => {
+                        const message = Object.values(err).join('\n');
+                        alert(message || 'Gagal menindaklanjuti catatan.');
+                    },
                 },
-            });
+            );
         }
     };
 
@@ -176,6 +190,12 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
         return parts[parts.length - 1];
     };
 
+    const isPdf = (urlPath: string | null) => {
+        if (!urlPath) return false;
+        const cleanPath = urlPath.split('?')[0];
+        return cleanPath.toLowerCase().endsWith('.pdf');
+    };
+
     return (
         <main className="mx-auto w-full max-w-container-max animate-in space-y-gutter p-margin-desktop duration-200 fade-in">
             {/* Header & Back Button */}
@@ -192,7 +212,7 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                     <h2 className="font-headline-lg text-headline-lg text-primary">
                         Dokumentasi: {kegiatan.nama_kegiatan}
                     </h2>
-                    <span className="bg-primary-fixed rounded border border-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                    <span className="rounded border border-primary/10 bg-primary-fixed px-2.5 py-1 text-xs font-semibold text-primary">
                         {kegiatan.jenis_kegiatan}
                     </span>
                     {dokumentasi && (
@@ -200,14 +220,22 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                             className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
                                 dokumentasi.status_dokumentasi === 'Diterima'
                                     ? 'bg-green-100 text-green-700'
-                                    : dokumentasi.status_dokumentasi === 'Butuh Revisi'
+                                    : dokumentasi.status_dokumentasi ===
+                                        'Butuh Revisi'
                                       ? 'bg-red-100 text-red-700'
                                       : 'bg-blue-100 text-blue-700'
                             }`}
                         >
-                            {dokumentasi.status_dokumentasi === 'Diterima' && <CheckCircle2 className="h-3.5 w-3.5" />}
-                            {dokumentasi.status_dokumentasi === 'Butuh Revisi' && <AlertCircle className="h-3.5 w-3.5" />}
-                            {dokumentasi.status_dokumentasi === 'Diproses' && <Clock className="h-3.5 w-3.5" />}
+                            {dokumentasi.status_dokumentasi === 'Diterima' && (
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                            )}
+                            {dokumentasi.status_dokumentasi ===
+                                'Butuh Revisi' && (
+                                <AlertCircle className="h-3.5 w-3.5" />
+                            )}
+                            {dokumentasi.status_dokumentasi === 'Diproses' && (
+                                <Clock className="h-3.5 w-3.5" />
+                            )}
                             Status: {dokumentasi.status_dokumentasi}
                         </span>
                     )}
@@ -227,26 +255,29 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
 
             {/* Quick Status Info for Missing Docs */}
             {!dokumentasi && (
-                <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4 text-blue-800 flex items-start gap-3 shadow-xs">
-                    <Info className="h-5 w-5 mt-0.5 text-blue-600 shrink-0" />
+                <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50/50 p-4 text-blue-800 shadow-xs">
+                    <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
                     <div>
-                        <h4 className="font-bold text-sm">Dokumentasi Belum Dibuat</h4>
-                        <p className="text-xs mt-0.5 opacity-90">
-                            Silakan unggah dokumen proposal kegiatan Anda terlebih dahulu untuk membuat dokumentasi kegiatan baru. Setelah proposal berhasil diunggah, Anda dapat mengunggah foto dokumentasi kegiatan.
+                        <h4 className="text-sm font-bold">
+                            Dokumentasi Belum Dibuat
+                        </h4>
+                        <p className="mt-0.5 text-xs opacity-90">
+                            Silakan unggah dokumen proposal kegiatan Anda
+                            terlebih dahulu untuk membuat dokumentasi kegiatan
+                            baru. Setelah proposal berhasil diunggah, Anda dapat
+                            mengunggah foto dokumentasi kegiatan.
                         </p>
                     </div>
                 </div>
             )}
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-                
+            <div className="grid grid-cols-1 gap-gutter lg:grid-cols-3">
                 {/* Left Columns - Form & Files (Span 2) */}
-                <div className="lg:col-span-2 space-y-gutter">
-                    
+                <div className="space-y-gutter lg:col-span-2">
                     {/* Proposal and LPJ Card */}
                     <Card className="rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
-                        <h3 className="font-headline-sm font-bold text-primary mb-6 flex items-center gap-2">
+                        <h3 className="mb-6 flex items-center gap-2 font-headline-sm font-bold text-primary">
                             <FileText className="h-5 w-5 text-primary" />
                             Dokumen Pertanggungjawaban
                         </h3>
@@ -257,49 +288,85 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                 <label className="block text-sm font-semibold text-primary">
                                     Dokumen Proposal *
                                     {dokumentasi?.dokumen_proposal && (
-                                        <span className="text-[11px] font-normal text-green-700 ml-2">(Sudah Diunggah)</span>
+                                        <span className="ml-2 text-[11px] font-normal text-green-700">
+                                            (Sudah Diunggah)
+                                        </span>
                                     )}
                                 </label>
-                                
+
                                 {dokumentasi?.dokumen_proposal && (
-                                    <div className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs mb-2 transition-all hover:bg-surface-container-high">
-                                        <span className="font-medium text-on-surface-variant truncate max-w-md">
-                                            {getFileName(dokumentasi.dokumen_proposal)}
-                                        </span>
-                                        <a
-                                            href={dokumentasi.dokumen_proposal}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1.5 text-primary font-bold hover:underline"
-                                        >
-                                            <Download className="h-3.5 w-3.5" />
-                                            Unduh
-                                        </a>
+                                    <div className="mb-2 space-y-2">
+                                        <div className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs transition-all hover:bg-surface-container-high">
+                                            <span className="max-w-md truncate font-medium text-on-surface-variant">
+                                                {getFileName(
+                                                    dokumentasi.dokumen_proposal,
+                                                )}
+                                            </span>
+                                            <a
+                                                href={
+                                                    dokumentasi.dokumen_proposal
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1.5 font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />
+                                                Unduh
+                                            </a>
+                                        </div>
+                                        {isPdf(dokumentasi.dokumen_proposal) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${dokumentasi.dokumen_proposal}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Proposal PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="px-1 text-[11px] text-on-surface-variant/70 italic">
+                                                * Preview hanya tersedia untuk
+                                                file PDF. Silakan unduh untuk
+                                                melihat dokumen Word.
+                                            </p>
+                                        )}
                                     </div>
                                 )}
 
-                                <div className="relative flex items-center justify-center rounded-lg border-2 border-dashed border-outline-variant hover:border-primary transition-all p-4 bg-background/50">
+                                <div className="relative flex items-center justify-center rounded-lg border-2 border-dashed border-outline-variant bg-background/50 p-4 transition-all hover:border-primary">
                                     <input
                                         type="file"
                                         accept=".pdf,.doc,.docx"
-                                        onChange={(e) => setData('dokumen_proposal', e.target.files?.[0] || null)}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onChange={(e) =>
+                                            setData(
+                                                'dokumen_proposal',
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
+                                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                                     />
-                                    <div className="text-center space-y-1">
-                                        <Upload className="h-8 w-8 mx-auto text-on-surface-variant/40" />
+                                    <div className="space-y-1 text-center">
+                                        <Upload className="mx-auto h-8 w-8 text-on-surface-variant/40" />
                                         <div className="text-xs text-on-surface-variant">
-                                            <span className="font-semibold text-primary">Pilih berkas</span> atau seret kemari
+                                            <span className="font-semibold text-primary">
+                                                Pilih berkas
+                                            </span>{' '}
+                                            atau seret kemari
                                         </div>
-                                        <p className="text-[10px] text-on-surface-variant/60">PDF, DOC, DOCX (Maks. 10 MB)</p>
+                                        <p className="text-[10px] text-on-surface-variant/60">
+                                            PDF, DOC, DOCX (Maks. 10 MB)
+                                        </p>
                                     </div>
                                 </div>
                                 {data.dokumen_proposal && (
-                                    <p className="text-xs text-primary font-medium">
-                                        Berkas terpilih: {data.dokumen_proposal.name}
+                                    <p className="text-xs font-medium text-primary">
+                                        Berkas terpilih:{' '}
+                                        {data.dokumen_proposal.name}
                                     </p>
                                 )}
                                 {errors.dokumen_proposal && (
-                                    <p className="text-xs text-error">{errors.dokumen_proposal}</p>
+                                    <p className="text-xs text-error">
+                                        {errors.dokumen_proposal}
+                                    </p>
                                 )}
                             </div>
 
@@ -308,73 +375,123 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                 <label className="block text-sm font-semibold text-primary">
                                     Dokumen LPJ (Laporan Pertanggungjawaban)
                                     {dokumentasi?.dokumen_lpj && (
-                                        <span className="text-[11px] font-normal text-green-700 ml-2">(Sudah Diunggah)</span>
+                                        <span className="ml-2 text-[11px] font-normal text-green-700">
+                                            (Sudah Diunggah)
+                                        </span>
                                     )}
                                 </label>
 
                                 {dokumentasi?.dokumen_lpj && (
-                                    <div className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs mb-2 transition-all hover:bg-surface-container-high">
-                                        <span className="font-medium text-on-surface-variant truncate max-w-md">
-                                            {getFileName(dokumentasi.dokumen_lpj)}
-                                        </span>
-                                        <a
-                                            href={dokumentasi.dokumen_lpj}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1.5 text-primary font-bold hover:underline"
-                                        >
-                                            <Download className="h-3.5 w-3.5" />
-                                            Unduh
-                                        </a>
+                                    <div className="mb-2 space-y-2">
+                                        <div className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs transition-all hover:bg-surface-container-high">
+                                            <span className="max-w-md truncate font-medium text-on-surface-variant">
+                                                {getFileName(
+                                                    dokumentasi.dokumen_lpj,
+                                                )}
+                                            </span>
+                                            <a
+                                                href={dokumentasi.dokumen_lpj}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1.5 font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />
+                                                Unduh
+                                            </a>
+                                        </div>
+                                        {isPdf(dokumentasi.dokumen_lpj) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${dokumentasi.dokumen_lpj}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="LPJ PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="px-1 text-[11px] text-on-surface-variant/70 italic">
+                                                * Preview hanya tersedia untuk
+                                                file PDF. Silakan unduh untuk
+                                                melihat dokumen Word.
+                                            </p>
+                                        )}
                                     </div>
                                 )}
 
-                                <div className="relative flex items-center justify-center rounded-lg border-2 border-dashed border-outline-variant hover:border-primary transition-all p-4 bg-background/50">
+                                <div className="relative flex items-center justify-center rounded-lg border-2 border-dashed border-outline-variant bg-background/50 p-4 transition-all hover:border-primary">
                                     <input
                                         type="file"
                                         accept=".pdf,.doc,.docx"
-                                        onChange={(e) => setData('dokumen_lpj', e.target.files?.[0] || null)}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onChange={(e) =>
+                                            setData(
+                                                'dokumen_lpj',
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
+                                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                                     />
-                                    <div className="text-center space-y-1">
-                                        <Upload className="h-8 w-8 mx-auto text-on-surface-variant/40" />
+                                    <div className="space-y-1 text-center">
+                                        <Upload className="mx-auto h-8 w-8 text-on-surface-variant/40" />
                                         <div className="text-xs text-on-surface-variant">
-                                            <span className="font-semibold text-primary">Pilih berkas</span> atau seret kemari
+                                            <span className="font-semibold text-primary">
+                                                Pilih berkas
+                                            </span>{' '}
+                                            atau seret kemari
                                         </div>
-                                        <p className="text-[10px] text-on-surface-variant/60">PDF, DOC, DOCX (Maks. 10 MB)</p>
+                                        <p className="text-[10px] text-on-surface-variant/60">
+                                            PDF, DOC, DOCX (Maks. 10 MB)
+                                        </p>
                                     </div>
                                 </div>
                                 {data.dokumen_lpj && (
-                                    <p className="text-xs text-primary font-medium">
+                                    <p className="text-xs font-medium text-primary">
                                         Berkas terpilih: {data.dokumen_lpj.name}
                                     </p>
                                 )}
                                 {errors.dokumen_lpj && (
-                                    <p className="text-xs text-error">{errors.dokumen_lpj}</p>
+                                    <p className="text-xs text-error">
+                                        {errors.dokumen_lpj}
+                                    </p>
                                 )}
                             </div>
 
                             {/* Evaluation Report (Petugas only upload, Staff View Only) */}
                             {dokumentasi?.hasil_evaluasi && (
-                                <div className="rounded-lg border border-outline-variant bg-surface-container-low p-4 space-y-2">
-                                    <h4 className="text-xs font-bold text-primary flex items-center gap-1">
+                                <div className="space-y-2 rounded-lg border border-outline-variant bg-surface-container-low p-4">
+                                    <h4 className="flex items-center gap-1 text-xs font-bold text-primary">
                                         <CheckCircle2 className="h-3.5 w-3.5 text-green-700" />
                                         Hasil Evaluasi Kegiatan dari Petugas
                                     </h4>
-                                    <div className="flex items-center justify-between text-xs pt-1">
-                                        <span className="text-on-surface-variant truncate max-w-sm">
-                                            {getFileName(dokumentasi.hasil_evaluasi)}
+                                    <div className="flex items-center justify-between pt-1 text-xs">
+                                        <span className="max-w-sm truncate text-on-surface-variant">
+                                            {getFileName(
+                                                dokumentasi.hasil_evaluasi,
+                                            )}
                                         </span>
                                         <a
                                             href={dokumentasi.hasil_evaluasi}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-1.5 text-primary font-bold hover:underline"
+                                            className="flex items-center gap-1.5 font-bold text-primary hover:underline"
                                         >
                                             <Download className="h-3.5 w-3.5" />
                                             Unduh Evaluasi
                                         </a>
                                     </div>
+                                    {isPdf(dokumentasi.hasil_evaluasi) ? (
+                                        <div className="mt-2 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                            <iframe
+                                                src={`${dokumentasi.hasil_evaluasi}#toolbar=0&navpanes=0`}
+                                                className="h-[1000px] w-full border-none"
+                                                title="Evaluasi PDF Preview"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <p className="mt-1 px-1 text-[11px] text-on-surface-variant/70 italic">
+                                            * Preview hanya tersedia untuk file
+                                            PDF. Silakan unduh untuk melihat
+                                            dokumen Word.
+                                        </p>
+                                    )}
                                 </div>
                             )}
 
@@ -386,7 +503,9 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                     className="cursor-pointer bg-primary text-on-primary hover:opacity-95"
                                 >
                                     <Upload className="mr-2 h-4 w-4" />
-                                    {processing ? 'Menyimpan...' : 'Simpan Dokumen'}
+                                    {processing
+                                        ? 'Menyimpan...'
+                                        : 'Simpan Dokumen'}
                                 </Button>
                             </div>
                         </form>
@@ -394,12 +513,12 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
 
                     {/* Photos Gallery Card */}
                     <Card className="rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                            <h3 className="font-headline-sm font-bold text-primary flex items-center gap-2">
+                        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <h3 className="flex items-center gap-2 font-headline-sm font-bold text-primary">
                                 <Image className="h-5 w-5 text-primary" />
                                 Foto Dokumentasi Kegiatan
                             </h3>
-                            
+
                             {dokumentasi && (
                                 <div className="relative">
                                     <input
@@ -412,12 +531,16 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                     />
                                     <label
                                         htmlFor="photo-upload-input"
-                                        className={`inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary cursor-pointer transition-all hover:opacity-90 active:scale-95 shadow-sm ${
-                                            uploadingPhoto ? 'opacity-50 pointer-events-none' : ''
+                                        className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 ${
+                                            uploadingPhoto
+                                                ? 'pointer-events-none opacity-50'
+                                                : ''
                                         }`}
                                     >
                                         <Plus className="h-4 w-4" />
-                                        {uploadingPhoto ? 'Mengunggah...' : 'Unggah Foto'}
+                                        {uploadingPhoto
+                                            ? 'Mengunggah...'
+                                            : 'Unggah Foto'}
                                     </label>
                                 </div>
                             )}
@@ -426,7 +549,7 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                         {/* Image Grid / Placeholders */}
                         {dokumentasi ? (
                             dokumentasi.foto_kegiatan.length > 0 ? (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
                                     {dokumentasi.foto_kegiatan.map((foto) => (
                                         <div
                                             key={foto.id_foto}
@@ -438,17 +561,25 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                                 className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
                                             />
                                             {/* Hover action overlay */}
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center gap-2">
+                                            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                                                 <button
-                                                    onClick={() => setPreviewPhoto(foto.url)}
-                                                    className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white transition-colors"
+                                                    onClick={() =>
+                                                        setPreviewPhoto(
+                                                            foto.url,
+                                                        )
+                                                    }
+                                                    className="rounded-lg bg-white/20 p-1.5 text-white transition-colors hover:bg-white/40"
                                                     title="Lihat Penuh"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDeletePhoto(foto.id_foto)}
-                                                    className="p-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/80 text-white transition-colors"
+                                                    onClick={() =>
+                                                        handleDeletePhoto(
+                                                            foto.id_foto,
+                                                        )
+                                                    }
+                                                    className="rounded-lg bg-red-600/20 p-1.5 text-white transition-colors hover:bg-red-600/80"
                                                     title="Hapus"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -460,15 +591,26 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                             ) : (
                                 <div className="rounded-lg border border-outline-variant bg-surface-container-low py-10 text-center text-on-surface-variant/60">
                                     <Image className="mx-auto mb-2 h-12 w-12 opacity-35" />
-                                    <p className="text-sm font-medium">Belum ada foto dokumentasi</p>
-                                    <p className="text-xs mt-1">Unggah foto kegiatan yang sudah selesai dilaksanakan.</p>
+                                    <p className="text-sm font-medium">
+                                        Belum ada foto dokumentasi
+                                    </p>
+                                    <p className="mt-1 text-xs">
+                                        Unggah foto kegiatan yang sudah selesai
+                                        dilaksanakan.
+                                    </p>
                                 </div>
                             )
                         ) : (
                             <div className="rounded-lg border border-outline-variant bg-surface-container-low py-10 text-center text-on-surface-variant/60">
                                 <Image className="mx-auto mb-2 h-12 w-12 opacity-30" />
-                                <p className="text-sm font-medium text-on-surface-variant/70">Galeri Foto Belum Aktif</p>
-                                <p className="text-xs mt-1">Silakan unggah berkas proposal di atas terlebih dahulu untuk mengaktifkan pengunggahan foto kegiatan.</p>
+                                <p className="text-sm font-medium text-on-surface-variant/70">
+                                    Galeri Foto Belum Aktif
+                                </p>
+                                <p className="mt-1 text-xs">
+                                    Silakan unggah berkas proposal di atas
+                                    terlebih dahulu untuk mengaktifkan
+                                    pengunggahan foto kegiatan.
+                                </p>
                             </div>
                         )}
                     </Card>
@@ -476,18 +618,19 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
 
                 {/* Right Column - Revision Notes (Span 1) */}
                 <div className="space-y-gutter">
-                    <Card className="rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm h-full flex flex-col">
-                        <h3 className="font-headline-sm font-bold text-primary mb-6 flex items-center gap-2">
+                    <Card className="flex h-full flex-col rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
+                        <h3 className="mb-6 flex items-center gap-2 font-headline-sm font-bold text-primary">
                             <MessageSquare className="h-5 w-5 text-primary" />
                             Catatan Revisi & Evaluasi
                         </h3>
 
-                        {dokumentasi && dokumentasi.catatan_revisi.length > 0 ? (
-                            <div className="flex-1 space-y-4 overflow-y-auto max-h-[600px] pr-2">
+                        {dokumentasi &&
+                        dokumentasi.catatan_revisi.length > 0 ? (
+                            <div className="max-h-[600px] flex-1 space-y-4 overflow-y-auto pr-2">
                                 {dokumentasi.catatan_revisi.map((catatan) => (
                                     <div
                                         key={catatan.id_catatan}
-                                        className={`rounded-lg border p-4 space-y-3 shadow-2xs transition-all ${
+                                        className={`space-y-3 rounded-lg border p-4 shadow-2xs transition-all ${
                                             catatan.status_tindaklanjut
                                                 ? 'border-green-200 bg-green-50/20'
                                                 : 'border-red-200 bg-red-50/20'
@@ -498,23 +641,27 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                                 <span className="block text-xs font-bold text-primary">
                                                     {catatan.nama_petugas}
                                                 </span>
-                                                <span className="block text-[10px] text-on-surface-variant/60 mt-0.5">
-                                                    {formatDate(catatan.created_at)}
+                                                <span className="mt-0.5 block text-[10px] text-on-surface-variant/60">
+                                                    {formatDate(
+                                                        catatan.created_at,
+                                                    )}
                                                 </span>
                                             </div>
-                                            
+
                                             <span
-                                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                                                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                                                     catatan.status_tindaklanjut
                                                         ? 'bg-green-100 text-green-700'
                                                         : 'bg-red-100 text-red-700'
                                                 }`}
                                             >
-                                                {catatan.status_tindaklanjut ? 'Selesai' : 'Revisi'}
+                                                {catatan.status_tindaklanjut
+                                                    ? 'Selesai'
+                                                    : 'Revisi'}
                                             </span>
                                         </div>
 
-                                        <p className="text-xs text-on-background leading-relaxed whitespace-pre-line">
+                                        <p className="text-xs leading-relaxed whitespace-pre-line text-on-background">
                                             {catatan.isi_catatan}
                                         </p>
 
@@ -522,10 +669,14 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                         {!catatan.status_tindaklanjut && (
                                             <div className="flex justify-end pt-1">
                                                 <Button
-                                                    onClick={() => handleTindaklanjut(catatan.id_catatan)}
+                                                    onClick={() =>
+                                                        handleTindaklanjut(
+                                                            catatan.id_catatan,
+                                                        )
+                                                    }
                                                     variant="outline"
                                                     size="xs"
-                                                    className="cursor-pointer border border-green-600 text-green-700 hover:bg-green-50 text-[11px] h-7 px-2.5"
+                                                    className="h-7 cursor-pointer border border-green-600 px-2.5 text-[11px] text-green-700 hover:bg-green-50"
                                                 >
                                                     <Check className="mr-1 h-3.5 w-3.5" />
                                                     Tindaklanjuti
@@ -533,20 +684,29 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
                                             </div>
                                         )}
 
-                                        {catatan.status_tindaklanjut && catatan.waktu_ditindaklanjuti && (
-                                            <div className="text-[10px] text-green-700 italic border-t border-green-200/40 pt-2 flex items-center gap-1">
-                                                <CheckCircle2 className="h-3 w-3 inline" />
-                                                Ditindaklanjuti pada: {formatDate(catatan.waktu_ditindaklanjuti)}
-                                            </div>
-                                        )}
+                                        {catatan.status_tindaklanjut &&
+                                            catatan.waktu_ditindaklanjuti && (
+                                                <div className="flex items-center gap-1 border-t border-green-200/40 pt-2 text-[10px] text-green-700 italic">
+                                                    <CheckCircle2 className="inline h-3 w-3" />
+                                                    Ditindaklanjuti pada:{' '}
+                                                    {formatDate(
+                                                        catatan.waktu_ditindaklanjuti,
+                                                    )}
+                                                </div>
+                                            )}
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-center text-on-surface-variant/60 py-12">
+                            <div className="flex flex-1 flex-col items-center justify-center py-12 text-center text-on-surface-variant/60">
                                 <MessageSquare className="mb-2 h-12 w-12 opacity-35" />
-                                <p className="text-sm font-medium">Tidak ada catatan revisi</p>
-                                <p className="text-xs mt-1">Evaluasi atau masukan dari pembina & admin akan muncul di sini.</p>
+                                <p className="text-sm font-medium">
+                                    Tidak ada catatan revisi
+                                </p>
+                                <p className="mt-1 text-xs">
+                                    Evaluasi atau masukan dari pembina & admin
+                                    akan muncul di sini.
+                                </p>
                             </div>
                         )}
                     </Card>
@@ -555,18 +715,18 @@ export default function DokumentasiKegiatanPage({ kegiatan, dokumentasi }: Props
 
             {/* Photo lightbox modal */}
             {previewPhoto && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xs transition-opacity duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs transition-opacity duration-200">
                     <button
                         onClick={() => setPreviewPhoto(null)}
-                        className="absolute top-4 right-4 text-white hover:text-primary transition-colors p-2 bg-white/10 hover:bg-white/20 rounded-full"
+                        className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 hover:text-primary"
                     >
                         <X className="h-6 w-6" />
                     </button>
-                    <div className="max-w-4xl max-h-[90vh] overflow-hidden rounded-lg flex items-center justify-center">
+                    <div className="flex max-h-[90vh] max-w-4xl items-center justify-center overflow-hidden rounded-lg">
                         <img
                             src={previewPhoto}
                             alt="Dokumentasi Penuh"
-                            className="max-h-[85vh] max-w-full object-contain rounded"
+                            className="max-h-[85vh] max-w-full rounded object-contain"
                         />
                     </div>
                 </div>

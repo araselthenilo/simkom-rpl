@@ -57,5 +57,11 @@ export default function PesertaKegiatanPage({
     kegiatan,
     pesertaList = [],
 }: Props) {
-    return <PesertaKegiatan kegiatan={kegiatan} pesertaList={pesertaList} role="admin" />;
+    return (
+        <PesertaKegiatan
+            kegiatan={kegiatan}
+            pesertaList={pesertaList}
+            role="admin"
+        />
+    );
 }

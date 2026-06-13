@@ -74,8 +74,9 @@ export default function TopNavbar({
                 />
             </Head>
             <header
-                className={`sticky top-0 z-40 w-full border-b border-outline-variant bg-surface shadow-sm transition-transform duration-300 ease-out dark:bg-surface-dim ${isHidden ? '-translate-y-full' : 'translate-y-0'
-                    }`}
+                className={`sticky top-0 z-40 w-full border-b border-outline-variant bg-surface shadow-sm transition-transform duration-300 ease-out dark:bg-surface-dim ${
+                    isHidden ? '-translate-y-full' : 'translate-y-0'
+                }`}
             >
                 <div className="mx-auto flex h-16 w-full max-w-container-max items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-unit-md">
@@ -118,7 +119,7 @@ export default function TopNavbar({
                         </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="bg-primary-fixed flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
+                                <button className="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-primary-fixed transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
                                     {auth.user?.avatar ? (
                                         <img
                                             src={auth.user.avatar}
@@ -136,7 +137,7 @@ export default function TopNavbar({
                                 <DropdownMenuItem asChild>
                                     <Link
                                         className="block w-full cursor-pointer"
-                                        href={edit()}
+                                        href={edit.url({ query: { from: 'student' } })}
                                         prefetch
                                         onClick={cleanup}
                                     >

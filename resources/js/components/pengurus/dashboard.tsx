@@ -87,8 +87,8 @@ export default function Dashboard({
             iconBg: 'bg-primary/10 text-primary dark:bg-primary-container dark:text-on-primary-container',
             badge: (
                 <span className="text-success flex items-center gap-1 text-label-md font-bold text-green-600 dark:text-green-400">
-                    <TrendingUp className="h-3.5 w-3.5" />
-                    +{statsData.percentageIncrease}%
+                    <TrendingUp className="h-3.5 w-3.5" />+
+                    {statsData.percentageIncrease}%
                 </span>
             ),
         },
@@ -113,7 +113,9 @@ export default function Dashboard({
                       style: 'currency',
                       currency: 'IDR',
                       minimumFractionDigits: 0,
-                  }).format(statsData.saldoKas).replace('IDR', 'Rp')
+                  })
+                      .format(statsData.saldoKas)
+                      .replace('IDR', 'Rp')
                 : 'Rp *********',
             icon: Wallet,
             iconBg: 'bg-tertiary-container/10 text-tertiary dark:bg-tertiary-container dark:text-on-tertiary-container',
@@ -135,19 +137,21 @@ export default function Dashboard({
             value: statsData.menungguVerifikasi.toString(),
             icon: Clock,
             iconBg: 'bg-error-container/50 text-error dark:bg-error-container dark:text-on-error-container',
-            badge: statsData.menungguVerifikasiBaru > 0 ? (
-                <Badge className="h-auto animate-pulse rounded-full border-none bg-error px-2 py-0.5 font-bold text-on-error">
-                    {statsData.menungguVerifikasiBaru} Baru
-                </Badge>
-            ) : (
-                <Badge className="h-auto rounded-full border-none bg-outline-variant/30 px-2 py-0.5 font-bold text-on-surface-variant">
-                    0 Baru
-                </Badge>
-            ),
+            badge:
+                statsData.menungguVerifikasiBaru > 0 ? (
+                    <Badge className="h-auto animate-pulse rounded-full border-none bg-error px-2 py-0.5 font-bold text-on-error">
+                        {statsData.menungguVerifikasiBaru} Baru
+                    </Badge>
+                ) : (
+                    <Badge className="h-auto rounded-full border-none bg-outline-variant/30 px-2 py-0.5 font-bold text-on-surface-variant">
+                        0 Baru
+                    </Badge>
+                ),
         },
     ];
 
-    const trendData = trendPeriod === '7-days' ? trendData7Days : trendData30Days;
+    const trendData =
+        trendPeriod === '7-days' ? trendData7Days : trendData30Days;
 
     const getActivityIconConfig = (jenis: string) => {
         switch (jenis) {
@@ -259,41 +263,49 @@ export default function Dashboard({
                     </div>
 
                     <TooltipProvider>
-                        <div 
+                        <div
                             className="mt-8 h-64 px-2"
-                            style={{ 
-                                display: 'grid', 
+                            style={{
+                                display: 'grid',
                                 gridTemplateColumns: `repeat(${trendData.length}, minmax(0, 1fr))`,
-                                gap: trendPeriod === '7-days' ? '8px' : '4px'
+                                gap: trendPeriod === '7-days' ? '8px' : '4px',
                             }}
                         >
                             {trendData.map((data, idx) => {
-                                const showLabel = trendPeriod === '7-days' || (trendData.length - 1 - idx) % 5 === 0;
+                                const showLabel =
+                                    trendPeriod === '7-days' ||
+                                    (trendData.length - 1 - idx) % 5 === 0;
 
                                 return (
                                     <Tooltip key={idx}>
                                         <TooltipTrigger asChild>
-                                            <div
-                                                className="group flex h-full flex-col items-center justify-end w-full cursor-pointer"
-                                            >
-                                                <div className={`relative h-2/3 w-full rounded-t-lg transition-all ${
-                                                    data.count > 0 
-                                                        ? 'bg-primary/10 dark:bg-primary-container/45' 
-                                                        : 'bg-transparent'
-                                                } group-hover:bg-primary/5 dark:group-hover:bg-primary-container/10`}>
+                                            <div className="group flex h-full w-full cursor-pointer flex-col items-center justify-end">
+                                                <div
+                                                    className={`relative h-2/3 w-full rounded-t-lg transition-all ${
+                                                        data.count > 0
+                                                            ? 'bg-primary/10 dark:bg-primary-container/45'
+                                                            : 'bg-transparent'
+                                                    } group-hover:bg-primary/5 dark:group-hover:bg-primary-container/10`}
+                                                >
                                                     <div
                                                         className="absolute bottom-0 w-full rounded-t-lg bg-primary transition-all duration-700 ease-out"
-                                                        style={{ height: data.height }}
+                                                        style={{
+                                                            height: data.height,
+                                                        }}
                                                     />
                                                 </div>
-                                                <span className="mt-2 text-[9px] md:text-label-md text-on-surface-variant h-4 flex items-center justify-center whitespace-nowrap">
+                                                <span className="mt-2 flex h-4 items-center justify-center text-[9px] whitespace-nowrap text-on-surface-variant md:text-label-md">
                                                     {showLabel ? data.day : ''}
                                                 </span>
                                             </div>
                                         </TooltipTrigger>
                                         <TooltipContent side="top">
-                                            <p className="font-semibold text-xs">{data.day}</p>
-                                            <p className="text-[11px]">{data.count} Pendaftaran</p>
+                                            <p className="text-xs font-semibold">
+                                                {data.day}
+                                            </p>
+                                            <p className="text-[11px]">
+                                                {data.count} Pendaftaran
+                                            </p>
                                         </TooltipContent>
                                     </Tooltip>
                                 );
@@ -309,7 +321,9 @@ export default function Dashboard({
                     </h4>
                     <div className="custom-scrollbar max-h-64 space-y-unit-md overflow-y-auto pr-2">
                         {recentActivities.map((activity, idx) => {
-                            const config = getActivityIconConfig(activity.jenis_kegiatan);
+                            const config = getActivityIconConfig(
+                                activity.jenis_kegiatan,
+                            );
                             const ActivityIcon = config.icon;
 
                             return (
@@ -334,7 +348,7 @@ export default function Dashboard({
                             );
                         })}
                         {recentActivities.length === 0 && (
-                            <p className="text-center font-body-md text-on-surface-variant py-8">
+                            <p className="py-8 text-center font-body-md text-on-surface-variant">
                                 Belum ada kegiatan.
                             </p>
                         )}
@@ -362,9 +376,7 @@ export default function Dashboard({
                         className="h-auto cursor-pointer p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
                         asChild
                     >
-                        <Link href="/pengurus/anggota">
-                            Kelola Semua
-                        </Link>
+                        <Link href="/pengurus/anggota">Kelola Semua</Link>
                     </Button>
                 </div>
                 <div className="overflow-x-auto">
@@ -410,12 +422,14 @@ export default function Dashboard({
                                     <td className="px-unit-lg py-4">
                                         <Badge
                                             className={`h-auto rounded-full border-none px-3 py-1 text-[12px] font-bold shadow-none ${
-                                                member.status === 'Approved' || member.status === 'Aktif'
+                                                member.status === 'Approved' ||
+                                                member.status === 'Aktif'
                                                     ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-950/50'
-                                                    : member.status === 'Ditolak'
-                                                    ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
-                                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
-                                                }`}
+                                                    : member.status ===
+                                                        'Ditolak'
+                                                      ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
+                                                      : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
+                                            }`}
                                         >
                                             {member.status}
                                         </Badge>

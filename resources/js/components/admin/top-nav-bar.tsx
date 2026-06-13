@@ -60,7 +60,7 @@ export default function TopNavBar() {
                         </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="bg-primary-fixed flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
+                                <button className="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-primary-fixed transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
                                     {auth.user?.avatar ? (
                                         <img
                                             src={auth.user.avatar}
@@ -78,7 +78,7 @@ export default function TopNavBar() {
                                 <DropdownMenuItem asChild>
                                     <Link
                                         className="block w-full cursor-pointer"
-                                        href={edit()}
+                                        href={edit.url({ query: { from: 'staff' } })}
                                         prefetch
                                         onClick={cleanup}
                                     >

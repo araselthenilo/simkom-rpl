@@ -64,7 +64,8 @@ export default function ManajemenKeuangan({
     const [selectedKegiatanId, setSelectedKegiatanId] = useState<string>('all');
     const [selectedJenis, setSelectedJenis] = useState<string>('all');
     const [sortBy, setSortBy] = useState<string>('newest');
-    const [selectedStatsActivityId, setSelectedStatsActivityId] = useState<string>('all');
+    const [selectedStatsActivityId, setSelectedStatsActivityId] =
+        useState<string>('all');
 
     // Dynamic stats computation based on selected activity for stats
     const computedStats = React.useMemo(() => {
@@ -77,7 +78,10 @@ export default function ManajemenKeuangan({
         }
 
         const filtered = transactions.filter((t) => {
-            return selectedStatsActivityId === 'all' || t.id_kegiatan === parseInt(selectedStatsActivityId, 10);
+            return (
+                selectedStatsActivityId === 'all' ||
+                t.id_kegiatan === parseInt(selectedStatsActivityId, 10)
+            );
         });
 
         const totalPemasukan = filtered
@@ -99,7 +103,8 @@ export default function ManajemenKeuangan({
 
     // Modal State
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+    const [selectedTransaction, setSelectedTransaction] =
+        useState<Transaction | null>(null);
     const [filePreview, setFilePreview] = useState<string | null>(null);
     const [dragActive, setDragActive] = useState(false);
 
@@ -130,7 +135,11 @@ export default function ManajemenKeuangan({
             }, 0);
 
             // Clean up the URL query parameters
-            window.history.replaceState({}, document.title, window.location.pathname);
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname,
+            );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -188,8 +197,8 @@ export default function ManajemenKeuangan({
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) {
-return '0 Bytes';
-}
+            return '0 Bytes';
+        }
 
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB'];
@@ -250,10 +259,23 @@ return '0 Bytes';
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) {
-return '';
-}
+            return '';
+        }
 
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agu',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des',
+        ];
         const parts = dateStr.split('-');
 
         if (parts.length === 3) {
@@ -267,22 +289,22 @@ return '';
         const d = new Date(dateStr);
 
         if (isNaN(d.getTime())) {
-return dateStr;
-}
+            return dateStr;
+        }
 
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     };
 
     const formatTime = (timeStr?: string | null) => {
         if (!timeStr) {
-return '--:-- WITA';
-}
+            return '--:-- WITA';
+        }
 
         const d = new Date(timeStr);
 
         if (isNaN(d.getTime())) {
-return '';
-}
+            return '';
+        }
 
         const pad = (n: number) => n.toString().padStart(2, '0');
 
@@ -294,8 +316,13 @@ return '';
             const query = searchQuery.toLowerCase();
             const purpose = (t.sumber_tujuan_transaksi || '').toLowerCase();
             const invoice = (t.foto_bukti_transaksi || '').toLowerCase();
-            const kegiatanName = (t.kegiatan?.nama_kegiatan || '').toLowerCase();
-            const matchesQuery = purpose.includes(query) || invoice.includes(query) || kegiatanName.includes(query);
+            const kegiatanName = (
+                t.kegiatan?.nama_kegiatan || ''
+            ).toLowerCase();
+            const matchesQuery =
+                purpose.includes(query) ||
+                invoice.includes(query) ||
+                kegiatanName.includes(query);
 
             const matchesKegiatan =
                 selectedKegiatanId === 'all' ||
@@ -313,22 +340,29 @@ return '';
 
             if (sortBy === 'newest') {
                 if (dateA !== dateB) {
-return dateB - dateA;
-}
+                    return dateB - dateA;
+                }
 
                 return b.id_transaksi - a.id_transaksi;
             } else {
                 if (dateA !== dateB) {
-return dateA - dateB;
-}
+                    return dateA - dateB;
+                }
 
                 return a.id_transaksi - b.id_transaksi;
             }
         });
 
-    const totalStatsAmount = computedStats.totalPemasukan + computedStats.totalPengeluaran;
-    const pemasukanPercent = totalStatsAmount > 0 ? (computedStats.totalPemasukan / totalStatsAmount) * 100 : 0;
-    const pengeluaranPercent = totalStatsAmount > 0 ? (computedStats.totalPengeluaran / totalStatsAmount) * 100 : 0;
+    const totalStatsAmount =
+        computedStats.totalPemasukan + computedStats.totalPengeluaran;
+    const pemasukanPercent =
+        totalStatsAmount > 0
+            ? (computedStats.totalPemasukan / totalStatsAmount) * 100
+            : 0;
+    const pengeluaranPercent =
+        totalStatsAmount > 0
+            ? (computedStats.totalPengeluaran / totalStatsAmount) * 100
+            : 0;
 
     let financialStatus = 'Seimbang';
 
@@ -375,15 +409,17 @@ return dateA - dateB;
             </section>
 
             {/* Stats Filter Section */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-sm">
+            <div className="flex flex-col justify-between gap-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 shadow-sm sm:flex-row sm:items-center">
                 <div className="flex items-center gap-2">
                     <Filter className="h-5 w-5 text-primary" />
-                    <span className="font-semibold text-sm text-primary">Filter Statistik Kegiatan</span>
+                    <span className="text-sm font-semibold text-primary">
+                        Filter Statistik Kegiatan
+                    </span>
                 </div>
                 <select
                     value={selectedStatsActivityId}
                     onChange={(e) => setSelectedStatsActivityId(e.target.value)}
-                    className="w-full sm:w-72 cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-72"
                 >
                     <option value="all">Semua Kegiatan (Total)</option>
                     {activities.map((act) => (
@@ -404,7 +440,10 @@ return dateA - dateB;
                         + {formatRupiah(computedStats.totalPemasukan)}
                     </p>
                     <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-green-100 dark:bg-green-950">
-                        <div className="h-full bg-green-500" style={{ width: `${pemasukanPercent}%` }} />
+                        <div
+                            className="h-full bg-green-500"
+                            style={{ width: `${pemasukanPercent}%` }}
+                        />
                     </div>
                 </Card>
                 <Card className="rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-unit-lg shadow-sm ring-0 md:col-span-1">
@@ -415,7 +454,10 @@ return dateA - dateB;
                         - {formatRupiah(computedStats.totalPengeluaran)}
                     </p>
                     <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-red-100 dark:bg-red-950">
-                        <div className="h-full bg-error" style={{ width: `${pengeluaranPercent}%` }} />
+                        <div
+                            className="h-full bg-error"
+                            style={{ width: `${pengeluaranPercent}%` }}
+                        />
                     </div>
                 </Card>
                 <Card className="group relative overflow-hidden rounded-xl border-none bg-primary p-unit-lg shadow-lg ring-0 md:col-span-2">
@@ -457,7 +499,9 @@ return dateA - dateB;
                             onClick={() => setIsFilterVisible(!isFilterVisible)}
                             className="group h-auto cursor-pointer rounded-lg border border-outline-variant/50 p-2 shadow-none transition-colors hover:bg-surface-container-low"
                         >
-                            <Filter className={`h-5 w-5 ${isFilterVisible ? 'text-white group-hover:text-primary' : 'text-primary'}`} />
+                            <Filter
+                                className={`h-5 w-5 ${isFilterVisible ? 'text-white group-hover:text-primary' : 'text-primary'}`}
+                            />
                         </Button>
                     </div>
                 </div>
@@ -469,12 +513,17 @@ return dateA - dateB;
                             </label>
                             <select
                                 value={selectedKegiatanId}
-                                onChange={(e) => setSelectedKegiatanId(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedKegiatanId(e.target.value)
+                                }
                                 className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                             >
                                 <option value="all">Semua Kegiatan</option>
                                 {activities.map((act) => (
-                                    <option key={act.id_kegiatan} value={act.id_kegiatan}>
+                                    <option
+                                        key={act.id_kegiatan}
+                                        value={act.id_kegiatan}
+                                    >
                                         {act.nama_kegiatan}
                                     </option>
                                 ))}
@@ -486,7 +535,9 @@ return dateA - dateB;
                             </label>
                             <select
                                 value={selectedJenis}
-                                onChange={(e) => setSelectedJenis(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedJenis(e.target.value)
+                                }
                                 className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                             >
                                 <option value="all">Semua Jenis</option>
@@ -503,8 +554,12 @@ return dateA - dateB;
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                             >
-                                <option value="newest">Terbaru (Terbaru ke Terlama)</option>
-                                <option value="oldest">Terlama (Terlama ke Terbaru)</option>
+                                <option value="newest">
+                                    Terbaru (Terbaru ke Terlama)
+                                </option>
+                                <option value="oldest">
+                                    Terlama (Terlama ke Terbaru)
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -544,7 +599,9 @@ return dateA - dateB;
                                 >
                                     <td className="px-unit-lg py-4">
                                         <p className="font-body-md text-body-md font-medium">
-                                            {formatDate(transaction.tanggal_transaksi)}
+                                            {formatDate(
+                                                transaction.tanggal_transaksi,
+                                            )}
                                         </p>
                                         <p className="font-label-md text-label-md text-on-surface-variant">
                                             {formatTime(transaction.created_at)}
@@ -552,12 +609,15 @@ return dateA - dateB;
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <span
-                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${transaction.jenis_transaksi.toLowerCase() === 'pemasukan'
-                                                ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
-                                                : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
-                                                }`}
+                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${
+                                                transaction.jenis_transaksi.toLowerCase() ===
+                                                'pemasukan'
+                                                    ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
+                                                    : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
+                                            }`}
                                         >
-                                            {transaction.jenis_transaksi.toLowerCase() === 'pemasukan' ? (
+                                            {transaction.jenis_transaksi.toLowerCase() ===
+                                            'pemasukan' ? (
                                                 <ArrowUp className="h-3.5 w-3.5" />
                                             ) : (
                                                 <ArrowDown className="h-3.5 w-3.5" />
@@ -566,42 +626,64 @@ return dateA - dateB;
                                         </span>
                                     </td>
                                     <td
-                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${transaction.jenis_transaksi.toLowerCase() === 'pemasukan'
-                                            ? 'text-green-700 dark:text-green-400'
-                                            : 'text-error'
-                                            }`}
+                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${
+                                            transaction.jenis_transaksi.toLowerCase() ===
+                                            'pemasukan'
+                                                ? 'text-green-700 dark:text-green-400'
+                                                : 'text-error'
+                                        }`}
                                     >
-                                        {formatRupiah(transaction.nominal_transaksi)}
+                                        {formatRupiah(
+                                            transaction.nominal_transaksi,
+                                        )}
                                     </td>
                                     <td
                                         className="max-w-xs truncate px-unit-lg py-4 font-body-md text-body-md"
-                                        title={transaction.sumber_tujuan_transaksi}
+                                        title={
+                                            transaction.sumber_tujuan_transaksi
+                                        }
                                     >
                                         {transaction.sumber_tujuan_transaksi}
                                     </td>
                                     <td
                                         className="max-w-xs truncate px-unit-lg py-4 font-body-md text-body-md font-medium text-primary"
-                                        title={transaction.kegiatan?.nama_kegiatan || '-'}
+                                        title={
+                                            transaction.kegiatan
+                                                ?.nama_kegiatan || '-'
+                                        }
                                     >
-                                        {transaction.kegiatan?.nama_kegiatan || '-'}
+                                        {transaction.kegiatan?.nama_kegiatan ||
+                                            '-'}
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         {transaction.foto_bukti_transaksi ? (
                                             <Button
                                                 variant="link"
                                                 className="flex h-auto cursor-pointer items-center gap-2 p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
-                                                onClick={() => transaction.foto_bukti_transaksi && window.open(transaction.foto_bukti_transaksi, '_blank')}
+                                                onClick={() =>
+                                                    transaction.foto_bukti_transaksi &&
+                                                    window.open(
+                                                        transaction.foto_bukti_transaksi,
+                                                        '_blank',
+                                                    )
+                                                }
                                             >
                                                 <Receipt className="h-4 w-4" />
-                                                {transaction.foto_bukti_transaksi.split('/').pop()}
+                                                {transaction.foto_bukti_transaksi
+                                                    .split('/')
+                                                    .pop()}
                                             </Button>
                                         ) : (
-                                            <span className="font-body-md text-body-md text-on-surface-variant">Tidak ada</span>
+                                            <span className="font-body-md text-body-md text-on-surface-variant">
+                                                Tidak ada
+                                            </span>
                                         )}
                                     </td>
                                     <td className="px-unit-lg py-4 text-right">
                                         <Button
-                                            onClick={() => handleKoreksi(transaction)}
+                                            onClick={() =>
+                                                handleKoreksi(transaction)
+                                            }
                                             className="h-auto cursor-pointer rounded-lg border-none bg-surface-container-low px-4 py-2 font-label-lg text-label-lg text-primary shadow-none transition-all hover:bg-primary hover:text-on-primary"
                                         >
                                             Koreksi
@@ -625,7 +707,9 @@ return dateA - dateB;
                 {/* Table Footer */}
                 <div className="flex flex-col items-center justify-between gap-unit-md border-t border-outline-variant/30 px-unit-lg py-4 text-on-surface-variant md:flex-row">
                     <p className="font-body-sm text-body-sm">
-                        Menampilkan {filteredTransactions.length > 0 ? 1 : 0}-{filteredTransactions.length} dari {transactions.length} transaksi
+                        Menampilkan {filteredTransactions.length > 0 ? 1 : 0}-
+                        {filteredTransactions.length} dari {transactions.length}{' '}
+                        transaksi
                     </p>
                     <div className="flex items-center gap-2">
                         <Button
@@ -658,11 +742,13 @@ return dateA - dateB;
                         className="absolute inset-0 bg-black/50 backdrop-blur-xs"
                         onClick={handleCloseModal}
                     ></div>
-                    <div className="relative z-10 w-full max-w-xl animate-in rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                    <div className="custom-scrollbar relative z-10 max-h-[90vh] w-full max-w-xl animate-in overflow-y-auto rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
                         <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
-                            <h3 className="font-headline-sm font-bold text-primary flex items-center gap-2">
+                            <h3 className="flex items-center gap-2 font-headline-sm font-bold text-primary">
                                 <Coins className="h-5 w-5" />
-                                {selectedTransaction ? 'Koreksi Transaksi' : 'Catat Transaksi Baru'}
+                                {selectedTransaction
+                                    ? 'Koreksi Transaksi'
+                                    : 'Catat Transaksi Baru'}
                             </h3>
                             <button
                                 onClick={handleCloseModal}
@@ -677,25 +763,35 @@ return dateA - dateB;
                         >
                             {/* Kegiatan Dropdown */}
                             <div className="space-y-1">
-                                <Label htmlFor="id_kegiatan" className="text-primary font-semibold text-xs">
+                                <Label
+                                    htmlFor="id_kegiatan"
+                                    className="text-xs font-semibold text-primary"
+                                >
                                     Kegiatan Terkait *
                                 </Label>
                                 <select
                                     id="id_kegiatan"
                                     value={data.id_kegiatan}
-                                    onChange={(e) => setData('id_kegiatan', e.target.value)}
-                                    className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    onChange={(e) =>
+                                        setData('id_kegiatan', e.target.value)
+                                    }
+                                    className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     required
                                 >
-                                    <option value="">-- Pilih Kegiatan --</option>
+                                    <option value="">
+                                        -- Pilih Kegiatan --
+                                    </option>
                                     {activities.map((act) => (
-                                        <option key={act.id_kegiatan} value={act.id_kegiatan}>
+                                        <option
+                                            key={act.id_kegiatan}
+                                            value={act.id_kegiatan}
+                                        >
                                             {act.nama_kegiatan}
                                         </option>
                                     ))}
                                 </select>
                                 {errors.id_kegiatan && (
-                                    <p className="text-xs text-error flex items-center gap-1 font-medium mt-1">
+                                    <p className="mt-1 flex items-center gap-1 text-xs font-medium text-error">
                                         <AlertCircle className="h-3 w-3" />
                                         {errors.id_kegiatan}
                                     </p>
@@ -704,35 +800,52 @@ return dateA - dateB;
 
                             {/* Jenis Transaksi */}
                             <div className="space-y-1">
-                                <Label className="text-primary font-semibold text-xs">
+                                <Label className="text-xs font-semibold text-primary">
                                     Jenis Transaksi *
                                 </Label>
                                 <div className="grid grid-cols-2 gap-3">
                                     <button
                                         type="button"
-                                        onClick={() => setData('jenis_transaksi', 'Pemasukan')}
-                                        className={`flex items-center justify-center gap-2 rounded-lg border-2 py-2.5 font-semibold text-xs transition-all duration-200 cursor-pointer ${data.jenis_transaksi === 'Pemasukan'
-                                            ? 'border-green-500 bg-green-50/50 text-green-700 dark:border-green-600 dark:bg-green-950/20 dark:text-green-400 shadow-sm'
-                                            : 'border-outline-variant/60 hover:bg-surface-container-low text-on-surface-variant'
-                                            }`}
+                                        onClick={() =>
+                                            setData(
+                                                'jenis_transaksi',
+                                                'Pemasukan',
+                                            )
+                                        }
+                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-xs font-semibold transition-all duration-200 ${
+                                            data.jenis_transaksi === 'Pemasukan'
+                                                ? 'border-green-500 bg-green-50/50 text-green-700 shadow-sm dark:border-green-600 dark:bg-green-950/20 dark:text-green-400'
+                                                : 'border-outline-variant/60 text-on-surface-variant hover:bg-surface-container-low'
+                                        }`}
                                     >
-                                        <ArrowUp className={`h-4 w-4 ${data.jenis_transaksi === 'Pemasukan' ? 'text-green-600 dark:text-green-400' : 'text-on-surface-variant/40'}`} />
+                                        <ArrowUp
+                                            className={`h-4 w-4 ${data.jenis_transaksi === 'Pemasukan' ? 'text-green-600 dark:text-green-400' : 'text-on-surface-variant/40'}`}
+                                        />
                                         Pemasukan
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setData('jenis_transaksi', 'Pengeluaran')}
-                                        className={`flex items-center justify-center gap-2 rounded-lg border-2 py-2.5 font-semibold text-xs transition-all duration-200 cursor-pointer ${data.jenis_transaksi === 'Pengeluaran'
-                                            ? 'border-red-500 bg-red-50/50 text-error dark:border-red-600 dark:bg-red-950/20 dark:text-red-400 shadow-sm'
-                                            : 'border-outline-variant/60 hover:bg-surface-container-low text-on-surface-variant'
-                                            }`}
+                                        onClick={() =>
+                                            setData(
+                                                'jenis_transaksi',
+                                                'Pengeluaran',
+                                            )
+                                        }
+                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-xs font-semibold transition-all duration-200 ${
+                                            data.jenis_transaksi ===
+                                            'Pengeluaran'
+                                                ? 'border-red-500 bg-red-50/50 text-error shadow-sm dark:border-red-600 dark:bg-red-950/20 dark:text-red-400'
+                                                : 'border-outline-variant/60 text-on-surface-variant hover:bg-surface-container-low'
+                                        }`}
                                     >
-                                        <ArrowDown className={`h-4 w-4 ${data.jenis_transaksi === 'Pengeluaran' ? 'text-error dark:text-red-400' : 'text-on-surface-variant/40'}`} />
+                                        <ArrowDown
+                                            className={`h-4 w-4 ${data.jenis_transaksi === 'Pengeluaran' ? 'text-error dark:text-red-400' : 'text-on-surface-variant/40'}`}
+                                        />
                                         Pengeluaran
                                     </button>
                                 </div>
                                 {errors.jenis_transaksi && (
-                                    <p className="text-xs text-error flex items-center gap-1 font-medium mt-1">
+                                    <p className="mt-1 flex items-center gap-1 text-xs font-medium text-error">
                                         <AlertCircle className="h-3 w-3" />
                                         {errors.jenis_transaksi}
                                     </p>
@@ -742,7 +855,10 @@ return dateA - dateB;
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 {/* Nominal */}
                                 <div className="space-y-1">
-                                    <Label htmlFor="nominal_transaksi" className="text-primary font-semibold text-xs">
+                                    <Label
+                                        htmlFor="nominal_transaksi"
+                                        className="text-xs font-semibold text-primary"
+                                    >
                                         Nominal Transaksi *
                                     </Label>
                                     <div className="relative">
@@ -754,18 +870,31 @@ return dateA - dateB;
                                             type="number"
                                             min="0"
                                             placeholder="Contoh: 150000"
-                                            className="pl-8 h-9 text-sm"
+                                            className="h-9 pl-8 text-sm"
                                             value={data.nominal_transaksi}
-                                            onChange={(e) => setData('nominal_transaksi', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'nominal_transaksi',
+                                                    e.target.value,
+                                                )
+                                            }
                                             required
                                         />
                                     </div>
-                                    <div className="flex items-center justify-between text-[11px] px-1 text-on-surface-variant/70">
+                                    <div className="flex items-center justify-between px-1 text-[11px] text-on-surface-variant/70">
                                         <span>Preview:</span>
-                                        <span className="font-semibold text-primary">{formatRupiah(data.nominal_transaksi ? Number(data.nominal_transaksi) : 0)}</span>
+                                        <span className="font-semibold text-primary">
+                                            {formatRupiah(
+                                                data.nominal_transaksi
+                                                    ? Number(
+                                                          data.nominal_transaksi,
+                                                      )
+                                                    : 0,
+                                            )}
+                                        </span>
                                     </div>
                                     {errors.nominal_transaksi && (
-                                        <p className="text-xs text-error flex items-center gap-1 font-medium mt-1">
+                                        <p className="mt-1 flex items-center gap-1 text-xs font-medium text-error">
                                             <AlertCircle className="h-3 w-3" />
                                             {errors.nominal_transaksi}
                                         </p>
@@ -774,19 +903,27 @@ return dateA - dateB;
 
                                 {/* Tanggal */}
                                 <div className="space-y-1">
-                                    <Label htmlFor="tanggal_transaksi" className="text-primary font-semibold text-xs">
+                                    <Label
+                                        htmlFor="tanggal_transaksi"
+                                        className="text-xs font-semibold text-primary"
+                                    >
                                         Tanggal Transaksi *
                                     </Label>
                                     <Input
                                         id="tanggal_transaksi"
                                         type="date"
-                                        className="h-9 text-sm cursor-pointer"
+                                        className="h-9 cursor-pointer text-sm"
                                         value={data.tanggal_transaksi}
-                                        onChange={(e) => setData('tanggal_transaksi', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'tanggal_transaksi',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                     {errors.tanggal_transaksi && (
-                                        <p className="text-xs text-error flex items-center gap-1 font-medium mt-1">
+                                        <p className="mt-1 flex items-center gap-1 text-xs font-medium text-error">
                                             <AlertCircle className="h-3 w-3" />
                                             {errors.tanggal_transaksi}
                                         </p>
@@ -796,7 +933,10 @@ return dateA - dateB;
 
                             {/* Sumber / Tujuan */}
                             <div className="space-y-1">
-                                <Label htmlFor="sumber_tujuan_transaksi" className="text-primary font-semibold text-xs">
+                                <Label
+                                    htmlFor="sumber_tujuan_transaksi"
+                                    className="text-xs font-semibold text-primary"
+                                >
                                     Sumber / Tujuan Transaksi *
                                 </Label>
                                 <Input
@@ -805,12 +945,17 @@ return dateA - dateB;
                                     placeholder="Contoh: Sponsor Tokopedia, Pembelian Atribut Panitia"
                                     className="h-9 text-sm"
                                     value={data.sumber_tujuan_transaksi}
-                                    onChange={(e) => setData('sumber_tujuan_transaksi', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'sumber_tujuan_transaksi',
+                                            e.target.value,
+                                        )
+                                    }
                                     maxLength={200}
                                     required
                                 />
                                 {errors.sumber_tujuan_transaksi && (
-                                    <p className="text-xs text-error flex items-center gap-1 font-medium mt-1">
+                                    <p className="mt-1 flex items-center gap-1 text-xs font-medium text-error">
                                         <AlertCircle className="h-3 w-3" />
                                         {errors.sumber_tujuan_transaksi}
                                     </p>
@@ -819,42 +964,56 @@ return dateA - dateB;
 
                             {/* Foto Bukti */}
                             <div className="space-y-1">
-                                <Label className="text-primary font-semibold text-xs">
-                                    Foto Bukti Transaksi (Nota / Kwitansi) {selectedTransaction ? '' : '*'}
+                                <Label className="text-xs font-semibold text-primary">
+                                    Foto Bukti Transaksi (Nota / Kwitansi){' '}
+                                    {selectedTransaction ? '' : '*'}
                                 </Label>
                                 <div
                                     onDragEnter={handleDrag}
                                     onDragOver={handleDrag}
                                     onDragLeave={handleDrag}
                                     onDrop={handleDrop}
-                                    onClick={() => document.getElementById('receipt-input-modal')?.click()}
-                                    className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 transition-all cursor-pointer ${dragActive
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-outline-variant/60 hover:bg-surface-container-low'
-                                        } ${(data.foto_bukti_transaksi || selectedTransaction?.foto_bukti_transaksi) ? 'bg-surface-container-low/30' : ''}`}
+                                    onClick={() =>
+                                        document
+                                            .getElementById(
+                                                'receipt-input-modal',
+                                            )
+                                            ?.click()
+                                    }
+                                    className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 transition-all ${
+                                        dragActive
+                                            ? 'border-primary bg-primary/5'
+                                            : 'border-outline-variant/60 hover:bg-surface-container-low'
+                                    } ${data.foto_bukti_transaksi || selectedTransaction?.foto_bukti_transaksi ? 'bg-surface-container-low/30' : ''}`}
                                 >
                                     <input
                                         id="receipt-input-modal"
                                         type="file"
                                         accept="image/jpeg,image/jpg,image/png,application/pdf"
                                         className="hidden"
-                                        onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+                                        onChange={(e) =>
+                                            handleFileChange(
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
                                     />
 
-                                    {!data.foto_bukti_transaksi && !selectedTransaction?.foto_bukti_transaksi ? (
-                                        <div className="text-center space-y-1">
+                                    {!data.foto_bukti_transaksi &&
+                                    !selectedTransaction?.foto_bukti_transaksi ? (
+                                        <div className="space-y-1 text-center">
                                             <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                                                 <UploadCloud className="h-4 w-4" />
                                             </div>
-                                            <p className="text-xs font-semibold text-center">
-                                                Drag & drop nota di sini atau klik untuk memilih
+                                            <p className="text-center text-xs font-semibold">
+                                                Drag & drop nota di sini atau
+                                                klik untuk memilih
                                             </p>
-                                            <p className="text-[10px] text-on-surface-variant/70 text-center">
+                                            <p className="text-center text-[10px] text-on-surface-variant/70">
                                                 JPG, PNG, PDF maks 5MB
                                             </p>
                                         </div>
                                     ) : (
-                                        <div className="w-full flex items-center gap-3 text-left">
+                                        <div className="flex w-full items-center gap-3 text-left">
                                             {filePreview ? (
                                                 <div className="relative h-10 w-10 overflow-hidden rounded-md border border-outline-variant bg-surface-container-low">
                                                     <img
@@ -865,13 +1024,17 @@ return dateA - dateB;
                                                 </div>
                                             ) : selectedTransaction?.foto_bukti_transaksi ? (
                                                 <div className="relative h-10 w-10 overflow-hidden rounded-md border border-outline-variant bg-surface-container-low">
-                                                    {selectedTransaction.foto_bukti_transaksi.endsWith('.pdf') ? (
+                                                    {selectedTransaction.foto_bukti_transaksi.endsWith(
+                                                        '.pdf',
+                                                    ) ? (
                                                         <div className="flex h-full w-full items-center justify-center bg-primary/10 text-primary">
                                                             <FileText className="h-5 w-5" />
                                                         </div>
                                                     ) : (
                                                         <img
-                                                            src={selectedTransaction.foto_bukti_transaksi}
+                                                            src={
+                                                                selectedTransaction.foto_bukti_transaksi
+                                                            }
                                                             alt="Receipt preview"
                                                             className="h-full w-full object-cover"
                                                         />
@@ -882,15 +1045,24 @@ return dateA - dateB;
                                                     <FileText className="h-5 w-5" />
                                                 </div>
                                             )}
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-semibold text-primary truncate">
-                                                    {data.foto_bukti_transaksi 
-                                                        ? data.foto_bukti_transaksi.name 
-                                                        : selectedTransaction?.foto_bukti_transaksi?.split('/').pop() || 'Bukti Transaksi'}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="truncate text-xs font-semibold text-primary">
+                                                    {data.foto_bukti_transaksi
+                                                        ? data
+                                                              .foto_bukti_transaksi
+                                                              .name
+                                                        : selectedTransaction?.foto_bukti_transaksi
+                                                              ?.split('/')
+                                                              .pop() ||
+                                                          'Bukti Transaksi'}
                                                 </p>
                                                 <p className="text-[10px] text-on-surface-variant">
-                                                    {data.foto_bukti_transaksi 
-                                                        ? formatBytes(data.foto_bukti_transaksi.size) 
+                                                    {data.foto_bukti_transaksi
+                                                        ? formatBytes(
+                                                              data
+                                                                  .foto_bukti_transaksi
+                                                                  .size,
+                                                          )
                                                         : 'Menggunakan file saat ini (klik untuk mengganti)'}
                                                 </p>
                                             </div>
@@ -898,7 +1070,7 @@ return dateA - dateB;
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    className="h-auto p-1.5 hover:bg-error-container hover:text-error text-xs"
+                                                    className="h-auto p-1.5 text-xs hover:bg-error-container hover:text-error"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleFileChange(null);
@@ -911,7 +1083,7 @@ return dateA - dateB;
                                     )}
                                 </div>
                                 {errors.foto_bukti_transaksi && (
-                                    <p className="text-xs text-error flex items-center gap-1 font-medium mt-1">
+                                    <p className="mt-1 flex items-center gap-1 text-xs font-medium text-error">
                                         <AlertCircle className="h-3 w-3" />
                                         {errors.foto_bukti_transaksi}
                                     </p>
@@ -920,41 +1092,52 @@ return dateA - dateB;
 
                             {/* Catatan Koreksi */}
                             <div className="space-y-1">
-                                <Label htmlFor="catatan_koreksi" className="text-primary font-semibold text-xs">
-                                    Catatan / Keterangan Tambahan <span className="text-on-surface-variant/60 font-normal">(Opsional)</span>
+                                <Label
+                                    htmlFor="catatan_koreksi"
+                                    className="text-xs font-semibold text-primary"
+                                >
+                                    Catatan / Keterangan Tambahan{' '}
+                                    <span className="font-normal text-on-surface-variant/60">
+                                        (Opsional)
+                                    </span>
                                 </Label>
                                 <textarea
                                     id="catatan_koreksi"
                                     placeholder="Tuliskan catatan tambahan mengenai rincian transaksi..."
                                     rows={2}
-                                    className="w-full rounded-lg border border-outline-variant bg-background px-3 py-1.5 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                                    className="w-full resize-none rounded-lg border border-outline-variant bg-background px-3 py-1.5 text-xs transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     value={data.catatan_koreksi}
-                                    onChange={(e) => setData('catatan_koreksi', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'catatan_koreksi',
+                                            e.target.value,
+                                        )
+                                    }
                                     maxLength={500}
                                 />
                             </div>
 
                             {/* Actions */}
-                            <div className="flex justify-end gap-2 pt-3 border-t border-outline-variant/30">
+                            <div className="flex justify-end gap-2 border-t border-outline-variant/30 pt-3">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={handleCloseModal}
-                                    className="px-4 cursor-pointer h-9 text-xs"
+                                    className="h-9 cursor-pointer px-4 text-xs"
                                     disabled={processing}
                                 >
                                     Batal
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="px-4 cursor-pointer h-9 text-xs font-semibold"
+                                    className="h-9 cursor-pointer px-4 text-xs font-semibold"
                                     disabled={processing}
                                 >
-                                    {processing 
-                                        ? 'Menyimpan...' 
-                                        : selectedTransaction 
-                                            ? 'Simpan Perubahan' 
-                                            : 'Simpan Transaksi'}
+                                    {processing
+                                        ? 'Menyimpan...'
+                                        : selectedTransaction
+                                          ? 'Simpan Perubahan'
+                                          : 'Simpan Transaksi'}
                                 </Button>
                             </div>
                         </form>

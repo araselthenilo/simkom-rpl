@@ -40,7 +40,11 @@ interface PageProps {
 }
 
 export default function PengurusIndexPage() {
-    const { organisasiList = [], anggotaList = [], pengurusList = [] } = usePage<PageProps>().props;
+    const {
+        organisasiList = [],
+        anggotaList = [],
+        pengurusList = [],
+    } = usePage<PageProps>().props;
 
     return (
         <>

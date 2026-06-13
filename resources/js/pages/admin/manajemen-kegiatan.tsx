@@ -26,6 +26,14 @@ interface Activity {
             nama_organisasi: string;
         };
     };
+    dokumentasi_kegiatan?: {
+        id_dokumentasi: number;
+        id_kegiatan: number;
+        dokumen_proposal: string | null;
+        dokumen_lpj: string | null;
+        hasil_evaluasi: string | null;
+        status_dokumentasi: 'Diproses' | 'Butuh Revisi' | 'Diterima';
+    } | null;
 }
 
 interface ProfilOrganisasi {
@@ -53,4 +61,3 @@ export default function ManajemenKegiatanPage({
         />
     );
 }
-

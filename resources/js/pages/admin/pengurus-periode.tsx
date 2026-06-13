@@ -56,7 +56,10 @@ export default function PengurusPeriodePage() {
     return (
         <>
             <Head title={`Pengurus Periode ${period} - ${orgName}`} />
-            <PengurusPeriode profilOrganisasi={profilOrganisasi} anggotaList={anggotaList} />
+            <PengurusPeriode
+                profilOrganisasi={profilOrganisasi}
+                anggotaList={anggotaList}
+            />
         </>
     );
 }

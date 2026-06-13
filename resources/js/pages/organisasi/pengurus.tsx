@@ -195,7 +195,9 @@ export default function PengurusPage({
                                         {/* Avatar initials with dynamic background colors */}
                                         <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-outline-variant bg-gradient-to-br from-primary/5 to-primary/10 shadow-inner">
                                             <span className="font-headline-sm text-headline-sm font-bold text-primary">
-                                                {getInitials(student.nama_lengkap)}
+                                                {getInitials(
+                                                    student.nama_lengkap,
+                                                )}
                                             </span>
                                         </div>
 

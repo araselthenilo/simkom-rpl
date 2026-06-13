@@ -10,6 +10,8 @@ import {
     User,
     LogOut,
     Building2,
+    FileText,
+    FileImage,
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout } from '@/routes';
@@ -30,6 +32,16 @@ export default function Sidepanel() {
         { title: 'Dashboard', href: admin.dashboard(), icon: LayoutDashboard },
         { title: 'Organisasi', href: admin.organisasi(), icon: Building2 },
         { title: 'Pengurus', href: admin.pengurus.index(), icon: Users },
+        {
+            title: 'Pengajuan Profil',
+            href: admin.pengajuanProfil.index().url,
+            icon: FileText,
+        },
+        {
+            title: 'Dokumentasi Kegiatan',
+            href: admin.dokumentasiKegiatan.index().url,
+            icon: FileImage,
+        },
         { title: 'Kegiatan', href: admin.kegiatan.index(), icon: Calendar },
         { title: 'Keuangan', href: '/admin/keuangan', icon: Coins },
         { title: 'Laporan', href: '/laporan', icon: BarChart3 },

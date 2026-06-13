@@ -168,7 +168,13 @@ export default function PesertaKegiatan({
             <header className="mb-unit-xl flex flex-col items-start justify-between gap-unit-md md:flex-row md:items-center">
                 <div className="flex flex-col gap-2">
                     <button
-                        onClick={() => router.get(role === 'admin' ? '/admin/kegiatan' : '/pengurus/kegiatan')}
+                        onClick={() =>
+                            router.get(
+                                role === 'admin'
+                                    ? '/admin/kegiatan'
+                                    : '/pengurus/kegiatan',
+                            )
+                        }
                         className="group inline-flex cursor-pointer items-center gap-2 font-label-lg text-primary transition-all hover:opacity-80 focus:outline-none"
                     >
                         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
@@ -179,7 +185,7 @@ export default function PesertaKegiatan({
                         <h2 className="font-headline-lg text-headline-lg text-primary">
                             {kegiatan.nama_kegiatan}
                         </h2>
-                        <span className="bg-primary-fixed rounded border border-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                        <span className="rounded border border-primary/10 bg-primary-fixed px-2.5 py-1 text-xs font-semibold text-primary">
                             {kegiatan.jenis_kegiatan}
                         </span>
                         <span

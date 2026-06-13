@@ -9,6 +9,7 @@ use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,9 +22,23 @@ class AdminKegiatanController extends Controller
     {
         Gate::authorize('is-admin');
 
-        $activities = Kegiatan::with(['profilOrganisasi.organisasi'])
+        $activities = Kegiatan::with(['profilOrganisasi.organisasi', 'dokumentasiKegiatan'])
             ->orderBy('tanggal_pelaksanaan', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($kegiatan) {
+                if ($kegiatan->dokumentasiKegiatan) {
+                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal 
+                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_proposal) 
+                        : null;
+                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj 
+                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_lpj) 
+                        : null;
+                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi 
+                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->hasil_evaluasi) 
+                        : null;
+                }
+                return $kegiatan;
+            });
 
         $profilList = ProfilOrganisasi::where('status_aktif', true)
             ->with('organisasi')

@@ -7,6 +7,7 @@ import PengurusLayout from '@/layouts/pengurus-layout';
 import AdminLayout from './layouts/admin-layout';
 import AuthLayout from './layouts/auth-layout';
 import HomeLayout from './layouts/home-layout';
+import SettingsLayout from '@/layouts/settings/layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -16,12 +17,14 @@ createInertiaApp({
         switch (true) {
             case name === 'welcome' ||
                 name === 'auth/login' ||
-                name === 'auth/forgot-password':
+                name === 'auth/forgot-password' ||
+                name === 'auth/confirm-password':
                 return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
+            case name.startsWith('settings/'):
+                return SettingsLayout;
             case name === 'home' ||
-                name.startsWith('settings/') ||
                 name.startsWith('organisasi/') ||
                 name.startsWith('kegiatan/'):
                 return [HomeLayout];

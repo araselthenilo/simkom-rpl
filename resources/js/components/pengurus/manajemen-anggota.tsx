@@ -274,7 +274,7 @@ export default function ManajemenAnggota({
                                                         member.foto_ktm,
                                                     )
                                                 }
-                                                className="hover:bg-primary-fixed rounded-lg p-2 text-primary transition-colors"
+                                                className="rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Lihat KTM"
                                             >
                                                 <IdCard className="h-5 w-5" />
@@ -360,46 +360,6 @@ export default function ManajemenAnggota({
                     </div>
                 </div>
             </Card>
-
-            {/* Guide & Support Section */}
-            <div className="mt-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
-                <div className="relative overflow-hidden rounded-xl bg-primary p-unit-xl text-on-primary shadow-lg md:col-span-2">
-                    <div className="relative z-10 max-w-md">
-                        <h3 className="mb-2 font-headline-md text-headline-md">
-                            Panduan Verifikasi
-                        </h3>
-                        <p className="mb-6 font-body-md opacity-80">
-                            Pastikan Nama dan NIM yang tertera di form
-                            pendaftaran sesuai dengan Kartu Tanda Mahasiswa
-                            (KTM) yang diunggah sebelum menyetujui anggota baru.
-                        </p>
-                        <a
-                            className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline"
-                            href="#"
-                        >
-                            Lihat SOP Keanggotaan
-                            <ArrowRight className="h-[18px] w-[18px]" />
-                        </a>
-                    </div>
-                    <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-white/5"></div>
-                    <div className="absolute right-12 bottom-0 mb-8 h-32 w-32 rounded-full bg-white/5"></div>
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg text-center shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
-                    <div className="bg-primary-fixed mb-4 flex h-16 w-16 items-center justify-center rounded-full text-primary">
-                        <HelpCircle className="h-10 w-10" />
-                    </div>
-                    <h4 className="mb-2 font-headline-sm text-primary">
-                        Butuh Bantuan?
-                    </h4>
-                    <p className="mb-4 font-body-sm text-on-surface-variant">
-                        Hubungi tim IT jika terjadi kendala pada sinkronisasi
-                        data NIM.
-                    </p>
-                    <button className="hover:bg-primary-fixed w-full rounded-lg border-2 border-primary py-2 font-label-lg text-primary transition-colors">
-                        Tiket Support
-                    </button>
-                </div>
-            </div>
 
             {/* KTM Viewer Dialog */}
             <Dialog

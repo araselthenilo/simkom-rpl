@@ -191,3 +191,95 @@ test('mahasiswa home page returns correct organizations props based on active st
             ->where('organizations.2.type', 'member');
     });
 });
+
+test('admin dashboard returns correct activities statistics as inertia props', function () {
+    $admin = User::factory()->create([
+        'role' => 'Admin Kemahasiswaan',
+    ]);
+
+    // Insert Organisasi
+    $id_organisasi = DB::table('organisasi')->insertGetId([
+        'nama_organisasi' => 'UKM A', 
+        'status_aktif' => true
+    ]);
+
+    // Insert Profil Organisasi
+    $id_profil = DB::table('profil_organisasi')->insertGetId([
+        'id_organisasi' => $id_organisasi,
+        'periode_kepengurusan' => '2026/2027',
+        'logo_organisasi' => 'logo.png',
+        'deskripsi_organisasi' => 'Deskripsi',
+        'visi_organisasi' => 'Visi',
+        'misi_organisasi' => 'Misi',
+        'status_aktif' => true,
+    ]);
+
+    $now = \Carbon\Carbon::now();
+
+    // Insert Kegiatan
+    DB::table('kegiatan')->insert([
+        [
+            'id_profil' => $id_profil,
+            'nama_kegiatan' => 'Kegiatan Bulan Ini 1',
+            'jenis_kegiatan' => 'Seminar',
+            'deskripsi_kegiatan' => 'Deskripsi 1',
+            'biaya_pendaftaran' => 0,
+            'tanggal_pelaksanaan' => $now->toDateString(),
+            'lokasi_kegiatan' => 'Aula Utama',
+            'kuota_peserta' => 100,
+            'status_kegiatan' => 'Mendatang',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'id_profil' => $id_profil,
+            'nama_kegiatan' => 'Kegiatan Bulan Ini 2',
+            'jenis_kegiatan' => 'Pelatihan',
+            'deskripsi_kegiatan' => 'Deskripsi 2',
+            'biaya_pendaftaran' => 0,
+            'tanggal_pelaksanaan' => $now->toDateString(),
+            'lokasi_kegiatan' => 'Aula Utama',
+            'kuota_peserta' => 100,
+            'status_kegiatan' => 'Mendatang',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'id_profil' => $id_profil,
+            'nama_kegiatan' => 'Kegiatan Bulan Lalu',
+            'jenis_kegiatan' => 'Seminar',
+            'deskripsi_kegiatan' => 'Deskripsi 3',
+            'biaya_pendaftaran' => 0,
+            'tanggal_pelaksanaan' => $now->copy()->subMonth()->toDateString(),
+            'lokasi_kegiatan' => 'Aula Utama',
+            'kuota_peserta' => 100,
+            'status_kegiatan' => 'Selesai',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'id_profil' => $id_profil,
+            'nama_kegiatan' => 'Kegiatan Mendatang Jauh',
+            'jenis_kegiatan' => 'Lomba',
+            'deskripsi_kegiatan' => 'Deskripsi 4',
+            'biaya_pendaftaran' => 0,
+            'tanggal_pelaksanaan' => $now->copy()->addMonths(2)->toDateString(),
+            'lokasi_kegiatan' => 'Online',
+            'kuota_peserta' => 100,
+            'status_kegiatan' => 'Mendatang',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+    $response->assertStatus(200);
+
+    $response->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('admin/dashboard')
+        ->where('kegiatanBulanIni', 2)
+        ->where('perubahanKegiatanBulanLalu', 1)
+        ->has('agendaTerdekat', 3)
+    );
+});

@@ -24,7 +24,12 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
-import { daftar as organisasiDaftar, pengurus as organisasiPengurus, kegiatan as organisasiKegiatan, keuangan as organisasiKeuangan } from '@/routes/organisasi';
+import {
+    daftar as organisasiDaftar,
+    pengurus as organisasiPengurus,
+    kegiatan as organisasiKegiatan,
+    keuangan as organisasiKeuangan,
+} from '@/routes/organisasi';
 import pengurusRoute from '@/routes/pengurus';
 
 interface Profil {
@@ -120,20 +125,44 @@ export default function ProfilDetail({
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                     {isReadOnly && (
                         <>
-                            <Link href={organisasiKeuangan(organisasi.id_organisasi).url}>
-                                <Button variant="outline" className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-6 py-3 font-label-lg text-primary shadow-sm transition-all hover:bg-primary/5 active:scale-95">
+                            <Link
+                                href={
+                                    organisasiKeuangan(organisasi.id_organisasi)
+                                        .url
+                                }
+                            >
+                                <Button
+                                    variant="outline"
+                                    className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-6 py-3 font-label-lg text-primary shadow-sm transition-all hover:bg-primary/5 active:scale-95"
+                                >
                                     <Receipt className="h-[18px] w-[18px]" />
                                     Lihat Keuangan
                                 </Button>
                             </Link>
-                            <Link href={organisasiKegiatan(organisasi.id_organisasi).url}>
-                                <Button variant="outline" className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-6 py-3 font-label-lg text-primary shadow-sm transition-all hover:bg-primary/5 active:scale-95">
+                            <Link
+                                href={
+                                    organisasiKegiatan(organisasi.id_organisasi)
+                                        .url
+                                }
+                            >
+                                <Button
+                                    variant="outline"
+                                    className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-6 py-3 font-label-lg text-primary shadow-sm transition-all hover:bg-primary/5 active:scale-95"
+                                >
                                     <Calendar className="h-[18px] w-[18px]" />
                                     Lihat Kegiatan
                                 </Button>
                             </Link>
-                            <Link href={organisasiPengurus(organisasi.id_organisasi).url}>
-                                <Button variant="outline" className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-6 py-3 font-label-lg text-primary shadow-sm transition-all hover:bg-primary/5 active:scale-95">
+                            <Link
+                                href={
+                                    organisasiPengurus(organisasi.id_organisasi)
+                                        .url
+                                }
+                            >
+                                <Button
+                                    variant="outline"
+                                    className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-6 py-3 font-label-lg text-primary shadow-sm transition-all hover:bg-primary/5 active:scale-95"
+                                >
                                     <Users2 className="h-[18px] w-[18px]" />
                                     Lihat Pengurus
                                 </Button>

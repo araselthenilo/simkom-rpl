@@ -1,5 +1,14 @@
 import ManajemenKegiatan from '@/components/pengurus/manajemen-kegiatan';
 
+interface DokumentasiKegiatan {
+    id_dokumentasi: number;
+    id_kegiatan: number;
+    dokumen_proposal: string | null;
+    dokumen_lpj: string | null;
+    hasil_evaluasi: string | null;
+    status_dokumentasi: 'Diproses' | 'Butuh Revisi' | 'Diterima';
+}
+
 interface Activity {
     id_kegiatan: number;
     id_profil: number;
@@ -17,6 +26,7 @@ interface Activity {
         | 'Selesai'
         | 'Dibatalkan';
     alasan_pembatalan: string | null;
+    dokumentasi_kegiatan?: DokumentasiKegiatan | null;
 }
 
 export default function ManajemenKegiatanPage({

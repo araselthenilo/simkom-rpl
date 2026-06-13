@@ -82,7 +82,7 @@ export default function ProposeProfilForm({
             {/* Form Card */}
             <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface shadow-md">
                 <div className="flex items-center gap-3 border-b border-outline-variant/60 bg-surface-container-low px-6 py-5">
-                    <div className="bg-primary-fixed rounded-lg p-2.5 text-primary">
+                    <div className="rounded-lg bg-primary-fixed p-2.5 text-primary">
                         <Building2 className="h-6 w-6" />
                     </div>
                     <div>

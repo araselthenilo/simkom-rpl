@@ -313,7 +313,7 @@ export default function ManajemenOrganisasi({
                                                     href={admin.organisasi.profil(
                                                         org.id_organisasi,
                                                     )}
-                                                    className="hover:bg-primary-fixed display-inline-block cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                    className="display-inline-block cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                     title="Lihat Riwayat Profil & Pembina"
                                                 >
                                                     <Eye className="h-4 w-4" />
@@ -426,7 +426,7 @@ export default function ManajemenOrganisasi({
                     <div className="absolute right-12 bottom-0 mb-8 h-32 w-32 rounded-full bg-white/5"></div>
                 </div>
                 <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg text-center shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
-                    <div className="bg-primary-fixed mb-4 flex h-16 w-16 items-center justify-center rounded-full text-primary">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-fixed text-primary">
                         <HelpCircle className="h-10 w-10" />
                     </div>
                     <h4 className="mb-2 font-headline-sm text-primary">
@@ -437,7 +437,7 @@ export default function ManajemenOrganisasi({
                         organisasi besar yang memerlukan penyesuaian database
                         manual.
                     </p>
-                    <button className="hover:bg-primary-fixed w-full cursor-pointer rounded-lg border-2 border-primary py-2 font-label-lg font-semibold text-primary transition-colors">
+                    <button className="w-full cursor-pointer rounded-lg border-2 border-primary py-2 font-label-lg font-semibold text-primary transition-colors hover:bg-primary-fixed">
                         Kontak Support
                     </button>
                 </div>

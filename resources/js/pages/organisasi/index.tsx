@@ -2,7 +2,12 @@ import { Head, Link } from '@inertiajs/react';
 import { Building2, Clock, ChevronRight, Compass, XCircle } from 'lucide-react';
 import React from 'react';
 import OrganisasiSaya from '@/components/beranda/organisasi-saya';
-import { detail, pengurus as organisasiPengurus, kegiatan as organisasiKegiatan, keuangan as organisasiKeuangan } from '@/routes/organisasi';
+import {
+    detail,
+    pengurus as organisasiPengurus,
+    kegiatan as organisasiKegiatan,
+    keuangan as organisasiKeuangan,
+} from '@/routes/organisasi';
 
 interface Organization {
     id: number;
@@ -104,19 +109,31 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                             </span>
                                             <div className="flex items-center gap-4">
                                                 <Link
-                                                    href={organisasiKeuangan(org.id).url}
+                                                    href={
+                                                        organisasiKeuangan(
+                                                            org.id,
+                                                        ).url
+                                                    }
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
                                                 >
                                                     Lihat Keuangan
                                                 </Link>
                                                 <Link
-                                                    href={organisasiKegiatan(org.id).url}
+                                                    href={
+                                                        organisasiKegiatan(
+                                                            org.id,
+                                                        ).url
+                                                    }
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
                                                 >
                                                     Lihat Kegiatan
                                                 </Link>
                                                 <Link
-                                                    href={organisasiPengurus(org.id).url}
+                                                    href={
+                                                        organisasiPengurus(
+                                                            org.id,
+                                                        ).url
+                                                    }
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
                                                 >
                                                     Lihat Pengurus
@@ -211,19 +228,31 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                         <div className="mt-6 flex items-center justify-between border-t border-outline-variant/30 pt-4">
                                             <div className="flex items-center gap-4">
                                                 <Link
-                                                    href={organisasiKeuangan(org.id).url}
+                                                    href={
+                                                        organisasiKeuangan(
+                                                            org.id,
+                                                        ).url
+                                                    }
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
                                                 >
                                                     Lihat Keuangan
                                                 </Link>
                                                 <Link
-                                                    href={organisasiKegiatan(org.id).url}
+                                                    href={
+                                                        organisasiKegiatan(
+                                                            org.id,
+                                                        ).url
+                                                    }
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
                                                 >
                                                     Lihat Kegiatan
                                                 </Link>
                                                 <Link
-                                                    href={organisasiPengurus(org.id).url}
+                                                    href={
+                                                        organisasiPengurus(
+                                                            org.id,
+                                                        ).url
+                                                    }
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
                                                 >
                                                     Lihat Pengurus

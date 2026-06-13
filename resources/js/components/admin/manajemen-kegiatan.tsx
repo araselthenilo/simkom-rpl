@@ -23,10 +23,21 @@ import {
     FileText,
     SlidersHorizontal,
     ArrowUpDown,
+    Eye,
+    X,
 } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+
+interface DokumentasiKegiatan {
+    id_dokumentasi: number;
+    id_kegiatan: number;
+    dokumen_proposal: string | null;
+    dokumen_lpj: string | null;
+    hasil_evaluasi: string | null;
+    status_dokumentasi: 'Diproses' | 'Butuh Revisi' | 'Diterima';
+}
 
 interface Activity {
     id_kegiatan: number;
@@ -40,10 +51,10 @@ interface Activity {
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-    | 'Mendatang'
-    | 'Sedang berlangsung'
-    | 'Selesai'
-    | 'Dibatalkan';
+        | 'Mendatang'
+        | 'Sedang berlangsung'
+        | 'Selesai'
+        | 'Dibatalkan';
     alasan_pembatalan: string | null;
     profil_organisasi?: {
         id_profil: number;
@@ -54,6 +65,7 @@ interface Activity {
             nama_organisasi: string;
         };
     };
+    dokumentasi_kegiatan?: DokumentasiKegiatan | null;
 }
 
 interface ProfilOrganisasi {
@@ -91,7 +103,23 @@ export default function ManajemenKegiatan({
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
     const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
+    const [previewActivity, setPreviewActivity] = useState<Activity | null>(
+        null,
+    );
+
+    const getFileName = (urlPath: string | null) => {
+        if (!urlPath) return '';
+        const parts = urlPath.split('/');
+        return parts[parts.length - 1];
+    };
+
+    const isPdf = (urlPath: string | null) => {
+        if (!urlPath) return false;
+        const cleanPath = urlPath.split('?')[0];
+        return cleanPath.toLowerCase().endsWith('.pdf');
+    };
 
     // Export filter & sort state
     const [exportFilters, setExportFilters] = useState({
@@ -101,7 +129,13 @@ export default function ManajemenKegiatan({
         tanggalAkhir: '',
     });
     const [exportSort, setExportSort] = useState({
-        field: 'tanggal_pelaksanaan' as keyof Pick<Activity, 'nama_kegiatan' | 'tanggal_pelaksanaan' | 'biaya_pendaftaran' | 'kuota_peserta'>,
+        field: 'tanggal_pelaksanaan' as keyof Pick<
+            Activity,
+            | 'nama_kegiatan'
+            | 'tanggal_pelaksanaan'
+            | 'biaya_pendaftaran'
+            | 'kuota_peserta'
+        >,
         direction: 'asc' as 'asc' | 'desc',
     });
     const [isExporting, setIsExporting] = useState(false);
@@ -112,7 +146,9 @@ export default function ManajemenKegiatan({
 
         // Filter by status
         if (exportFilters.status !== 'Semua') {
-            data = data.filter((a) => a.status_kegiatan === exportFilters.status);
+            data = data.filter(
+                (a) => a.status_kegiatan === exportFilters.status,
+            );
         }
         // Filter by jenis
         if (exportFilters.jenis !== 'Semua') {
@@ -120,10 +156,14 @@ export default function ManajemenKegiatan({
         }
         // Filter by date range
         if (exportFilters.tanggalMulai) {
-            data = data.filter((a) => a.tanggal_pelaksanaan >= exportFilters.tanggalMulai);
+            data = data.filter(
+                (a) => a.tanggal_pelaksanaan >= exportFilters.tanggalMulai,
+            );
         }
         if (exportFilters.tanggalAkhir) {
-            data = data.filter((a) => a.tanggal_pelaksanaan <= exportFilters.tanggalAkhir);
+            data = data.filter(
+                (a) => a.tanggal_pelaksanaan <= exportFilters.tanggalAkhir,
+            );
         }
 
         // Sort
@@ -131,7 +171,9 @@ export default function ManajemenKegiatan({
             const valA = a[exportSort.field];
             const valB = b[exportSort.field];
             if (typeof valA === 'number' && typeof valB === 'number') {
-                return exportSort.direction === 'asc' ? valA - valB : valB - valA;
+                return exportSort.direction === 'asc'
+                    ? valA - valB
+                    : valB - valA;
             }
             const sA = String(valA ?? '');
             const sB = String(valB ?? '');
@@ -150,7 +192,11 @@ export default function ManajemenKegiatan({
             const { default: autoTable } = await import('jspdf-autotable');
             const data = getExportData();
 
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4',
+            });
 
             // Header
             doc.setFont('helvetica', 'bold');
@@ -161,12 +207,23 @@ export default function ManajemenKegiatan({
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(9);
             doc.setTextColor(100, 100, 120);
-            const subtitle = [
-                exportFilters.status !== 'Semua' ? `Status: ${exportFilters.status}` : null,
-                exportFilters.jenis !== 'Semua' ? `Jenis: ${exportFilters.jenis}` : null,
-                exportFilters.tanggalMulai ? `Dari: ${exportFilters.tanggalMulai}` : null,
-                exportFilters.tanggalAkhir ? `s/d: ${exportFilters.tanggalAkhir}` : null,
-            ].filter(Boolean).join('  |  ') || 'Semua data';
+            const subtitle =
+                [
+                    exportFilters.status !== 'Semua'
+                        ? `Status: ${exportFilters.status}`
+                        : null,
+                    exportFilters.jenis !== 'Semua'
+                        ? `Jenis: ${exportFilters.jenis}`
+                        : null,
+                    exportFilters.tanggalMulai
+                        ? `Dari: ${exportFilters.tanggalMulai}`
+                        : null,
+                    exportFilters.tanggalAkhir
+                        ? `s/d: ${exportFilters.tanggalAkhir}`
+                        : null,
+                ]
+                    .filter(Boolean)
+                    .join('  |  ') || 'Semua data';
             doc.text(`Filter: ${subtitle}`, 14, 25);
             doc.text(
                 `Dicetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}  |  Total: ${data.length} kegiatan`,
@@ -176,7 +233,19 @@ export default function ManajemenKegiatan({
 
             autoTable(doc, {
                 startY: 35,
-                head: [['No', 'Nama Kegiatan', 'Penyelenggara', 'Jenis', 'Tgl Pelaksanaan', 'Lokasi', 'Biaya', 'Kuota', 'Status']],
+                head: [
+                    [
+                        'No',
+                        'Nama Kegiatan',
+                        'Penyelenggara',
+                        'Jenis',
+                        'Tgl Pelaksanaan',
+                        'Lokasi',
+                        'Biaya',
+                        'Kuota',
+                        'Status',
+                    ],
+                ],
                 body: data.map((a, i) => [
                     i + 1,
                     a.nama_kegiatan,
@@ -184,12 +253,18 @@ export default function ManajemenKegiatan({
                     a.jenis_kegiatan,
                     a.tanggal_pelaksanaan,
                     a.lokasi_kegiatan,
-                    a.biaya_pendaftaran === 0 ? 'Gratis' : formatRupiah(a.biaya_pendaftaran),
+                    a.biaya_pendaftaran === 0
+                        ? 'Gratis'
+                        : formatRupiah(a.biaya_pendaftaran),
                     a.kuota_peserta,
                     a.status_kegiatan,
                 ]),
                 styles: { fontSize: 8, cellPadding: 3 },
-                headStyles: { fillColor: [26, 54, 93], textColor: 255, fontStyle: 'bold' },
+                headStyles: {
+                    fillColor: [26, 54, 93],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                },
                 alternateRowStyles: { fillColor: [245, 247, 252] },
                 columnStyles: {
                     0: { halign: 'center', cellWidth: 10 },
@@ -198,7 +273,9 @@ export default function ManajemenKegiatan({
                 },
             });
 
-            doc.save(`laporan-kegiatan-${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(
+                `laporan-kegiatan-${new Date().toISOString().split('T')[0]}.pdf`,
+            );
         } finally {
             setIsExporting(false);
         }
@@ -211,7 +288,18 @@ export default function ManajemenKegiatan({
             const data = getExportData();
 
             const wsData = [
-                ['No', 'Nama Kegiatan', 'Penyelenggara', 'Jenis Kegiatan', 'Tanggal Pelaksanaan', 'Lokasi', 'Biaya Pendaftaran (Rp)', 'Kuota Peserta', 'Status', 'Alasan Pembatalan'],
+                [
+                    'No',
+                    'Nama Kegiatan',
+                    'Penyelenggara',
+                    'Jenis Kegiatan',
+                    'Tanggal Pelaksanaan',
+                    'Lokasi',
+                    'Biaya Pendaftaran (Rp)',
+                    'Kuota Peserta',
+                    'Status',
+                    'Alasan Pembatalan',
+                ],
                 ...data.map((a, i) => [
                     i + 1,
                     a.nama_kegiatan,
@@ -230,14 +318,24 @@ export default function ManajemenKegiatan({
 
             // Column widths
             ws['!cols'] = [
-                { wch: 5 }, { wch: 35 }, { wch: 28 }, { wch: 20 },
-                { wch: 18 }, { wch: 30 }, { wch: 22 }, { wch: 14 },
-                { wch: 18 }, { wch: 35 },
+                { wch: 5 },
+                { wch: 35 },
+                { wch: 28 },
+                { wch: 20 },
+                { wch: 18 },
+                { wch: 30 },
+                { wch: 22 },
+                { wch: 14 },
+                { wch: 18 },
+                { wch: 35 },
             ];
 
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Data Kegiatan');
-            XLSX.writeFile(wb, `laporan-kegiatan-${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.writeFile(
+                wb,
+                `laporan-kegiatan-${new Date().toISOString().split('T')[0]}.xlsx`,
+            );
         } finally {
             setIsExporting(false);
         }
@@ -406,7 +504,7 @@ export default function ManajemenKegiatan({
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                        'Terjadi kesalahan saat memperbarui kegiatan.',
+                            'Terjadi kesalahan saat memperbarui kegiatan.',
                     );
                 },
             },
@@ -447,7 +545,7 @@ export default function ManajemenKegiatan({
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                        'Terjadi kesalahan saat membatalkan kegiatan.',
+                            'Terjadi kesalahan saat membatalkan kegiatan.',
                     );
                 },
             },
@@ -486,11 +584,12 @@ export default function ManajemenKegiatan({
                 alasan_pembatalan: null,
             },
             {
+                preserveScroll: true,
                 onError: (errors) => {
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                        'Terjadi kesalahan saat memperbarui status kegiatan.',
+                            'Terjadi kesalahan saat memperbarui status kegiatan.',
                     );
                 },
             },
@@ -585,10 +684,11 @@ export default function ManajemenKegiatan({
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
-                                ? 'bg-white font-semibold text-primary shadow-sm'
-                                : 'text-on-surface-variant hover:text-primary'
-                                }`}
+                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${
+                                activeTab === tab
+                                    ? 'bg-white font-semibold text-primary shadow-sm'
+                                    : 'text-on-surface-variant hover:text-primary'
+                            }`}
                         >
                             {tab}
                         </button>
@@ -667,11 +767,14 @@ export default function ManajemenKegiatan({
                                                 {activity.nama_kegiatan}
                                             </span>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <span className="bg-primary-fixed rounded border border-primary/10 px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed dark:bg-primary-container dark:text-on-primary-container dark:border-primary-container/30">
+                                                <span className="rounded border border-primary/10 bg-primary-fixed px-2 py-0.5 text-[11px] font-medium text-on-primary-fixed dark:border-primary-container/30 dark:bg-primary-container dark:text-on-primary-container">
                                                     {activity.jenis_kegiatan}
                                                 </span>
-                                                <span className="bg-secondary-fixed rounded border border-secondary/10 px-2 py-0.5 text-[11px] font-medium text-on-secondary-fixed dark:bg-secondary-container dark:text-on-secondary-container dark:border-secondary-container/30">
-                                                    {activity.profil_organisasi?.organisasi?.nama_organisasi || 'Organisasi'}
+                                                <span className="rounded border border-secondary/10 bg-secondary-fixed px-2 py-0.5 text-[11px] font-medium text-on-secondary-fixed dark:border-secondary-container/30 dark:bg-secondary-container dark:text-on-secondary-container">
+                                                    {activity.profil_organisasi
+                                                        ?.organisasi
+                                                        ?.nama_organisasi ||
+                                                        'Organisasi'}
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant/70">
                                                     ID: {activity.id_kegiatan}
@@ -725,21 +828,38 @@ export default function ManajemenKegiatan({
                                     {/* Status & Cancellation Reason */}
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col items-start gap-1">
-                                            <span
-                                                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${activity.status_kegiatan ===
-                                                    'Selesai'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : activity.status_kegiatan ===
-                                                        'Sedang berlangsung'
-                                                        ? 'bg-amber-100 text-amber-800'
-                                                        : activity.status_kegiatan ===
-                                                            'Mendatang'
-                                                            ? 'bg-blue-100 text-blue-700'
-                                                            : 'bg-red-100 text-red-700'
+                                            {activity.status_kegiatan ===
+                                            'Dibatalkan' ? (
+                                                <span className="flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-[12px] font-semibold text-red-700">
+                                                    {activity.status_kegiatan}
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    onClick={() =>
+                                                        handleStatusTransition(
+                                                            activity.id_kegiatan,
+                                                            activity.status_kegiatan,
+                                                        )
+                                                    }
+                                                    className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${
+                                                        activity.status_kegiatan ===
+                                                        'Selesai'
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
+                                                            : activity.status_kegiatan ===
+                                                                'Sedang berlangsung'
+                                                              ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
+                                                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
                                                     }`}
-                                            >
-                                                {activity.status_kegiatan}
-                                            </span>
+                                                    title="Klik untuk maju ke tahap selanjutnya"
+                                                >
+                                                    <span>
+                                                        {
+                                                            activity.status_kegiatan
+                                                        }
+                                                    </span>
+                                                    <RefreshCw className="h-3 w-3 opacity-60 transition-transform duration-500 group-hover/status-badge:rotate-180 group-hover/status-badge:opacity-100" />
+                                                </button>
+                                            )}
                                             {activity.status_kegiatan ===
                                                 'Dibatalkan' &&
                                                 activity.alasan_pembatalan && (
@@ -768,35 +888,34 @@ export default function ManajemenKegiatan({
                                                         `/admin/kegiatan/${activity.id_kegiatan}/peserta`,
                                                     )
                                                 }
-                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Lihat Daftar Peserta"
                                             >
                                                 <Users className="h-4 w-4" />
                                             </button>
-
-                                            {/* Change Status Switcher */}
-                                            {activity.status_kegiatan !==
-                                                'Dibatalkan' && (
-                                                    <button
-                                                        onClick={() =>
-                                                            handleStatusTransition(
-                                                                activity.id_kegiatan,
-                                                                activity.status_kegiatan,
-                                                            )
-                                                        }
-                                                        className="cursor-pointer rounded-lg p-2 text-secondary transition-colors hover:bg-secondary-fixed hover:text-on-secondary-fixed"
-                                                        title="Maju ke Tahap Selanjutnya"
-                                                    >
-                                                        <RefreshCw className="h-4 w-4" />
-                                                    </button>
-                                                )}
+                                            {activity.dokumentasi_kegiatan && (
+                                                <button
+                                                    onClick={() => {
+                                                        setPreviewActivity(
+                                                            activity,
+                                                        );
+                                                        setIsPreviewModalOpen(
+                                                            true,
+                                                        );
+                                                    }}
+                                                    className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
+                                                    title="Preview Dokumen Kegiatan"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </button>
+                                            )}
 
                                             {/* Edit Button */}
                                             <button
                                                 onClick={() =>
                                                     openEditModal(activity)
                                                 }
-                                                className="hover:bg-primary-fixed cursor-pointer rounded-lg p-2 text-primary transition-colors"
+                                                className="cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Edit Detail Kegiatan"
                                             >
                                                 <Edit2 className="h-4 w-4" />
@@ -805,18 +924,18 @@ export default function ManajemenKegiatan({
                                             {/* Cancel Button */}
                                             {activity.status_kegiatan !==
                                                 'Dibatalkan' && (
-                                                    <button
-                                                        onClick={() =>
-                                                            openCancelModal(
-                                                                activity,
-                                                            )
-                                                        }
-                                                        className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
-                                                        title="Batalkan Kegiatan"
-                                                    >
-                                                        <XCircle className="h-4 w-4" />
-                                                    </button>
-                                                )}
+                                                <button
+                                                    onClick={() =>
+                                                        openCancelModal(
+                                                            activity,
+                                                        )
+                                                    }
+                                                    className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
+                                                    title="Batalkan Kegiatan"
+                                                >
+                                                    <XCircle className="h-4 w-4" />
+                                                </button>
+                                            )}
 
                                             {/* Delete Button */}
                                             <button
@@ -874,44 +993,6 @@ export default function ManajemenKegiatan({
                 </div>
             </Card>
 
-            {/* Guide & Informational Section */}
-            <div className="mt-unit-xl grid grid-cols-1 gap-gutter md:grid-cols-3">
-                <div className="relative overflow-hidden rounded-xl bg-primary p-unit-xl text-on-primary shadow-lg md:col-span-2">
-                    <div className="relative z-10 max-w-md">
-                        <h3 className="mb-2 font-headline-md text-headline-md">
-                            Panduan Pengelolaan Event
-                        </h3>
-                        <p className="mb-6 font-body-md font-normal opacity-80">
-                            Sebagai Admin, Anda dapat memantau dan mengubah detail kegiatan dari seluruh UKM.
-                            Pastikan perubahan status atau pembatalan dikoordinasikan terlebih dahulu dengan UKM yang bersangkutan.
-                        </p>
-                        <a
-                            className="inline-flex items-center gap-2 font-label-lg text-secondary-fixed hover:underline"
-                            href="#"
-                        >
-                            Lihat SOP Kegiatan STIKOM
-                            <ArrowRight className="h-[18px] w-[18px]" />
-                        </a>
-                    </div>
-                    <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-white/5"></div>
-                    <div className="absolute right-12 bottom-0 mb-8 h-32 w-32 rounded-full bg-white/5"></div>
-                </div>
-                <div className="flex flex-col items-center justify-center rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg text-center shadow-[0px_2px_4px_rgba(26,54,93,0.05)]">
-                    <div className="bg-primary-fixed mb-4 flex h-16 w-16 items-center justify-center rounded-full text-primary">
-                        <HelpCircle className="h-10 w-10" />
-                    </div>
-                    <h4 className="mb-2 font-headline-sm text-primary">
-                        Butuh Bantuan?
-                    </h4>
-                    <p className="mb-4 font-body-sm text-on-surface-variant">
-                        Hubungi biro administrasi jika ada kendala sistem atau perizinan gedung.
-                    </p>
-                    <button className="hover:bg-primary-fixed w-full cursor-pointer rounded-lg border-2 border-primary py-2 font-label-lg font-semibold text-primary transition-colors">
-                        Panduan Operator
-                    </button>
-                </div>
-            </div>
-
             {/* Create Activity Modal */}
             {isCreateModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -950,10 +1031,16 @@ export default function ManajemenKegiatan({
                                         })
                                     }
                                 >
-                                    <option value="" disabled>-- Pilih UKM Penyelenggara --</option>
+                                    <option value="" disabled>
+                                        -- Pilih UKM Penyelenggara --
+                                    </option>
                                     {profilList.map((profil) => (
-                                        <option key={profil.id_profil} value={profil.id_profil}>
-                                            {profil.organisasi?.nama_organisasi} ({profil.periode_kepengurusan})
+                                        <option
+                                            key={profil.id_profil}
+                                            value={profil.id_profil}
+                                        >
+                                            {profil.organisasi?.nama_organisasi}{' '}
+                                            ({profil.periode_kepengurusan})
                                         </option>
                                     ))}
                                 </select>
@@ -1166,8 +1253,12 @@ export default function ManajemenKegiatan({
                                     }
                                 >
                                     {profilList.map((profil) => (
-                                        <option key={profil.id_profil} value={profil.id_profil}>
-                                            {profil.organisasi?.nama_organisasi} ({profil.periode_kepengurusan})
+                                        <option
+                                            key={profil.id_profil}
+                                            value={profil.id_profil}
+                                        >
+                                            {profil.organisasi?.nama_organisasi}{' '}
+                                            ({profil.periode_kepengurusan})
                                         </option>
                                     ))}
                                 </select>
@@ -1425,8 +1516,13 @@ export default function ManajemenKegiatan({
                                     <Download className="h-5 w-5 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 className="font-headline-sm font-bold text-primary">Export Data Kegiatan</h3>
-                                    <p className="text-xs text-on-surface-variant">Pilih filter &amp; pengurutan sebelum mengunduh</p>
+                                    <h3 className="font-headline-sm font-bold text-primary">
+                                        Export Data Kegiatan
+                                    </h3>
+                                    <p className="text-xs text-on-surface-variant">
+                                        Pilih filter &amp; pengurutan sebelum
+                                        mengunduh
+                                    </p>
                                 </div>
                             </div>
                             <button
@@ -1442,67 +1538,111 @@ export default function ManajemenKegiatan({
                             <section>
                                 <div className="mb-3 flex items-center gap-2">
                                     <SlidersHorizontal className="h-4 w-4 text-primary" />
-                                    <span className="font-label-lg font-semibold text-primary">Filter Data</span>
+                                    <span className="font-label-lg font-semibold text-primary">
+                                        Filter Data
+                                    </span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     {/* Status Filter */}
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                                             Status Kegiatan
                                         </label>
                                         <select
                                             value={exportFilters.status}
-                                            onChange={(e) => setExportFilters({ ...exportFilters, status: e.target.value as typeof exportFilters.status })}
+                                            onChange={(e) =>
+                                                setExportFilters({
+                                                    ...exportFilters,
+                                                    status: e.target
+                                                        .value as typeof exportFilters.status,
+                                                })
+                                            }
                                             className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         >
-                                            <option value="Semua">Semua Status</option>
-                                            <option value="Mendatang">Mendatang</option>
-                                            <option value="Sedang berlangsung">Sedang Berlangsung</option>
-                                            <option value="Selesai">Selesai</option>
-                                            <option value="Dibatalkan">Dibatalkan</option>
+                                            <option value="Semua">
+                                                Semua Status
+                                            </option>
+                                            <option value="Mendatang">
+                                                Mendatang
+                                            </option>
+                                            <option value="Sedang berlangsung">
+                                                Sedang Berlangsung
+                                            </option>
+                                            <option value="Selesai">
+                                                Selesai
+                                            </option>
+                                            <option value="Dibatalkan">
+                                                Dibatalkan
+                                            </option>
                                         </select>
                                     </div>
 
                                     {/* Jenis Filter */}
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                                             Jenis Kegiatan
                                         </label>
                                         <select
                                             value={exportFilters.jenis}
-                                            onChange={(e) => setExportFilters({ ...exportFilters, jenis: e.target.value as typeof exportFilters.jenis })}
+                                            onChange={(e) =>
+                                                setExportFilters({
+                                                    ...exportFilters,
+                                                    jenis: e.target
+                                                        .value as typeof exportFilters.jenis,
+                                                })
+                                            }
                                             className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         >
-                                            <option value="Semua">Semua Jenis</option>
-                                            <option value="Seminar">Seminar</option>
-                                            <option value="Pelatihan">Pelatihan</option>
+                                            <option value="Semua">
+                                                Semua Jenis
+                                            </option>
+                                            <option value="Seminar">
+                                                Seminar
+                                            </option>
+                                            <option value="Pelatihan">
+                                                Pelatihan
+                                            </option>
                                             <option value="Lomba">Lomba</option>
-                                            <option value="Pengabdian Masyarakat">Pengabdian Masyarakat</option>
+                                            <option value="Pengabdian Masyarakat">
+                                                Pengabdian Masyarakat
+                                            </option>
                                         </select>
                                     </div>
 
                                     {/* Date From */}
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                                             Tanggal Mulai
                                         </label>
                                         <input
                                             type="date"
                                             value={exportFilters.tanggalMulai}
-                                            onChange={(e) => setExportFilters({ ...exportFilters, tanggalMulai: e.target.value })}
+                                            onChange={(e) =>
+                                                setExportFilters({
+                                                    ...exportFilters,
+                                                    tanggalMulai:
+                                                        e.target.value,
+                                                })
+                                            }
                                             className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         />
                                     </div>
 
                                     {/* Date To */}
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                                             Tanggal Akhir
                                         </label>
                                         <input
                                             type="date"
                                             value={exportFilters.tanggalAkhir}
-                                            onChange={(e) => setExportFilters({ ...exportFilters, tanggalAkhir: e.target.value })}
+                                            onChange={(e) =>
+                                                setExportFilters({
+                                                    ...exportFilters,
+                                                    tanggalAkhir:
+                                                        e.target.value,
+                                                })
+                                            }
                                             className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         />
                                     </div>
@@ -1516,34 +1656,56 @@ export default function ManajemenKegiatan({
                             <section>
                                 <div className="mb-3 flex items-center gap-2">
                                     <ArrowUpDown className="h-4 w-4 text-primary" />
-                                    <span className="font-label-lg font-semibold text-primary">Pengurutan</span>
+                                    <span className="font-label-lg font-semibold text-primary">
+                                        Pengurutan
+                                    </span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                                             Urutkan Berdasarkan
                                         </label>
                                         <select
                                             value={exportSort.field}
-                                            onChange={(e) => setExportSort({ ...exportSort, field: e.target.value as typeof exportSort.field })}
+                                            onChange={(e) =>
+                                                setExportSort({
+                                                    ...exportSort,
+                                                    field: e.target
+                                                        .value as typeof exportSort.field,
+                                                })
+                                            }
                                             className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         >
-                                            <option value="tanggal_pelaksanaan">Tanggal Pelaksanaan</option>
-                                            <option value="nama_kegiatan">Nama Kegiatan (A–Z)</option>
-                                            <option value="biaya_pendaftaran">Biaya Pendaftaran</option>
-                                            <option value="kuota_peserta">Kuota Peserta</option>
+                                            <option value="tanggal_pelaksanaan">
+                                                Tanggal Pelaksanaan
+                                            </option>
+                                            <option value="nama_kegiatan">
+                                                Nama Kegiatan (A–Z)
+                                            </option>
+                                            <option value="biaya_pendaftaran">
+                                                Biaya Pendaftaran
+                                            </option>
+                                            <option value="kuota_peserta">
+                                                Kuota Peserta
+                                            </option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
                                             Arah Urutan
                                         </label>
                                         <div className="flex gap-2">
                                             <button
                                                 type="button"
-                                                onClick={() => setExportSort({ ...exportSort, direction: 'asc' })}
+                                                onClick={() =>
+                                                    setExportSort({
+                                                        ...exportSort,
+                                                        direction: 'asc',
+                                                    })
+                                                }
                                                 className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                                                    exportSort.direction === 'asc'
+                                                    exportSort.direction ===
+                                                    'asc'
                                                         ? 'border-primary bg-primary text-on-primary'
                                                         : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
                                                 }`}
@@ -1552,9 +1714,15 @@ export default function ManajemenKegiatan({
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => setExportSort({ ...exportSort, direction: 'desc' })}
+                                                onClick={() =>
+                                                    setExportSort({
+                                                        ...exportSort,
+                                                        direction: 'desc',
+                                                    })
+                                                }
                                                 className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                                                    exportSort.direction === 'desc'
+                                                    exportSort.direction ===
+                                                    'desc'
                                                         ? 'border-primary bg-primary text-on-primary'
                                                         : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
                                                 }`}
@@ -1574,7 +1742,9 @@ export default function ManajemenKegiatan({
                                 <Info className="h-4 w-4 shrink-0 text-primary" />
                                 <span className="text-sm text-on-surface-variant">
                                     Berdasarkan filter ini,{' '}
-                                    <strong className="text-primary">{getExportData().length} kegiatan</strong>{' '}
+                                    <strong className="text-primary">
+                                        {getExportData().length} kegiatan
+                                    </strong>{' '}
                                     akan diikutsertakan dalam ekspor dari total{' '}
                                     <strong>{activities.length}</strong> data.
                                 </span>
@@ -1595,27 +1765,281 @@ export default function ManajemenKegiatan({
                                 <button
                                     type="button"
                                     onClick={handleExportExcel}
-                                    disabled={isExporting || getExportData().length === 0}
+                                    disabled={
+                                        isExporting ||
+                                        getExportData().length === 0
+                                    }
                                     className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <FileSpreadsheet className="h-4 w-4" />
-                                    {isExporting ? 'Mengekspor...' : 'Export Excel (.xlsx)'}
+                                    {isExporting
+                                        ? 'Mengekspor...'
+                                        : 'Export Excel (.xlsx)'}
                                 </button>
 
                                 <button
                                     type="button"
                                     onClick={handleExportPDF}
-                                    disabled={isExporting || getExportData().length === 0}
+                                    disabled={
+                                        isExporting ||
+                                        getExportData().length === 0
+                                    }
                                     className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <FileText className="h-4 w-4" />
-                                    {isExporting ? 'Mengekspor...' : 'Export PDF'}
+                                    {isExporting
+                                        ? 'Mengekspor...'
+                                        : 'Export PDF'}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Preview Document Modal */}
+            {isPreviewModalOpen &&
+                previewActivity &&
+                previewActivity.dokumentasi_kegiatan && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+                            onClick={() => {
+                                setIsPreviewModalOpen(false);
+                                setPreviewActivity(null);
+                            }}
+                        ></div>
+                        <div className="relative z-10 flex max-h-[90vh] w-full max-w-4xl animate-in flex-col rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
+                            {/* Header */}
+                            <div className="flex shrink-0 items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                                <div className="flex items-center gap-2.5">
+                                    <h3 className="font-headline-sm font-bold text-primary">
+                                        Preview Dokumen:{' '}
+                                        {previewActivity.nama_kegiatan}
+                                    </h3>
+                                    <span
+                                        className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                                            previewActivity.dokumentasi_kegiatan
+                                                .status_dokumentasi ===
+                                            'Diterima'
+                                                ? 'bg-green-100 text-green-700'
+                                                : previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .status_dokumentasi ===
+                                                    'Butuh Revisi'
+                                                  ? 'bg-red-100 text-red-700'
+                                                  : 'bg-blue-100 text-blue-700'
+                                        }`}
+                                    >
+                                        Status:{' '}
+                                        {
+                                            previewActivity.dokumentasi_kegiatan
+                                                .status_dokumentasi
+                                        }
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setIsPreviewModalOpen(false);
+                                        setPreviewActivity(null);
+                                    }}
+                                    className="cursor-pointer text-2xl font-bold text-on-surface-variant transition-colors hover:text-primary"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+
+                            {/* Scrollable Content */}
+                            <div className="mt-4 flex-1 space-y-6 overflow-y-auto pr-1">
+                                {/* Proposal Preview Section */}
+                                <div className="space-y-2">
+                                    <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                        <span>Dokumen Proposal</span>
+                                        {previewActivity.dokumentasi_kegiatan
+                                            .dokumen_proposal && (
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .dokumen_proposal
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
+                                    </h4>
+                                    {previewActivity.dokumentasi_kegiatan
+                                        .dokumen_proposal ? (
+                                        isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .dokumen_proposal,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.dokumen_proposal}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Proposal PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .dokumen_proposal,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <p className="rounded-lg border border-outline-variant/40 bg-surface-container-low p-3 text-xs text-on-surface-variant/60 italic">
+                                            Dokumen proposal belum diunggah.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* LPJ Preview Section */}
+                                <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                    <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                        <span>
+                                            Dokumen LPJ (Laporan
+                                            Pertanggungjawaban)
+                                        </span>
+                                        {previewActivity.dokumentasi_kegiatan
+                                            .dokumen_lpj && (
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .dokumen_lpj
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
+                                    </h4>
+                                    {previewActivity.dokumentasi_kegiatan
+                                        .dokumen_lpj ? (
+                                        isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .dokumen_lpj,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.dokumen_lpj}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="LPJ PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .dokumen_lpj,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <p className="rounded-lg border border-outline-variant/40 bg-surface-container-low p-3 text-xs text-on-surface-variant/60 italic">
+                                            Dokumen LPJ belum diunggah.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Hasil Evaluasi Section */}
+                                {previewActivity.dokumentasi_kegiatan
+                                    .hasil_evaluasi && (
+                                    <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                        <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                            <span>
+                                                Hasil Evaluasi Kegiatan (Dari
+                                                Petugas)
+                                            </span>
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .hasil_evaluasi
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        </h4>
+                                        {isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .hasil_evaluasi,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.hasil_evaluasi}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Evaluasi PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .hasil_evaluasi,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="flex shrink-0 justify-end border-t border-outline-variant/60 pt-4">
+                                <Button
+                                    onClick={() => {
+                                        setIsPreviewModalOpen(false);
+                                        setPreviewActivity(null);
+                                    }}
+                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-95"
+                                >
+                                    Tutup
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
         </main>
     );
 }

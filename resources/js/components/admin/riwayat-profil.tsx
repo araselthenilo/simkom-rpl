@@ -172,7 +172,7 @@ export default function RiwayatProfil({
                                     ? 'Organisasi Aktif'
                                     : 'Organisasi Nonaktif'}
                             </span>
-                            <span className="bg-primary-fixed flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold text-primary">
+                            <span className="flex w-fit items-center gap-1.5 rounded-full bg-primary-fixed px-3 py-1 text-[12px] font-semibold text-primary">
                                 {profils.length} Periode Terdaftar
                             </span>
                         </div>
@@ -191,7 +191,9 @@ export default function RiwayatProfil({
 
                     <div className="mt-2 shrink-0 md:mt-0">
                         <Link
-                            href={admin.profilOrganisasi.create(organisasi.id_organisasi)}
+                            href={admin.profilOrganisasi.create(
+                                organisasi.id_organisasi,
+                            )}
                             className="decoration-none inline-flex cursor-pointer items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95"
                         >
                             <Plus className="h-4 w-4" />
@@ -267,14 +269,18 @@ export default function RiwayatProfil({
                                                         : 'Profil Nonaktif'}
                                                 </span>
                                                 <Link
-                                                    href={admin.profilOrganisasi.pengurus(profil.id_profil)}
+                                                    href={admin.profilOrganisasi.pengurus(
+                                                        profil.id_profil,
+                                                    )}
                                                     className="hover:bg-surface-variant decoration-none inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-outline px-3 py-1 text-xs font-semibold text-primary transition-colors"
                                                 >
                                                     <Users className="h-3.5 w-3.5" />
                                                     Lihat Pengurus
                                                 </Link>
                                                 <Link
-                                                    href={admin.profilOrganisasi.edit(profil.id_profil)}
+                                                    href={admin.profilOrganisasi.edit(
+                                                        profil.id_profil,
+                                                    )}
                                                     className="hover:bg-surface-variant decoration-none inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-outline px-3 py-1 text-xs font-semibold text-primary transition-colors"
                                                 >
                                                     <Edit className="h-3.5 w-3.5" />
@@ -370,7 +376,7 @@ export default function RiwayatProfil({
                                                         }}
                                                         variant="ghost"
                                                         size="icon-sm"
-                                                        className="hover:bg-primary-fixed/20 h-8 w-8 shrink-0 cursor-pointer rounded-lg text-primary hover:text-primary"
+                                                        className="h-8 w-8 shrink-0 cursor-pointer rounded-lg text-primary hover:bg-primary-fixed/20 hover:text-primary"
                                                         title="Tambah Pembina"
                                                     >
                                                         <Plus className="h-4 w-4" />
