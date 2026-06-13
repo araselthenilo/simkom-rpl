@@ -27,15 +27,15 @@ class ArsipLaporanController extends Controller
         Gate::authorize('is-petugas');
 
         $arsip = ArsipLaporan::where('id_organisasi', $organisasi->id_organisasi)
-            ->with('petugas:username')
-            ->orderByDesc('waktu_dibuat')
+            ->with('penggunaPetugas:username')
+            ->orderByDesc('created_at')
             ->get([
                 'id_laporan',
                 'id_organisasi',
                 'username_petugas',
                 'jenis_laporan',
                 'file_laporan',
-                'waktu_dibuat',
+                'created_at',
             ]);
 
         return Inertia::render('Laporan/Index', [

@@ -140,6 +140,45 @@ export default function ManajemenKegiatan({
     });
     const [isExporting, setIsExporting] = useState(false);
 
+    // Report archiving states
+    const [targetOrganisasiId, setTargetOrganisasiId] = useState<string>('');
+    const [reportFormat, setReportFormat] = useState<'pdf' | 'excel'>('pdf');
+    const [isArchiving, setIsArchiving] = useState(false);
+
+    const handleCreateAndArchiveReport = () => {
+        if (!targetOrganisasiId) {
+            alert('Silakan pilih organisasi tujuan arsip.');
+            return;
+        }
+        setIsArchiving(true);
+        router.post(
+            '/admin/laporan/generate',
+            {
+                jenis_laporan: 'Kegiatan',
+                id_organisasi: parseInt(targetOrganisasiId, 10),
+                format: reportFormat,
+                status_kegiatan: exportFilters.status,
+                jenis_kegiatan: exportFilters.jenis,
+                tanggal_mulai: exportFilters.tanggalMulai,
+                tanggal_akhir: exportFilters.tanggalAkhir,
+                sort_by_field: exportSort.field,
+                sort_direction: exportSort.direction,
+            },
+            {
+                onSuccess: () => {
+                    setIsExportModalOpen(false);
+                    setIsArchiving(false);
+                },
+                onError: (errors) => {
+                    setIsArchiving(false);
+                    const msg = Object.values(errors).join('\n');
+                    alert(msg || 'Gagal membuat dan menyimpan laporan kegiatan.');
+                },
+            },
+        );
+    };
+
+
     // Compute the data to export based on filters & sort
     const getExportData = useCallback(() => {
         let data = [...activities];
@@ -1737,6 +1776,69 @@ export default function ManajemenKegiatan({
                             {/* Divider */}
                             <div className="border-t border-outline-variant/40" />
 
+                            {/* ── Arsip Laporan Section ── */}
+                            <section>
+                                <div className="mb-3 flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-primary" />
+                                    <span className="font-label-lg font-semibold text-primary">
+                                        Arsip Laporan (Simpan ke Sistem)
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    {/* Format */}
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                            Format Dokumen Laporan
+                                        </label>
+                                        <div className="flex gap-4 py-2">
+                                            <label className="flex items-center gap-2 text-sm cursor-pointer text-on-surface-variant">
+                                                <input
+                                                    type="radio"
+                                                    name="reportFormat"
+                                                    checked={reportFormat === 'pdf'}
+                                                    onChange={() => setReportFormat('pdf')}
+                                                    className="h-4 w-4 accent-primary"
+                                                />
+                                                PDF (.pdf)
+                                            </label>
+                                            <label className="flex items-center gap-2 text-sm cursor-pointer text-on-surface-variant">
+                                                <input
+                                                    type="radio"
+                                                    name="reportFormat"
+                                                    checked={reportFormat === 'excel'}
+                                                    onChange={() => setReportFormat('excel')}
+                                                    className="h-4 w-4 accent-primary"
+                                                />
+                                                Excel (.xlsx)
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Target Organisasi */}
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                            Simpan Laporan Pada Arsip Organisasi *
+                                        </label>
+                                        <select
+                                            required
+                                            value={targetOrganisasiId}
+                                            onChange={(e) => setTargetOrganisasiId(e.target.value)}
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        >
+                                            <option value="">-- Pilih Organisasi --</option>
+                                            {profilList.map((profil) => (
+                                                <option key={profil.id_profil} value={profil.id_organisasi.toString()}>
+                                                    {profil.organisasi?.nama_organisasi ?? `Profil #${profil.id_profil}`}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Divider */}
+                            <div className="border-t border-outline-variant/40" />
+
                             {/* ── Preview Count ── */}
                             <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
                                 <Info className="h-4 w-4 shrink-0 text-primary" />
@@ -1757,7 +1859,7 @@ export default function ManajemenKegiatan({
                                     variant="outline"
                                     onClick={() => setIsExportModalOpen(false)}
                                     className="cursor-pointer"
-                                    disabled={isExporting}
+                                    disabled={isExporting || isArchiving}
                                 >
                                     Tutup
                                 </Button>
@@ -1767,6 +1869,7 @@ export default function ManajemenKegiatan({
                                     onClick={handleExportExcel}
                                     disabled={
                                         isExporting ||
+                                        isArchiving ||
                                         getExportData().length === 0
                                     }
                                     className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
@@ -1774,7 +1877,7 @@ export default function ManajemenKegiatan({
                                     <FileSpreadsheet className="h-4 w-4" />
                                     {isExporting
                                         ? 'Mengekspor...'
-                                        : 'Export Excel (.xlsx)'}
+                                        : 'Unduh Excel (.xlsx)'}
                                 </button>
 
                                 <button
@@ -1782,6 +1885,7 @@ export default function ManajemenKegiatan({
                                     onClick={handleExportPDF}
                                     disabled={
                                         isExporting ||
+                                        isArchiving ||
                                         getExportData().length === 0
                                     }
                                     className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
@@ -1789,7 +1893,24 @@ export default function ManajemenKegiatan({
                                     <FileText className="h-4 w-4" />
                                     {isExporting
                                         ? 'Mengekspor...'
-                                        : 'Export PDF'}
+                                        : 'Unduh PDF'}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleCreateAndArchiveReport}
+                                    disabled={
+                                        isExporting ||
+                                        isArchiving ||
+                                        !targetOrganisasiId ||
+                                        getExportData().length === 0
+                                    }
+                                    className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    {isArchiving
+                                        ? 'Mengarsipkan...'
+                                        : 'Buat & Simpan Laporan'}
                                 </button>
                             </div>
                         </div>

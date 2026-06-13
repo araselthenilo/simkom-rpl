@@ -67,7 +67,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     const content = (
         <div className="mx-auto max-w-container-max px-margin-desktop py-10">
-            <div className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-6 shadow-sm animate-in fade-in duration-300">
+            <div className="animate-in rounded-2xl border border-outline-variant bg-surface-container-lowest p-6 shadow-sm duration-300 fade-in">
                 <Heading
                     title="Settings"
                     description="Manage your profile and account settings"
@@ -89,13 +89,13 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                         'w-full cursor-pointer justify-start transition-all duration-200 hover:bg-surface-container-low',
                                         {
                                             'bg-muted font-semibold':
-                                                isCurrentOrParentUrl(
-                                                    item.href,
-                                                ),
+                                                isCurrentOrParentUrl(item.href),
                                         },
                                     )}
                                 >
-                                    <Link href={`${toUrl(item.href)}?from=${layoutContext}`}>
+                                    <Link
+                                        href={`${toUrl(item.href)}?from=${layoutContext}`}
+                                    >
                                         {item.icon && (
                                             <item.icon className="mr-2 h-4 w-4" />
                                         )}

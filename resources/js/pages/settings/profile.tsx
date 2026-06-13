@@ -33,7 +33,7 @@ export default function Profile({
                 <Heading
                     variant="small"
                     title="Profile"
-                    description="Update your name and email address"
+                    description="Update your name and phone number"
                 />
 
                 <Form
@@ -65,22 +65,21 @@ export default function Profile({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="nomor_telepon">Phone number</Label>
 
                                 <Input
-                                    id="email"
-                                    type="email"
+                                    id="nomor_telepon"
+                                    type="tel"
                                     className="mt-1 block w-full"
-                                    defaultValue={auth.user.email}
-                                    name="email"
+                                    defaultValue={auth.user.nomor_telepon as string}
+                                    name="nomor_telepon"
                                     required
-                                    autoComplete="username"
-                                    placeholder="Email address"
+                                    placeholder="Phone number"
                                 />
 
                                 <InputError
                                     className="mt-2"
-                                    message={errors.email}
+                                    message={errors.nomor_telepon}
                                 />
                             </div>
 
@@ -101,11 +100,11 @@ export default function Profile({
 
                                         {status ===
                                             'verification-link-sent' && (
-                                                <div className="mt-2 text-sm font-medium text-green-600">
-                                                    A new verification link has been
-                                                    sent to your email address.
-                                                </div>
-                                            )}
+                                            <div className="mt-2 text-sm font-medium text-green-600">
+                                                A new verification link has been
+                                                sent to your email address.
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 

@@ -11,10 +11,12 @@ import {
     Eye,
     Building2,
     Coins,
+    FileText,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { router } from '@inertiajs/react';
 
 interface Transaction {
     id_transaksi: number;
@@ -260,6 +262,35 @@ export default function ManajemenKeuangan({
         useState<string>('all');
     const [selectedTransaction, setSelectedTransaction] =
         useState<Transaction | null>(null);
+
+    // Report states
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportFormat, setReportFormat] = useState<'pdf' | 'excel'>('pdf');
+    const [targetOrganisasiId, setTargetOrganisasiId] = useState<string>('');
+
+    const handleCreateReport = (e: React.FormEvent) => {
+        e.preventDefault();
+        const orgId = selectedOrganisasiId !== 'all' ? selectedOrganisasiId : targetOrganisasiId;
+
+        if (!orgId) {
+            alert('Silakan pilih organisasi terlebih dahulu.');
+            return;
+        }
+
+        router.post('/admin/laporan/generate', {
+            id_organisasi: parseInt(orgId, 10),
+            format: reportFormat,
+            filter_organisasi_id: selectedOrganisasiId,
+            id_kegiatan: selectedKegiatanId,
+            jenis_transaksi: selectedJenis,
+            search: searchQuery,
+            sort_by: sortBy,
+        }, {
+            onSuccess: () => {
+                setIsReportModalOpen(false);
+            }
+        });
+    };
 
     // Dynamic stats computation based on selected organisasi
     const computedStats = React.useMemo(() => {
@@ -527,10 +558,27 @@ export default function ManajemenKeuangan({
                             variant={isFilterVisible ? 'default' : 'outline'}
                             onClick={() => setIsFilterVisible(!isFilterVisible)}
                             className="group h-auto cursor-pointer rounded-lg border border-outline-variant/50 p-2 shadow-none transition-colors hover:bg-surface-container-low"
+                            title="Tampilkan Filter"
                         >
                             <Filter
                                 className={`h-5 w-5 ${isFilterVisible ? 'text-white group-hover:text-primary' : 'text-primary'}`}
                             />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                if (selectedOrganisasiId !== 'all') {
+                                    setTargetOrganisasiId(selectedOrganisasiId);
+                                } else {
+                                    setTargetOrganisasiId('');
+                                }
+                                setIsReportModalOpen(true);
+                            }}
+                            className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant/50 px-3 py-2 text-sm text-primary shadow-none hover:bg-surface-container-low"
+                            title="Buat Laporan"
+                        >
+                            <FileText className="h-5 w-5" />
+                            <span className="hidden sm:inline">Buat Laporan</span>
                         </Button>
                     </div>
                 </div>
@@ -813,6 +861,124 @@ export default function ManajemenKeuangan({
                     transaction={selectedTransaction}
                     onClose={() => setSelectedTransaction(null)}
                 />
+            )}
+
+            {/* Report Generation Modal */}
+            {isReportModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+                        onClick={() => setIsReportModalOpen(false)}
+                    />
+                    <form onSubmit={handleCreateReport} className="custom-scrollbar relative z-10 max-h-[90vh] w-full max-w-md animate-in overflow-y-auto rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
+                        {/* Header */}
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
+                            <h3 className="flex items-center gap-2 font-headline-sm font-bold text-primary">
+                                <FileText className="h-5 w-5" />
+                                Buat Laporan Keuangan
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setIsReportModalOpen(false)}
+                                className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="mt-4 space-y-4">
+                            <p className="text-sm text-on-surface-variant">
+                                Laporan akan dibuat berdasarkan mutasi kas dengan filter yang aktif saat ini.
+                            </p>
+
+                            {/* Filter Preview */}
+                            <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low/30 p-3 text-xs space-y-1">
+                                <p className="font-semibold text-primary">Preview Filter Aktif:</p>
+                                <p><span className="text-on-surface-variant font-medium">Organisasi:</span> {selectedOrganisasiId === 'all' ? 'Semua Organisasi' : organisasiList.find(o => o.id_organisasi.toString() === selectedOrganisasiId)?.nama_organisasi}</p>
+                                <p><span className="text-on-surface-variant font-medium">Kegiatan:</span> {selectedKegiatanId === 'all' ? 'Semua Kegiatan' : activities.find(a => a.id_kegiatan.toString() === selectedKegiatanId)?.nama_kegiatan}</p>
+                                <p><span className="text-on-surface-variant font-medium">Jenis Transaksi:</span> {selectedJenis === 'all' ? 'Semua Jenis' : selectedJenis}</p>
+                                {searchQuery && <p><span className="text-on-surface-variant font-medium">Pencarian:</span> "{searchQuery}"</p>}
+                            </div>
+
+                            {/* Form Fields */}
+                            <div className="space-y-3">
+                                {/* Format */}
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-primary">
+                                        Format Dokumen
+                                    </label>
+                                    <div className="flex gap-4">
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="reportFormat"
+                                                checked={reportFormat === 'pdf'}
+                                                onChange={() => setReportFormat('pdf')}
+                                                className="h-4 w-4 accent-primary"
+                                            />
+                                            PDF (.pdf)
+                                        </label>
+                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="reportFormat"
+                                                checked={reportFormat === 'excel'}
+                                                onChange={() => setReportFormat('excel')}
+                                                className="h-4 w-4 accent-primary"
+                                            />
+                                            Excel (.xlsx)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Destination Organisasi */}
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold text-primary">
+                                        Simpan Laporan Pada Arsip Organisasi
+                                    </label>
+                                    {selectedOrganisasiId !== 'all' ? (
+                                        <div className="rounded-lg border border-outline-variant/50 bg-surface-container-low/50 px-3 py-2 text-sm text-on-surface-variant font-medium">
+                                            {organisasiList.find(o => o.id_organisasi.toString() === selectedOrganisasiId)?.nama_organisasi}
+                                        </div>
+                                    ) : (
+                                        <select
+                                            required
+                                            value={targetOrganisasiId}
+                                            onChange={(e) => setTargetOrganisasiId(e.target.value)}
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        >
+                                            <option value="">-- Pilih Organisasi --</option>
+                                            {organisasiList.map((org) => (
+                                                <option key={org.id_organisasi} value={org.id_organisasi.toString()}>
+                                                    {org.nama_organisasi}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex justify-end gap-2 border-t border-outline-variant/30 pt-3">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsReportModalOpen(false)}
+                                    className="h-9 cursor-pointer px-4 text-xs font-semibold"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    className="h-9 cursor-pointer px-6 text-xs font-semibold"
+                                    disabled={selectedOrganisasiId === 'all' && !targetOrganisasiId}
+                                >
+                                    Buat & Simpan
+                                </Button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             )}
         </div>
     );

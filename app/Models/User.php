@@ -16,7 +16,7 @@ use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Passkeys\Passkeys;
 
-#[Fillable(['username', 'name', 'email', 'password', 'role'])]
+#[Fillable(['username', 'name', 'email', 'password', 'role', 'nomor_telepon'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -29,7 +29,7 @@ class User extends Authenticatable implements PasskeyUser
 
     protected $keyType = 'string';
 
-    protected $appends = ['name', 'is_active_organization_staff', 'active_organization_eras'];
+    protected $appends = ['name', 'is_active_organization_staff', 'active_organization_eras', 'nomor_telepon'];
 
     protected function casts(): array
     {
@@ -81,6 +81,21 @@ class User extends Authenticatable implements PasskeyUser
             set: function ($value) {
                 if ($this->profilPengguna) {
                     $this->profilPengguna->nama_lengkap = $value;
+                    $this->profilPengguna->save();
+                }
+
+                return [];
+            }
+        );
+    }
+
+    public function nomorTelepon(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->profilPengguna?->nomor_telepon,
+            set: function ($value) {
+                if ($this->profilPengguna) {
+                    $this->profilPengguna->nomor_telepon = $value;
                     $this->profilPengguna->save();
                 }
 

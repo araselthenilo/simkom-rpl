@@ -27,6 +27,10 @@ class Kegiatan extends Model
 
     protected $primaryKey = 'id_kegiatan';
 
+    protected $casts = [
+        'tanggal_pelaksanaan' => 'date',
+    ];
+
     public function profilOrganisasi(): BelongsTo
     {
         return $this->belongsTo(ProfilOrganisasi::class, 'id_profil', 'id_profil');
@@ -39,7 +43,7 @@ class Kegiatan extends Model
 
     public function dokumentasiKegiatan(): HasOne
     {
-        return $this->hasOne(DokumentasiKegiatan::class, 'id_dokumentasi', 'id_dokumentasi');
+        return $this->hasOne(DokumentasiKegiatan::class, 'id_kegiatan', 'id_kegiatan');
     }
 
     public function transaksiKeuangan(): HasMany

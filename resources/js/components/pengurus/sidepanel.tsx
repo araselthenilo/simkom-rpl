@@ -8,11 +8,14 @@ import {
     Coins,
     LogOut,
     ArrowLeft,
+    User,
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { logout, pengurus, home } from '@/routes';
 import { keuangan, anggota, kegiatan } from '@/routes/pengurus';
 import staff from '@/routes/pengurus/staff';
+import { edit as profileEdit } from '@/routes/profile';
+import { toUrl } from '@/lib/utils';
 
 interface NavItem {
     title: string;
@@ -32,6 +35,7 @@ export default function Sidepanel() {
     ];
 
     const bottomItems: NavItem[] = [
+        { title: 'Profil Saya', href: profileEdit({ query: { from: 'staff' } }), icon: User },
         { title: 'Kembali ke Beranda', href: home(), icon: ArrowLeft },
     ];
 
@@ -55,11 +59,10 @@ export default function Sidepanel() {
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
-                                isActive
+                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${isActive
                                     ? 'border-l-4 border-secondary bg-secondary-container text-on-secondary-container'
                                     : 'text-on-primary/80 hover:bg-on-primary/10 hover:text-on-primary'
-                            }`}
+                                }`}
                         >
                             <Icon className="h-5 w-5 flex-shrink-0" />
                             <span className="font-label-lg text-label-lg">
@@ -72,18 +75,17 @@ export default function Sidepanel() {
 
             <div className="mt-auto space-y-unit-sm border-t border-on-primary/10 pt-unit-md">
                 {bottomItems.map((item) => {
-                    const isActive = isCurrentUrl(item.href);
+                    const isActive = isCurrentUrl(toUrl(item.href).split('?')[0]);
                     const Icon = item.icon;
 
                     return (
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
-                                isActive
+                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${isActive
                                     ? 'border-l-4 border-secondary bg-secondary-container text-on-secondary-container'
                                     : 'text-on-primary/80 hover:bg-on-primary/10 hover:text-on-primary'
-                            }`}
+                                }`}
                         >
                             <Icon className="h-5 w-5 flex-shrink-0" />
                             <span className="font-label-lg text-label-lg">

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminKegiatanController;
 use App\Http\Controllers\AdminPengajuanProfilController;
 use App\Http\Controllers\AdminDokumentasiKegiatanController;
+use App\Http\Controllers\AdminLaporanController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PengurusOrganisasiController;
 use App\Http\Controllers\TransaksiKeuanganController;
@@ -51,4 +52,11 @@ Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(functi
     Route::get('/dokumentasi-kegiatan', [AdminDokumentasiKegiatanController::class, 'index'])->name('dokumentasi-kegiatan.index');
     Route::get('/dokumentasi-kegiatan/{dokumentasi}', [AdminDokumentasiKegiatanController::class, 'show'])->name('dokumentasi-kegiatan.show');
     Route::post('/dokumentasi-kegiatan/{dokumentasi}/update-status', [AdminDokumentasiKegiatanController::class, 'updateStatus'])->name('dokumentasi-kegiatan.update-status');
+
+    // Laporan routes
+    Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
+    Route::post('/laporan/generate', [AdminLaporanController::class, 'generate'])->name('laporan.generate');
+    Route::get('/laporan/{arsipLaporan}/download', [AdminLaporanController::class, 'download'])->name('laporan.download');
+    Route::delete('/laporan/{arsipLaporan}', [AdminLaporanController::class, 'destroy'])->name('laporan.destroy');
 });
+

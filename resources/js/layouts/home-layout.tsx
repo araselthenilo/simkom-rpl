@@ -10,10 +10,10 @@ export default function HomeLayout({
     useFlashToast();
 
     return (
-        <>
+        <div className="flex min-h-screen flex-col">
             <TopNavbar />
-            <main>{children}</main>
+            <main className="flex-1">{children}</main>
             <Footer />
-        </>
+        </div>
     );
 }

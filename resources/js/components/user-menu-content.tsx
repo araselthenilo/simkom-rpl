@@ -26,7 +26,9 @@ export function UserMenuContent({ user }: Props) {
             const isStaff =
                 window.location.pathname.includes('/pengurus') ||
                 window.location.pathname.includes('/admin');
-            setSettingsHref(edit.url({ query: { from: isStaff ? 'staff' : 'student' } }));
+            setSettingsHref(
+                edit.url({ query: { from: isStaff ? 'staff' : 'student' } }),
+            );
         }
     }, []);
 

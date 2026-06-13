@@ -446,14 +446,14 @@ class TransaksiKeuanganController extends Controller
         $totalPengeluaran = TransaksiKeuangan::where('jenis_transaksi', 'Pengeluaran')->sum('nominal_transaksi');
         $totalSaldo       = $totalPemasukan - $totalPengeluaran;
 
-        // All activities that have transactions
-        $activities = Kegiatan::whereHas('transaksiKeuangan')->get()->map(fn (Kegiatan $k) => [
+        // All activities
+        $activities = Kegiatan::all()->map(fn (Kegiatan $k) => [
             'id_kegiatan'   => $k->id_kegiatan,
             'nama_kegiatan' => $k->nama_kegiatan,
         ]);
 
-        // All unique organisations represented in transactions
-        $organisasiList = \App\Models\Organisasi::whereHas('profilOrganisasi.kegiatan.transaksiKeuangan')
+        // All active organisations
+        $organisasiList = \App\Models\Organisasi::where('status_aktif', true)
             ->get()
             ->map(fn ($org) => [
                 'id_organisasi'   => $org->id_organisasi,

@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Building2, Clock, ChevronRight, Compass, XCircle } from 'lucide-react';
+import { Building2, Clock, ChevronRight, ChevronDown, Compass, XCircle } from 'lucide-react';
 import React from 'react';
 import OrganisasiSaya from '@/components/beranda/organisasi-saya';
 import {
@@ -25,6 +25,15 @@ interface IndexProps {
 }
 
 export default function Index({ followed, applied, joinable }: IndexProps) {
+    const [expandedOrgs, setExpandedOrgs] = React.useState<Record<number, boolean>>({});
+
+    const toggleExpand = (id: number) => {
+        setExpandedOrgs((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
+
     return (
         <>
             <Head title="Daftar Organisasi" />
@@ -225,46 +234,61 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                             )}
                                         </div>
 
-                                        <div className="mt-6 flex items-center justify-between border-t border-outline-variant/30 pt-4">
-                                            <div className="flex items-center gap-4">
-                                                <Link
-                                                    href={
-                                                        organisasiKeuangan(
-                                                            org.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                        <div className="mt-6 flex flex-col gap-3 border-t border-outline-variant/30 pt-4">
+                                            <div className="flex items-center justify-between">
+                                                <button
+                                                    onClick={() => toggleExpand(org.id)}
+                                                    className="hover:text-primary inline-flex items-center gap-1 text-label-md font-semibold text-on-surface-variant transition-colors"
                                                 >
-                                                    Lihat Keuangan
-                                                </Link>
+                                                    {expandedOrgs[org.id] ? 'Sembunyikan Menu' : 'Tampilkan Menu'}
+                                                    <ChevronDown
+                                                        className={`h-4 w-4 transition-transform duration-200 ${
+                                                            expandedOrgs[org.id] ? 'rotate-180' : ''
+                                                        }`}
+                                                    />
+                                                </button>
                                                 <Link
-                                                    href={
-                                                        organisasiKegiatan(
-                                                            org.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    href={detail(org.id)}
+                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
                                                 >
-                                                    Lihat Kegiatan
-                                                </Link>
-                                                <Link
-                                                    href={
-                                                        organisasiPengurus(
-                                                            org.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
-                                                >
-                                                    Lihat Pengurus
+                                                    Lihat Profil{' '}
+                                                    <ChevronRight className="h-4 w-4" />
                                                 </Link>
                                             </div>
-                                            <Link
-                                                href={detail(org.id)}
-                                                className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
-                                            >
-                                                Lihat Profil{' '}
-                                                <ChevronRight className="h-4 w-4" />
-                                            </Link>
+                                            {expandedOrgs[org.id] && (
+                                                <div className="animate-fade-in flex flex-wrap items-center gap-4 border-t border-dashed border-outline-variant/30 pt-3">
+                                                    <Link
+                                                        href={
+                                                            organisasiKeuangan(
+                                                                org.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    >
+                                                        Lihat Keuangan
+                                                    </Link>
+                                                    <Link
+                                                        href={
+                                                            organisasiKegiatan(
+                                                                org.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    >
+                                                        Lihat Kegiatan
+                                                    </Link>
+                                                    <Link
+                                                        href={
+                                                            organisasiPengurus(
+                                                                org.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    >
+                                                        Lihat Pengurus
+                                                    </Link>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

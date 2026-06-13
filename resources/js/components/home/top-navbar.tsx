@@ -109,35 +109,39 @@ export default function TopNavbar({
                     </div>
 
                     <div className="ml-6 flex items-center gap-4">
-                        <button className="relative rounded-full p-2 transition-all duration-100 hover:bg-surface-container-low active:scale-95">
-                            <Bell className="h-6 w-6 text-primary" />
-                            {count > 0 && (
-                                <span className="absolute top-2 right-2 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full border-2 border-surface bg-error px-1.5 py-0.5 text-[10px] leading-none font-bold text-on-error">
-                                    {count > 99 ? '99+' : count}
-                                </span>
-                            )}
-                        </button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-primary-fixed transition-transform duration-200 hover:scale-105 focus:outline-none active:scale-95">
-                                    {auth.user?.avatar ? (
-                                        <img
-                                            src={auth.user.avatar}
-                                            alt="User Profile Avatar"
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <span className="text-sm font-semibold text-primary">
-                                            {initials}
+                                <button className="group flex cursor-pointer items-center gap-2.5 rounded-full border border-transparent p-0.5 text-left transition-all duration-200 hover:bg-surface-container-low focus:outline-none sm:border-outline-variant sm:bg-surface-container-lowest sm:pr-4">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-outline-variant bg-primary-fixed transition-transform duration-200 group-hover:scale-105">
+                                        {auth.user?.avatar ? (
+                                            <img
+                                                src={auth.user.avatar}
+                                                alt="User Profile Avatar"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-sm font-semibold text-primary">
+                                                {initials}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="hidden flex-col justify-center sm:flex">
+                                        <span className="max-w-[140px] truncate text-body-sm leading-tight font-semibold text-on-surface">
+                                            {auth.user?.name}
                                         </span>
-                                    )}
+                                        <span className="mt-0.5 text-[10px] leading-tight font-medium text-on-surface-variant">
+                                            {auth.user?.role}
+                                        </span>
+                                    </div>
                                 </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end">
                                 <DropdownMenuItem asChild>
                                     <Link
                                         className="block w-full cursor-pointer"
-                                        href={edit.url({ query: { from: 'student' } })}
+                                        href={edit.url({
+                                            query: { from: 'student' },
+                                        })}
                                         prefetch
                                         onClick={cleanup}
                                     >

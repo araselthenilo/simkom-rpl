@@ -244,21 +244,6 @@ export default function StaffManagement({
                         {organisasi?.nama_organisasi}
                     </p>
                 </div>
-                <div className="mt-2 flex w-full gap-unit-sm md:mt-0 md:w-auto">
-                    <button
-                        onClick={() => {
-                            setSelectedMemberId('');
-                            setPosition('');
-                            setIsActive(true);
-                            setValidationError('');
-                            setIsAddOpen(true);
-                        }}
-                        className="decoration-none flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"
-                    >
-                        <Plus className="h-[18px] w-[18px]" />
-                        Tambah Pengurus Baru
-                    </button>
-                </div>
             </header>
 
             {/* Metrics Grid */}
@@ -304,32 +289,29 @@ export default function StaffManagement({
                 <div className="flex w-full items-center gap-1 overflow-x-auto rounded-lg border border-outline-variant bg-surface-container-low p-1 sm:w-auto">
                     <button
                         onClick={() => setStatusFilter('all')}
-                        className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
-                            statusFilter === 'all'
+                        className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === 'all'
                                 ? 'bg-white text-primary shadow-sm'
                                 : 'border-none bg-transparent text-on-surface-variant hover:text-primary'
-                        }`}
+                            }`}
                     >
                         Semua ({pengurusList.length})
                     </button>
                     <button
                         onClick={() => setStatusFilter('active')}
-                        className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
-                            statusFilter === 'active'
+                        className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === 'active'
                                 ? 'bg-white text-green-700 shadow-sm'
                                 : 'border-none bg-transparent text-on-surface-variant hover:text-green-700'
-                        }`}
+                            }`}
                     >
                         Aktif (
                         {pengurusList.filter((o) => o.status_aktif).length})
                     </button>
                     <button
                         onClick={() => setStatusFilter('inactive')}
-                        className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
-                            statusFilter === 'inactive'
+                        className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === 'inactive'
                                 ? 'bg-white text-red-700 shadow-sm'
                                 : 'border-none bg-transparent text-on-surface-variant hover:text-red-700'
-                        }`}
+                            }`}
                     >
                         Nonaktif (
                         {pengurusList.filter((o) => !o.status_aktif).length})
@@ -398,7 +380,7 @@ export default function StaffManagement({
                                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary-fixed bg-primary-fixed/30 text-sm font-bold text-primary">
                                                         {getInitials(
                                                             student?.nama_lengkap ||
-                                                                '',
+                                                            '',
                                                         )}
                                                     </div>
                                                     <div>
@@ -440,11 +422,10 @@ export default function StaffManagement({
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span
-                                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                        officer.status_aktif
+                                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${officer.status_aktif
                                                             ? 'border border-green-200 bg-green-50 text-green-700'
                                                             : 'border border-red-200 bg-red-50 text-red-700'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <span
                                                         className={`h-1.5 w-1.5 rounded-full ${officer.status_aktif ? 'bg-green-600' : 'bg-red-600'}`}
@@ -462,14 +443,13 @@ export default function StaffManagement({
                                                                 officer.id_pengurus,
                                                                 officer.status_aktif,
                                                                 student?.nama_lengkap ||
-                                                                    '',
+                                                                '',
                                                             )
                                                         }
-                                                        className={`cursor-pointer rounded-lg p-2 transition-colors ${
-                                                            officer.status_aktif
+                                                        className={`cursor-pointer rounded-lg p-2 transition-colors ${officer.status_aktif
                                                                 ? 'text-amber-600 hover:bg-amber-50'
                                                                 : 'text-green-700 hover:bg-green-50'
-                                                        }`}
+                                                            }`}
                                                         title={
                                                             officer.status_aktif
                                                                 ? 'Nonaktifkan Staff'
@@ -483,7 +463,7 @@ export default function StaffManagement({
                                                             handleDeleteStaff(
                                                                 officer.id_pengurus,
                                                                 student?.nama_lengkap ||
-                                                                    '',
+                                                                '',
                                                             )
                                                         }
                                                         className="cursor-pointer rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"

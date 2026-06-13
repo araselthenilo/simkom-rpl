@@ -346,8 +346,9 @@ class DummyOrganisasiSeeder extends Seeder
                 ->where('organisasi.nama_organisasi', 'UKM Penalaran & Riset')
                 ->value('profil_organisasi.id_profil');
 
+            $idMusikKegiatan = null;
             if ($ukmMusikProfil) {
-                DB::table('kegiatan')->insert([
+                $idMusikKegiatan = DB::table('kegiatan')->insertGetId([
                     'id_profil' => $ukmMusikProfil,
                     'nama_kegiatan' => 'Konser Harmoni Musik Kampus',
                     'jenis_kegiatan' => 'Seminar',
@@ -362,8 +363,9 @@ class DummyOrganisasiSeeder extends Seeder
                 ]);
             }
 
+            $idRobotikaKegiatan = null;
             if ($ukmRobotikaProfil) {
-                DB::table('kegiatan')->insert([
+                $idRobotikaKegiatan = DB::table('kegiatan')->insertGetId([
                     'id_profil' => $ukmRobotikaProfil,
                     'nama_kegiatan' => 'Workshop IoT & Smart Device',
                     'jenis_kegiatan' => 'Pelatihan',
@@ -378,8 +380,9 @@ class DummyOrganisasiSeeder extends Seeder
                 ]);
             }
 
+            $idOlahragaKegiatan = null;
             if ($ukmOlahragaProfil) {
-                DB::table('kegiatan')->insert([
+                $idOlahragaKegiatan = DB::table('kegiatan')->insertGetId([
                     'id_profil' => $ukmOlahragaProfil,
                     'nama_kegiatan' => 'Turnamen Futsal Rektor Cup 2026',
                     'jenis_kegiatan' => 'Lomba',
@@ -394,8 +397,9 @@ class DummyOrganisasiSeeder extends Seeder
                 ]);
             }
 
+            $idRisetKegiatan = null;
             if ($ukmRisetProfil) {
-                DB::table('kegiatan')->insert([
+                $idRisetKegiatan = DB::table('kegiatan')->insertGetId([
                     'id_profil' => $ukmRisetProfil,
                     'nama_kegiatan' => 'Seminar Penulisan PKM & Karya Ilmiah',
                     'jenis_kegiatan' => 'Seminar',
@@ -407,6 +411,77 @@ class DummyOrganisasiSeeder extends Seeder
                     'status_kegiatan' => 'Mendatang',
                     'created_at' => now(),
                     'updated_at' => now(),
+                ]);
+            }
+
+            // Create Dummy Transaksi Keuangan
+            if ($idMusikKegiatan) {
+                DB::table('transaksi_keuangan')->insert([
+                    [
+                        'id_kegiatan' => $idMusikKegiatan,
+                        'jenis_transaksi' => 'Pemasukan',
+                        'nominal_transaksi' => 5000000.00,
+                        'tanggal_transaksi' => '2026-06-05',
+                        'sumber_tujuan_transaksi' => 'Sponsorship Teh Botol Sosro',
+                        'foto_bukti_transaksi' => 'transaksi_keuangan/bukti/dummy_invoice.png',
+                        'catatan_koreksi' => null,
+                        'created_at' => now()->subDays(5),
+                        'updated_at' => now()->subDays(5),
+                    ],
+                    [
+                        'id_kegiatan' => $idMusikKegiatan,
+                        'jenis_transaksi' => 'Pengeluaran',
+                        'nominal_transaksi' => 2500000.00,
+                        'tanggal_transaksi' => '2026-06-08',
+                        'sumber_tujuan_transaksi' => 'Sewa Sound System & Lighting',
+                        'foto_bukti_transaksi' => 'transaksi_keuangan/bukti/dummy_nota.png',
+                        'catatan_koreksi' => null,
+                        'created_at' => now()->subDays(2),
+                        'updated_at' => now()->subDays(2),
+                    ]
+                ]);
+            }
+
+            if ($idRobotikaKegiatan) {
+                DB::table('transaksi_keuangan')->insert([
+                    [
+                        'id_kegiatan' => $idRobotikaKegiatan,
+                        'jenis_transaksi' => 'Pemasukan',
+                        'nominal_transaksi' => 2250000.00,
+                        'tanggal_transaksi' => '2026-06-10',
+                        'sumber_tujuan_transaksi' => 'Uang Pendaftaran Peserta (30 Orang)',
+                        'foto_bukti_transaksi' => 'transaksi_keuangan/bukti/dummy_receipt.png',
+                        'catatan_koreksi' => null,
+                        'created_at' => now()->subDay(),
+                        'updated_at' => now()->subDay(),
+                    ],
+                    [
+                        'id_kegiatan' => $idRobotikaKegiatan,
+                        'jenis_transaksi' => 'Pengeluaran',
+                        'nominal_transaksi' => 1500000.00,
+                        'tanggal_transaksi' => '2026-06-11',
+                        'sumber_tujuan_transaksi' => 'Pembelian NodeMCU ESP8266 & Sensor DHT11',
+                        'foto_bukti_transaksi' => 'transaksi_keuangan/bukti/dummy_invoice2.png',
+                        'catatan_koreksi' => 'Harap lampirkan nota toko fisik juga',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                ]);
+            }
+
+            if ($idOlahragaKegiatan) {
+                DB::table('transaksi_keuangan')->insert([
+                    [
+                        'id_kegiatan' => $idOlahragaKegiatan,
+                        'jenis_transaksi' => 'Pemasukan',
+                        'nominal_transaksi' => 1500000.00,
+                        'tanggal_transaksi' => '2026-06-12',
+                        'sumber_tujuan_transaksi' => 'Kas Himpunan Mahasiswa',
+                        'foto_bukti_transaksi' => 'transaksi_keuangan/bukti/dummy_transfer.png',
+                        'catatan_koreksi' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
                 ]);
             }
 

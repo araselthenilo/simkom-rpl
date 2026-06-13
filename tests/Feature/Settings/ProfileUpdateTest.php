@@ -35,7 +35,7 @@ test('profile information can be updated', function () {
         ->actingAs($user)
         ->patch(route('profile.update'), [
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'nomor_telepon' => '08987654321',
         ]);
 
     $response
@@ -45,7 +45,7 @@ test('profile information can be updated', function () {
     $user->refresh();
 
     expect($user->name)->toBe('Test User');
-    expect($user->email)->toBe('test@example.com');
+    expect($user->nomor_telepon)->toBe('08987654321');
 });
 
 test('user can delete their account', function () {

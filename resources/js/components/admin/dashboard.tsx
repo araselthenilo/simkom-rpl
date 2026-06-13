@@ -106,15 +106,6 @@ export default function Dashboard({
                         Selamat datang kembali, Admin Kemahasiswaan SIMKOM.
                     </p>
                 </div>
-                <div className="flex gap-unit-sm">
-                    <Button
-                        variant="outline"
-                        className="h-auto cursor-pointer gap-2 rounded-lg border border-primary bg-surface px-6 py-2.5 font-label-lg text-label-lg text-primary transition-all hover:bg-primary/5"
-                    >
-                        <Download className="h-5 w-5" />
-                        Export Data
-                    </Button>
-                </div>
             </section>
             <section className="grid grid-cols-1 gap-unit-lg md:grid-cols-3">
                 <div className="group col-span-1 flex flex-col justify-between rounded-xl border border-outline-variant bg-surface p-unit-lg shadow-[0px_2px_4px_rgba(26,54,93,0.05)] transition-all duration-300 hover:shadow-[0px_10px_15px_rgba(26,54,93,0.1)] md:col-span-2">

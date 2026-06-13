@@ -22,6 +22,10 @@ class TransaksiKeuangan extends Model
 
     protected $primaryKey = 'id_transaksi';
 
+    protected $casts = [
+        'tanggal_transaksi' => 'date',
+    ];
+
     public function kegiatan(): BelongsTo
     {
         return $this->belongsTo(Kegiatan::class, 'id_kegiatan', 'id_kegiatan');

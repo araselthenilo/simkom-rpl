@@ -44,8 +44,7 @@ export default function Sidepanel() {
         },
         { title: 'Kegiatan', href: admin.kegiatan.index(), icon: Calendar },
         { title: 'Keuangan', href: '/admin/keuangan', icon: Coins },
-        { title: 'Laporan', href: '/laporan', icon: BarChart3 },
-        { title: 'Master Data', href: '/master-data', icon: Database },
+        { title: 'Laporan', href: '/admin/laporan', icon: BarChart3 },
     ];
 
     const bottomItems: NavItem[] = [
@@ -72,11 +71,10 @@ export default function Sidepanel() {
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
-                                isActive
+                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${isActive
                                     ? 'border-l-4 border-secondary bg-secondary-container text-on-secondary-container'
                                     : 'text-on-primary/80 hover:bg-on-primary/10 hover:text-on-primary'
-                            }`}
+                                }`}
                         >
                             <Icon className="h-5 w-5 flex-shrink-0" />
                             <span className="font-label-lg text-label-lg">
@@ -96,11 +94,10 @@ export default function Sidepanel() {
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
-                                isActive
+                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${isActive
                                     ? 'border-l-4 border-secondary bg-secondary-container text-on-secondary-container'
                                     : 'text-on-primary/80 hover:bg-on-primary/10 hover:text-on-primary'
-                            }`}
+                                }`}
                         >
                             <Icon className="h-5 w-5 flex-shrink-0" />
                             <span className="font-label-lg text-label-lg">
