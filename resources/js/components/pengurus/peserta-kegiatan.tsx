@@ -76,7 +76,7 @@ export default function PesertaKegiatan({
 }: {
     kegiatan: Activity;
     pesertaList?: Peserta[];
-    role?: 'admin' | 'pengurus';
+    role?: 'admin' | 'pengurus' | 'pembina';
 }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activePeserta, setActivePeserta] = useState<Peserta | null>(null);
@@ -172,7 +172,9 @@ export default function PesertaKegiatan({
                             router.get(
                                 role === 'admin'
                                     ? '/admin/kegiatan'
-                                    : '/pengurus/kegiatan',
+                                    : role === 'pembina'
+                                      ? '/pembina/kegiatan'
+                                      : '/pengurus/kegiatan',
                             )
                         }
                         className="group inline-flex cursor-pointer items-center gap-2 font-label-lg text-primary transition-all hover:opacity-80 focus:outline-none"

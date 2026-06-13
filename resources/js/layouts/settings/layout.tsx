@@ -5,6 +5,7 @@ import Heading from '@/components/heading';
 import HomeLayout from '@/layouts/home-layout';
 import AdminLayout from '@/layouts/admin-layout';
 import PengurusLayout from '@/layouts/pengurus-layout';
+import PembinaLayout from '@/layouts/pembina-layout';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -59,7 +60,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             }
         }
         // Default context
-        if (auth.user?.role === 'Admin Kemahasiswaan') {
+        if (auth.user?.role === 'Admin Kemahasiswaan' || auth.user?.role === 'Pembina Organisasi') {
             return 'staff';
         }
         return 'student';
@@ -117,6 +118,10 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             </div>
         </div>
     );
+
+    if (auth.user?.role === 'Pembina Organisasi') {
+        return <PembinaLayout>{content}</PembinaLayout>;
+    }
 
     if (layoutContext === 'student') {
         return <HomeLayout>{content}</HomeLayout>;

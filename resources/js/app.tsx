@@ -5,6 +5,7 @@ import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import PengurusLayout from '@/layouts/pengurus-layout';
 import AdminLayout from './layouts/admin-layout';
+import PembinaLayout from './layouts/pembina-layout';
 import AuthLayout from './layouts/auth-layout';
 import HomeLayout from './layouts/home-layout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -32,6 +33,8 @@ createInertiaApp({
                 return [PengurusLayout];
             case name.startsWith('admin/'):
                 return [AdminLayout];
+            case name.startsWith('pembina/'):
+                return [PembinaLayout];
             default:
                 return AppLayout;
         }

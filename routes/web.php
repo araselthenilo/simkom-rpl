@@ -106,6 +106,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Kemahasiswaan Routes
     require __DIR__.'/admin.php';
 
+    // Pembina Organisasi Routes
+    require __DIR__.'/pembina.php';
+
     // Pengurus Organisasi Routes
     require __DIR__.'/pengurus.php';
 });

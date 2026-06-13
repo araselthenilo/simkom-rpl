@@ -17,7 +17,7 @@ import {
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import admin from '@/routes/admin';
+import pembina from '@/routes/pembina';
 
 interface ProfilOrganisasi {
     id_profil: number;
@@ -72,39 +72,7 @@ export default function ManajemenOrganisasi({
         return matchesSearch && matchesStatus;
     });
 
-    const handleToggleStatus = (
-        id: number,
-        currentStatus: boolean,
-        name: string,
-    ) => {
-        const actionText = currentStatus ? 'menonaktifkan' : 'mengaktifkan';
 
-        if (
-            confirm(
-                `Apakah Anda yakin ingin ${actionText} organisasi "${name}"?`,
-            )
-        ) {
-            router.patch(
-                admin.organisasi.toggle(id).url,
-                {},
-                {
-                    preserveScroll: true,
-                },
-            );
-        }
-    };
-
-    const handleDeleteOrganisasi = (id: number, name: string) => {
-        if (
-            confirm(
-                `Apakah Anda yakin ingin menghapus/menonaktifkan organisasi "${name}"? Tindakan ini menggunakan Soft Delete.`,
-            )
-        ) {
-            router.delete(admin.organisasi.destroy(id).url, {
-                preserveScroll: true,
-            });
-        }
-    };
 
     return (
         <main className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
@@ -120,13 +88,6 @@ export default function ManajemenOrganisasi({
                     </p>
                 </div>
                 <div className="flex w-full gap-unit-sm md:w-auto">
-                    <Link
-                        href={admin.organisasi.create()}
-                        className="decoration-none flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg font-semibold text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"
-                    >
-                        <PlusCircle className="h-[18px] w-[18px]" />
-                        Tambah UKM Baru
-                    </Link>
                 </div>
             </header>
 
@@ -176,8 +137,8 @@ export default function ManajemenOrganisasi({
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`cursor-pointer rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
-                                ? 'bg-white font-semibold text-primary shadow-sm'
-                                : 'text-on-surface-variant hover:text-primary'
+                                    ? 'bg-white font-semibold text-primary shadow-sm'
+                                    : 'text-on-surface-variant hover:text-primary'
                                 }`}
                         >
                             {tab}
@@ -255,7 +216,7 @@ export default function ManajemenOrganisasi({
                                                 </div>
                                                 <div className="flex flex-col gap-0.5">
                                                     <Link
-                                                        href={admin.organisasi.profil(
+                                                        href={pembina.organisasi.profil(
                                                             org.id_organisasi,
                                                         )}
                                                         className="decoration-none font-body-md font-semibold text-primary hover:underline"
@@ -290,8 +251,8 @@ export default function ManajemenOrganisasi({
                                         <td className="px-unit-lg py-4">
                                             <span
                                                 className={`flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${org.status_aktif
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-red-100 text-red-700'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-red-100 text-red-700'
                                                     }`}
                                             >
                                                 <span
@@ -308,7 +269,7 @@ export default function ManajemenOrganisasi({
                                             <div className="flex justify-end gap-1.5">
                                                 {/* View Profile History */}
                                                 <Link
-                                                    href={admin.organisasi.profil(
+                                                    href={pembina.organisasi.profil(
                                                         org.id_organisasi,
                                                     )}
                                                     className="display-inline-block cursor-pointer rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
@@ -316,42 +277,6 @@ export default function ManajemenOrganisasi({
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </Link>
-
-                                                {/* Toggle status */}
-                                                <button
-                                                    onClick={() =>
-                                                        handleToggleStatus(
-                                                            org.id_organisasi,
-                                                            org.status_aktif,
-                                                            org.nama_organisasi,
-                                                        )
-                                                    }
-                                                    className={`cursor-pointer rounded-lg p-2 transition-colors ${org.status_aktif
-                                                        ? 'text-amber-600 hover:bg-amber-50'
-                                                        : 'text-green-700 hover:bg-green-50'
-                                                        }`}
-                                                    title={
-                                                        org.status_aktif
-                                                            ? 'Nonaktifkan UKM'
-                                                            : 'Aktifkan UKM'
-                                                    }
-                                                >
-                                                    <Power className="h-4 w-4" />
-                                                </button>
-
-                                                {/* Delete button (Soft Delete) */}
-                                                <button
-                                                    onClick={() =>
-                                                        handleDeleteOrganisasi(
-                                                            org.id_organisasi,
-                                                            org.nama_organisasi,
-                                                        )
-                                                    }
-                                                    className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
-                                                    title="Hapus / Soft Delete UKM"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>

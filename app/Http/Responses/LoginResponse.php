@@ -23,9 +23,9 @@ class LoginResponse implements LoginResponseContract
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        // if ($user->role === 'Pembina Organisasi') {
-        //     return redirect()->intended(route('pembina.dashboard'));
-        // }
+        if ($user->role === 'Pembina Organisasi') {
+            return redirect()->intended(route('pembina.dashboard'));
+        }
 
         if ($user->role === 'Mahasiswa') {
             return redirect()->intended(route('home'));
