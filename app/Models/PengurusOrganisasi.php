@@ -21,7 +21,7 @@ class PengurusOrganisasi extends Model
 
     public function anggotaOrganisasi(): BelongsTo
     {
-        return $this->belongsTo(anggotaOrganisasi::class, 'id_keanggotaan', 'id_keanggotaan');
+        return $this->belongsTo(AnggotaOrganisasi::class, 'id_keanggotaan', 'id_keanggotaan');
     }
 
     public function pengajuanProfilOrganisasi(): HasMany
