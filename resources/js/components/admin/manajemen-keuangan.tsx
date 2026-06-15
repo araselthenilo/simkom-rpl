@@ -12,11 +12,13 @@ import {
     Building2,
     Coins,
     FileText,
+    Save,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { router } from '@inertiajs/react';
+import { DialogFooter } from '../ui/dialog';
 
 interface Transaction {
     id_transaksi: number;
@@ -136,11 +138,10 @@ function TransactionDetailModal({ transaction, onClose }: DetailModalProps) {
                     {/* Jenis badge */}
                     <div className="flex items-center justify-between">
                         <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-bold ${
-                                isPemasukan
-                                    ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
-                                    : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
-                            }`}
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-bold ${isPemasukan
+                                ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
+                                : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
+                                }`}
                         >
                             {isPemasukan ? (
                                 <ArrowUp className="h-4 w-4" />
@@ -392,7 +393,7 @@ export default function ManajemenKeuangan({
             const matchesOrganisasi =
                 selectedOrganisasiId === 'all' ||
                 t.kegiatan?.profil_organisasi?.organisasi?.id_organisasi ===
-                    parseInt(selectedOrganisasiId, 10);
+                parseInt(selectedOrganisasiId, 10);
 
             const matchesJenis =
                 selectedJenis === 'all' ||
@@ -447,20 +448,37 @@ export default function ManajemenKeuangan({
                         kemahasiswaan.
                     </p>
                 </div>
-                <div className="flex w-full flex-col items-stretch gap-gutter sm:flex-row sm:items-center md:w-auto">
-                    <Card className="flex items-center gap-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 px-unit-lg shadow-sm ring-0">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container/20 text-on-secondary-container">
-                            <Wallet className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="font-label-md text-label-md text-on-surface-variant">
-                                Total Saldo Keseluruhan
-                            </p>
-                            <p className="font-headline-sm text-headline-sm font-bold text-primary">
-                                {formatRupiah(computedStats.totalSaldo)}
-                            </p>
-                        </div>
-                    </Card>
+                <div className="flex flex-col gap-4 md:flex-row items-center">
+                    <div className="flex w-full flex-col items-stretch gap-gutter sm:flex-row sm:items-center md:w-auto">
+                        <Card className="flex items-center gap-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 px-unit-lg shadow-sm ring-0">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container/20 text-on-secondary-container">
+                                <Wallet className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="font-label-md text-label-md text-on-surface-variant">
+                                    Total Saldo Keseluruhan
+                                </p>
+                                <p className="font-headline-sm text-headline-sm font-bold text-primary">
+                                    {formatRupiah(computedStats.totalSaldo)}
+                                </p>
+                            </div>
+                        </Card>
+                    </div>
+                    <Button
+                        onClick={() => {
+                            if (selectedOrganisasiId !== 'all') {
+                                setTargetOrganisasiId(selectedOrganisasiId);
+                            } else {
+                                setTargetOrganisasiId('');
+                            }
+                            setIsReportModalOpen(true);
+                        }}
+                        className="flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"
+                        title="Buat Laporan"
+                    >
+                        <FileText className="h-[18px] w-[18px]" />
+                        <span className="hidden sm:inline">Buat Laporan</span>
+                    </Button>
                 </div>
             </section>
 
@@ -563,22 +581,6 @@ export default function ManajemenKeuangan({
                             <Filter
                                 className={`h-5 w-5 ${isFilterVisible ? 'text-white group-hover:text-primary' : 'text-primary'}`}
                             />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                if (selectedOrganisasiId !== 'all') {
-                                    setTargetOrganisasiId(selectedOrganisasiId);
-                                } else {
-                                    setTargetOrganisasiId('');
-                                }
-                                setIsReportModalOpen(true);
-                            }}
-                            className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant/50 px-3 py-2 text-sm text-primary shadow-none hover:bg-surface-container-low"
-                            title="Buat Laporan"
-                        >
-                            <FileText className="h-5 w-5" />
-                            <span className="hidden sm:inline">Buat Laporan</span>
                         </Button>
                     </div>
                 </div>
@@ -713,15 +715,14 @@ export default function ManajemenKeuangan({
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <span
-                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${
-                                                transaction.jenis_transaksi.toLowerCase() ===
+                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${transaction.jenis_transaksi.toLowerCase() ===
                                                 'pemasukan'
-                                                    ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
-                                                    : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
-                                            }`}
+                                                ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
+                                                : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
+                                                }`}
                                         >
                                             {transaction.jenis_transaksi.toLowerCase() ===
-                                            'pemasukan' ? (
+                                                'pemasukan' ? (
                                                 <ArrowUp className="h-3.5 w-3.5" />
                                             ) : (
                                                 <ArrowDown className="h-3.5 w-3.5" />
@@ -730,12 +731,11 @@ export default function ManajemenKeuangan({
                                         </span>
                                     </td>
                                     <td
-                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${
-                                            transaction.jenis_transaksi.toLowerCase() ===
+                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${transaction.jenis_transaksi.toLowerCase() ===
                                             'pemasukan'
-                                                ? 'text-green-700 dark:text-green-400'
-                                                : 'text-error'
-                                        }`}
+                                            ? 'text-green-700 dark:text-green-400'
+                                            : 'text-error'
+                                            }`}
                                     >
                                         {formatRupiah(
                                             transaction.nominal_transaksi,
@@ -878,11 +878,12 @@ export default function ManajemenKeuangan({
                                 Buat Laporan Keuangan
                             </h3>
                             <button
-                                type="button"
-                                onClick={() => setIsReportModalOpen(false)}
-                                className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
+                                onClick={() => {
+                                    setIsReportModalOpen(false);
+                                }}
+                                className="cursor-pointer text-2xl font-bold text-on-surface-variant transition-colors hover:text-primary"
                             >
-                                ×
+                                &times;
                             </button>
                         </div>
 
@@ -934,7 +935,7 @@ export default function ManajemenKeuangan({
                                 {/* Destination Organisasi */}
                                 <div>
                                     <label className="mb-1 block text-xs font-semibold text-primary">
-                                        Simpan Laporan Pada Arsip Organisasi
+                                        Simpan Laporan Pada Arsip Laporan
                                     </label>
                                     {selectedOrganisasiId !== 'all' ? (
                                         <div className="rounded-lg border border-outline-variant/50 bg-surface-container-low/50 px-3 py-2 text-sm text-on-surface-variant font-medium">
@@ -959,7 +960,7 @@ export default function ManajemenKeuangan({
                             </div>
 
                             {/* Actions */}
-                            <div className="flex justify-end gap-2 border-t border-outline-variant/30 pt-3">
+                            <DialogFooter className="border-t border-outline-variant/30 pt-3">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -973,9 +974,10 @@ export default function ManajemenKeuangan({
                                     className="h-9 cursor-pointer px-6 text-xs font-semibold"
                                     disabled={selectedOrganisasiId === 'all' && !targetOrganisasiId}
                                 >
+                                    <Save size={12} />
                                     Buat & Simpan
                                 </Button>
-                            </div>
+                            </DialogFooter>
                         </div>
                     </form>
                 </div>

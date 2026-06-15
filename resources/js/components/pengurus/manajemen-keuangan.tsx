@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { DialogFooter } from '../ui/dialog';
 
 interface Transaction {
     id_transaksi: number;
@@ -609,15 +610,14 @@ export default function ManajemenKeuangan({
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <span
-                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${
-                                                transaction.jenis_transaksi.toLowerCase() ===
-                                                'pemasukan'
+                                            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-label-md font-bold ${transaction.jenis_transaksi.toLowerCase() ===
+                                                    'pemasukan'
                                                     ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-400'
                                                     : 'border-red-200 bg-red-50 text-error dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400'
-                                            }`}
+                                                }`}
                                         >
                                             {transaction.jenis_transaksi.toLowerCase() ===
-                                            'pemasukan' ? (
+                                                'pemasukan' ? (
                                                 <ArrowUp className="h-3.5 w-3.5" />
                                             ) : (
                                                 <ArrowDown className="h-3.5 w-3.5" />
@@ -626,12 +626,11 @@ export default function ManajemenKeuangan({
                                         </span>
                                     </td>
                                     <td
-                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${
-                                            transaction.jenis_transaksi.toLowerCase() ===
-                                            'pemasukan'
+                                        className={`px-unit-lg py-4 font-headline-sm font-semibold ${transaction.jenis_transaksi.toLowerCase() ===
+                                                'pemasukan'
                                                 ? 'text-green-700 dark:text-green-400'
                                                 : 'text-error'
-                                        }`}
+                                            }`}
                                     >
                                         {formatRupiah(
                                             transaction.nominal_transaksi,
@@ -812,11 +811,10 @@ export default function ManajemenKeuangan({
                                                 'Pemasukan',
                                             )
                                         }
-                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-xs font-semibold transition-all duration-200 ${
-                                            data.jenis_transaksi === 'Pemasukan'
+                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-xs font-semibold transition-all duration-200 ${data.jenis_transaksi === 'Pemasukan'
                                                 ? 'border-green-500 bg-green-50/50 text-green-700 shadow-sm dark:border-green-600 dark:bg-green-950/20 dark:text-green-400'
                                                 : 'border-outline-variant/60 text-on-surface-variant hover:bg-surface-container-low'
-                                        }`}
+                                            }`}
                                     >
                                         <ArrowUp
                                             className={`h-4 w-4 ${data.jenis_transaksi === 'Pemasukan' ? 'text-green-600 dark:text-green-400' : 'text-on-surface-variant/40'}`}
@@ -831,12 +829,11 @@ export default function ManajemenKeuangan({
                                                 'Pengeluaran',
                                             )
                                         }
-                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-xs font-semibold transition-all duration-200 ${
-                                            data.jenis_transaksi ===
-                                            'Pengeluaran'
+                                        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-xs font-semibold transition-all duration-200 ${data.jenis_transaksi ===
+                                                'Pengeluaran'
                                                 ? 'border-red-500 bg-red-50/50 text-error shadow-sm dark:border-red-600 dark:bg-red-950/20 dark:text-red-400'
                                                 : 'border-outline-variant/60 text-on-surface-variant hover:bg-surface-container-low'
-                                        }`}
+                                            }`}
                                     >
                                         <ArrowDown
                                             className={`h-4 w-4 ${data.jenis_transaksi === 'Pengeluaran' ? 'text-error dark:text-red-400' : 'text-on-surface-variant/40'}`}
@@ -887,8 +884,8 @@ export default function ManajemenKeuangan({
                                             {formatRupiah(
                                                 data.nominal_transaksi
                                                     ? Number(
-                                                          data.nominal_transaksi,
-                                                      )
+                                                        data.nominal_transaksi,
+                                                    )
                                                     : 0,
                                             )}
                                         </span>
@@ -980,11 +977,10 @@ export default function ManajemenKeuangan({
                                             )
                                             ?.click()
                                     }
-                                    className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 transition-all ${
-                                        dragActive
+                                    className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 transition-all ${dragActive
                                             ? 'border-primary bg-primary/5'
                                             : 'border-outline-variant/60 hover:bg-surface-container-low'
-                                    } ${data.foto_bukti_transaksi || selectedTransaction?.foto_bukti_transaksi ? 'bg-surface-container-low/30' : ''}`}
+                                        } ${data.foto_bukti_transaksi || selectedTransaction?.foto_bukti_transaksi ? 'bg-surface-container-low/30' : ''}`}
                                 >
                                     <input
                                         id="receipt-input-modal"
@@ -999,7 +995,7 @@ export default function ManajemenKeuangan({
                                     />
 
                                     {!data.foto_bukti_transaksi &&
-                                    !selectedTransaction?.foto_bukti_transaksi ? (
+                                        !selectedTransaction?.foto_bukti_transaksi ? (
                                         <div className="space-y-1 text-center">
                                             <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                                                 <UploadCloud className="h-4 w-4" />
@@ -1049,20 +1045,20 @@ export default function ManajemenKeuangan({
                                                 <p className="truncate text-xs font-semibold text-primary">
                                                     {data.foto_bukti_transaksi
                                                         ? data
-                                                              .foto_bukti_transaksi
-                                                              .name
+                                                            .foto_bukti_transaksi
+                                                            .name
                                                         : selectedTransaction?.foto_bukti_transaksi
-                                                              ?.split('/')
-                                                              .pop() ||
-                                                          'Bukti Transaksi'}
+                                                            ?.split('/')
+                                                            .pop() ||
+                                                        'Bukti Transaksi'}
                                                 </p>
                                                 <p className="text-[10px] text-on-surface-variant">
                                                     {data.foto_bukti_transaksi
                                                         ? formatBytes(
-                                                              data
-                                                                  .foto_bukti_transaksi
-                                                                  .size,
-                                                          )
+                                                            data
+                                                                .foto_bukti_transaksi
+                                                                .size,
+                                                        )
                                                         : 'Menggunakan file saat ini (klik untuk mengganti)'}
                                                 </p>
                                             </div>
@@ -1118,7 +1114,7 @@ export default function ManajemenKeuangan({
                             </div>
 
                             {/* Actions */}
-                            <div className="flex justify-end gap-2 border-t border-outline-variant/30 pt-3">
+                            <DialogFooter className="border-t border-outline-variant/30 pt-3">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -1136,10 +1132,10 @@ export default function ManajemenKeuangan({
                                     {processing
                                         ? 'Menyimpan...'
                                         : selectedTransaction
-                                          ? 'Simpan Perubahan'
-                                          : 'Simpan Transaksi'}
+                                            ? 'Simpan Perubahan'
+                                            : 'Simpan Transaksi'}
                                 </Button>
-                            </div>
+                            </DialogFooter>
                         </form>
                     </div>
                 </div>

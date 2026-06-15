@@ -26,6 +26,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { DialogFooter } from '../ui/dialog';
 
 interface DokumentasiKegiatan {
     id_dokumentasi: number;
@@ -446,8 +447,8 @@ export default function ManajemenKegiatan({
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
-                                    ? 'bg-white font-semibold text-primary shadow-sm'
-                                    : 'text-on-surface-variant hover:text-primary'
+                                ? 'bg-white font-semibold text-primary shadow-sm'
+                                : 'text-on-surface-variant hover:text-primary'
                                 }`}
                         >
                             {tab}
@@ -596,12 +597,12 @@ export default function ManajemenKegiatan({
                                                         )
                                                     }
                                                     className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${activity.status_kegiatan ===
-                                                            'Selesai'
-                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
-                                                            : activity.status_kegiatan ===
-                                                                'Sedang berlangsung'
-                                                                ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
-                                                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
+                                                        'Selesai'
+                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
+                                                        : activity.status_kegiatan ===
+                                                            'Sedang berlangsung'
+                                                            ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
+                                                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
                                                         }`}
                                                     title="Klik untuk maju ke tahap selanjutnya"
                                                 >
@@ -683,7 +684,7 @@ export default function ManajemenKegiatan({
                                                         `/pengurus/keuangan?create=true&id_kegiatan=${activity.id_kegiatan}`,
                                                     )
                                                 }
-                                                className="cursor-pointer rounded-lg p-2 text-green-600 transition-colors hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/40"
+                                                className="cursor-pointer rounded-lg p-2 text-green-600 transition-colors hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-800"
                                                 title="Catat Transaksi Keuangan"
                                             >
                                                 <DollarSign className="h-4 w-4" />
@@ -717,7 +718,7 @@ export default function ManajemenKegiatan({
                                                 )}
 
                                             {/* Delete Button */}
-                                            <button
+                                            {/* <button
                                                 onClick={() =>
                                                     handleDeleteActivity(
                                                         activity.id_kegiatan,
@@ -727,7 +728,7 @@ export default function ManajemenKegiatan({
                                                 title="Hapus Kegiatan"
                                             >
                                                 <Trash2 className="h-4 w-4" />
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </td>
                                 </tr>
@@ -771,8 +772,8 @@ export default function ManajemenKegiatan({
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
                                 className={`h-8 w-8 cursor-pointer rounded-lg font-label-md transition-colors ${currentPage === page
-                                        ? 'bg-primary text-on-primary'
-                                        : 'text-on-surface-variant hover:bg-surface-container-highest'
+                                    ? 'bg-primary text-on-primary'
+                                    : 'text-on-surface-variant hover:bg-surface-container-highest'
                                     }`}
                                 disabled={filteredActivities.length === 0}
                             >
@@ -966,22 +967,21 @@ export default function ManajemenKegiatan({
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-2 border-t border-outline-variant/60 pt-4">
+                            <DialogFooter className="border-t border-outline-variant/60 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => setIsCreateModalOpen(false)}
-                                    className="cursor-pointer"
                                 >
                                     Batal
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-90"
+                                    className="bg-primary text-on-primary hover:opacity-90"
                                 >
                                     Simpan Kegiatan
                                 </Button>
-                            </div>
+                            </DialogFooter>
                         </form>
                     </div>
                 </div>
@@ -1267,15 +1267,15 @@ export default function ManajemenKegiatan({
                                     </h3>
                                     <span
                                         className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${previewActivity.dokumentasi_kegiatan
+                                            .status_dokumentasi ===
+                                            'Diterima'
+                                            ? 'bg-green-100 text-green-700'
+                                            : previewActivity
+                                                .dokumentasi_kegiatan
                                                 .status_dokumentasi ===
-                                                'Diterima'
-                                                ? 'bg-green-100 text-green-700'
-                                                : previewActivity
-                                                    .dokumentasi_kegiatan
-                                                    .status_dokumentasi ===
-                                                    'Butuh Revisi'
-                                                    ? 'bg-red-100 text-red-700'
-                                                    : 'bg-blue-100 text-blue-700'
+                                                'Butuh Revisi'
+                                                ? 'bg-red-100 text-red-700'
+                                                : 'bg-blue-100 text-blue-700'
                                             }`}
                                     >
                                         Status:{' '}

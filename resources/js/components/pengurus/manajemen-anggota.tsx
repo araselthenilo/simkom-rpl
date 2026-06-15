@@ -118,12 +118,6 @@ export default function ManajemenAnggota({
                         aktif.
                     </p>
                 </div>
-                <div className="flex gap-unit-sm">
-                    <Button className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95">
-                        <Download className="h-[18px] w-[18px]" />
-                        Export PDF
-                    </Button>
-                </div>
             </header>
 
             {/* Metrics Grid */}
@@ -182,11 +176,10 @@ export default function ManajemenAnggota({
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${
-                                    activeTab === tab
+                                className={`rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
                                         ? 'bg-white font-semibold text-primary shadow-sm'
                                         : 'text-on-surface-variant hover:text-primary'
-                                }`}
+                                    }`}
                             >
                                 {tab}
                             </button>
@@ -254,14 +247,13 @@ export default function ManajemenAnggota({
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <span
-                                            className={`rounded-full px-3 py-1 text-[12px] font-semibold ${
-                                                member.status === 'Aktif'
+                                            className={`rounded-full px-3 py-1 text-[12px] font-semibold ${member.status === 'Aktif'
                                                     ? 'bg-green-100 text-green-700'
                                                     : member.status ===
                                                         'Diproses'
-                                                      ? 'bg-secondary-container text-on-secondary-container'
-                                                      : 'bg-error-container text-error'
-                                            }`}
+                                                        ? 'bg-secondary-container text-on-secondary-container'
+                                                        : 'bg-error-container text-error'
+                                                }`}
                                         >
                                             {member.status}
                                         </span>
@@ -286,11 +278,10 @@ export default function ManajemenAnggota({
                                                         member.id_keanggotaan,
                                                     )
                                                 }
-                                                className={`rounded-lg p-2 transition-colors ${
-                                                    member.status === 'Aktif'
+                                                className={`rounded-lg p-2 transition-colors ${member.status === 'Aktif'
                                                         ? 'cursor-not-allowed text-outline-variant'
                                                         : 'text-green-700 hover:bg-green-100'
-                                                }`}
+                                                    }`}
                                                 disabled={
                                                     member.status === 'Aktif'
                                                 }
@@ -305,11 +296,10 @@ export default function ManajemenAnggota({
                                                         member.id_keanggotaan,
                                                     )
                                                 }
-                                                className={`rounded-lg p-2 transition-colors ${
-                                                    member.status === 'Ditolak'
+                                                className={`rounded-lg p-2 transition-colors ${member.status === 'Ditolak'
                                                         ? 'cursor-not-allowed text-outline-variant'
                                                         : 'text-error hover:bg-error-container'
-                                                }`}
+                                                    }`}
                                                 disabled={
                                                     member.status === 'Ditolak'
                                                 }

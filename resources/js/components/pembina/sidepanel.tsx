@@ -43,8 +43,8 @@ export default function Sidepanel() {
             icon: FileImage,
         },
         { title: 'Kegiatan', href: pembina.kegiatan.index(), icon: Calendar },
-        { title: 'Keuangan', href: '/pembina/keuangan', icon: Coins },
-        { title: 'Laporan', href: '/pembina/laporan', icon: BarChart3 },
+        { title: 'Keuangan', href: pembina.keuangan.index(), icon: Coins },
+        { title: 'Laporan', href: pembina.laporan.index(), icon: BarChart3 },
     ];
 
     const bottomItems: NavItem[] = [

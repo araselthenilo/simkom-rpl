@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
+import { kegiatan, anggota } from '@/routes/pengurus';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -190,15 +191,6 @@ export default function Dashboard({
                         Selamat datang kembali, Pengurus SIMKOM.
                     </p>
                 </div>
-                <div className="flex gap-unit-sm">
-                    <Button
-                        variant="outline"
-                        className="h-auto cursor-pointer gap-2 rounded-lg border border-primary bg-surface px-6 py-2.5 font-label-lg text-label-lg text-primary transition-all hover:bg-primary/5"
-                    >
-                        <Download className="h-5 w-5" />
-                        Export Data
-                    </Button>
-                </div>
             </section>
 
             {/* Stats Cards Section */}
@@ -282,8 +274,8 @@ export default function Dashboard({
                                             <div className="group flex h-full w-full cursor-pointer flex-col items-center justify-end">
                                                 <div
                                                     className={`relative h-2/3 w-full rounded-t-lg transition-all ${data.count > 0
-                                                            ? 'bg-primary/10 dark:bg-primary-container/45'
-                                                            : 'bg-transparent'
+                                                        ? 'bg-primary/10 dark:bg-primary-container/45'
+                                                        : 'bg-transparent'
                                                         } group-hover:bg-primary/5 dark:group-hover:bg-primary-container/10`}
                                                 >
                                                     <div
@@ -357,7 +349,7 @@ export default function Dashboard({
                         className="mt-auto cursor-pointer pt-6 text-center text-label-lg font-bold text-primary shadow-none hover:text-primary/80 hover:underline"
                         asChild
                     >
-                        <Link href="/pengurus/kegiatan">
+                        <Link href={kegiatan()}>
                             Lihat Semua Kegiatan
                         </Link>
                     </Button>
@@ -375,7 +367,7 @@ export default function Dashboard({
                         className="h-auto cursor-pointer p-0 font-label-lg text-label-lg text-primary shadow-none hover:text-primary/80"
                         asChild
                     >
-                        <Link href="/pengurus/anggota">Kelola Semua</Link>
+                        <Link href={anggota()}>Kelola Semua</Link>
                     </Button>
                 </div>
                 <div className="overflow-x-auto">
@@ -421,12 +413,12 @@ export default function Dashboard({
                                     <td className="px-unit-lg py-4">
                                         <Badge
                                             className={`h-auto rounded-full border-none px-3 py-1 text-[12px] font-bold shadow-none ${member.status === 'Approved' ||
-                                                    member.status === 'Aktif'
-                                                    ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-950/50'
-                                                    : member.status ===
-                                                        'Ditolak'
-                                                        ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
-                                                        : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
+                                                member.status === 'Aktif'
+                                                ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-950/50'
+                                                : member.status ===
+                                                    'Ditolak'
+                                                    ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
+                                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
                                                 }`}
                                         >
                                             {member.status}

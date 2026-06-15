@@ -3,13 +3,10 @@ import {
     Calendar,
     Search,
     MapPin,
-    PlusCircle,
     CheckCircle2,
     XCircle,
     Edit2,
     Trash2,
-    ArrowRight,
-    HelpCircle,
     ChevronLeft,
     ChevronRight,
     Tag,
@@ -24,7 +21,6 @@ import {
     SlidersHorizontal,
     ArrowUpDown,
     Eye,
-    X,
 } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -51,10 +47,10 @@ interface Activity {
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-        | 'Mendatang'
-        | 'Sedang berlangsung'
-        | 'Selesai'
-        | 'Dibatalkan';
+    | 'Mendatang'
+    | 'Sedang berlangsung'
+    | 'Selesai'
+    | 'Dibatalkan';
     alasan_pembatalan: string | null;
     profil_organisasi?: {
         id_profil: number;
@@ -543,7 +539,7 @@ export default function ManajemenKegiatan({
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                            'Terjadi kesalahan saat memperbarui kegiatan.',
+                        'Terjadi kesalahan saat memperbarui kegiatan.',
                     );
                 },
             },
@@ -584,7 +580,7 @@ export default function ManajemenKegiatan({
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                            'Terjadi kesalahan saat membatalkan kegiatan.',
+                        'Terjadi kesalahan saat membatalkan kegiatan.',
                     );
                 },
             },
@@ -628,7 +624,7 @@ export default function ManajemenKegiatan({
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                            'Terjadi kesalahan saat memperbarui status kegiatan.',
+                        'Terjadi kesalahan saat memperbarui status kegiatan.',
                     );
                 },
             },
@@ -723,11 +719,10 @@ export default function ManajemenKegiatan({
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${
-                                activeTab === tab
-                                    ? 'bg-white font-semibold text-primary shadow-sm'
-                                    : 'text-on-surface-variant hover:text-primary'
-                            }`}
+                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
+                                ? 'bg-white font-semibold text-primary shadow-sm'
+                                : 'text-on-surface-variant hover:text-primary'
+                                }`}
                         >
                             {tab}
                         </button>
@@ -868,7 +863,7 @@ export default function ManajemenKegiatan({
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col items-start gap-1">
                                             {activity.status_kegiatan ===
-                                            'Dibatalkan' ? (
+                                                'Dibatalkan' ? (
                                                 <span className="flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-[12px] font-semibold text-red-700">
                                                     {activity.status_kegiatan}
                                                 </span>
@@ -880,15 +875,14 @@ export default function ManajemenKegiatan({
                                                             activity.status_kegiatan,
                                                         )
                                                     }
-                                                    className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${
-                                                        activity.status_kegiatan ===
+                                                    className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${activity.status_kegiatan ===
                                                         'Selesai'
-                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
-                                                            : activity.status_kegiatan ===
-                                                                'Sedang berlangsung'
-                                                              ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
-                                                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
-                                                    }`}
+                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
+                                                        : activity.status_kegiatan ===
+                                                            'Sedang berlangsung'
+                                                            ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
+                                                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
+                                                        }`}
                                                     title="Klik untuk maju ke tahap selanjutnya"
                                                 >
                                                     <span>
@@ -963,18 +957,18 @@ export default function ManajemenKegiatan({
                                             {/* Cancel Button */}
                                             {activity.status_kegiatan !==
                                                 'Dibatalkan' && (
-                                                <button
-                                                    onClick={() =>
-                                                        openCancelModal(
-                                                            activity,
-                                                        )
-                                                    }
-                                                    className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
-                                                    title="Batalkan Kegiatan"
-                                                >
-                                                    <XCircle className="h-4 w-4" />
-                                                </button>
-                                            )}
+                                                    <button
+                                                        onClick={() =>
+                                                            openCancelModal(
+                                                                activity,
+                                                            )
+                                                        }
+                                                        className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
+                                                        title="Batalkan Kegiatan"
+                                                    >
+                                                        <XCircle className="h-4 w-4" />
+                                                    </button>
+                                                )}
 
                                             {/* Delete Button */}
                                             <button
@@ -1742,12 +1736,11 @@ export default function ManajemenKegiatan({
                                                         direction: 'asc',
                                                     })
                                                 }
-                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                                                    exportSort.direction ===
+                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${exportSort.direction ===
                                                     'asc'
-                                                        ? 'border-primary bg-primary text-on-primary'
-                                                        : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
-                                                }`}
+                                                    ? 'border-primary bg-primary text-on-primary'
+                                                    : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
+                                                    }`}
                                             >
                                                 ↑ A–Z / Terkecil
                                             </button>
@@ -1759,12 +1752,11 @@ export default function ManajemenKegiatan({
                                                         direction: 'desc',
                                                     })
                                                 }
-                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
-                                                    exportSort.direction ===
+                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${exportSort.direction ===
                                                     'desc'
-                                                        ? 'border-primary bg-primary text-on-primary'
-                                                        : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
-                                                }`}
+                                                    ? 'border-primary bg-primary text-on-primary'
+                                                    : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
+                                                    }`}
                                             >
                                                 ↓ Z–A / Terbesar
                                             </button>
@@ -1858,7 +1850,7 @@ export default function ManajemenKegiatan({
                                     type="button"
                                     variant="outline"
                                     onClick={() => setIsExportModalOpen(false)}
-                                    className="cursor-pointer"
+                                    className="cursor-pointer h-auto py-2.5"
                                     disabled={isExporting || isArchiving}
                                 >
                                     Tutup
@@ -1939,18 +1931,17 @@ export default function ManajemenKegiatan({
                                         {previewActivity.nama_kegiatan}
                                     </h3>
                                     <span
-                                        className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                                            previewActivity.dokumentasi_kegiatan
-                                                .status_dokumentasi ===
+                                        className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${previewActivity.dokumentasi_kegiatan
+                                            .status_dokumentasi ===
                                             'Diterima'
-                                                ? 'bg-green-100 text-green-700'
-                                                : previewActivity
-                                                        .dokumentasi_kegiatan
-                                                        .status_dokumentasi ===
-                                                    'Butuh Revisi'
-                                                  ? 'bg-red-100 text-red-700'
-                                                  : 'bg-blue-100 text-blue-700'
-                                        }`}
+                                            ? 'bg-green-100 text-green-700'
+                                            : previewActivity
+                                                .dokumentasi_kegiatan
+                                                .status_dokumentasi ===
+                                                'Butuh Revisi'
+                                                ? 'bg-red-100 text-red-700'
+                                                : 'bg-blue-100 text-blue-700'
+                                            }`}
                                     >
                                         Status:{' '}
                                         {
@@ -1978,20 +1969,20 @@ export default function ManajemenKegiatan({
                                         <span>Dokumen Proposal</span>
                                         {previewActivity.dokumentasi_kegiatan
                                             .dokumen_proposal && (
-                                            <a
-                                                href={
-                                                    previewActivity
-                                                        .dokumentasi_kegiatan
-                                                        .dokumen_proposal
-                                                }
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                            >
-                                                <Download className="h-3.5 w-3.5" />{' '}
-                                                Unduh
-                                            </a>
-                                        )}
+                                                <a
+                                                    href={
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .dokumen_proposal
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                                >
+                                                    <Download className="h-3.5 w-3.5" />{' '}
+                                                    Unduh
+                                                </a>
+                                            )}
                                     </h4>
                                     {previewActivity.dokumentasi_kegiatan
                                         .dokumen_proposal ? (
@@ -2039,20 +2030,20 @@ export default function ManajemenKegiatan({
                                         </span>
                                         {previewActivity.dokumentasi_kegiatan
                                             .dokumen_lpj && (
-                                            <a
-                                                href={
-                                                    previewActivity
-                                                        .dokumentasi_kegiatan
-                                                        .dokumen_lpj
-                                                }
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                            >
-                                                <Download className="h-3.5 w-3.5" />{' '}
-                                                Unduh
-                                            </a>
-                                        )}
+                                                <a
+                                                    href={
+                                                        previewActivity
+                                                            .dokumentasi_kegiatan
+                                                            .dokumen_lpj
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                                >
+                                                    <Download className="h-3.5 w-3.5" />{' '}
+                                                    Unduh
+                                                </a>
+                                            )}
                                     </h4>
                                     {previewActivity.dokumentasi_kegiatan
                                         .dokumen_lpj ? (
@@ -2094,56 +2085,56 @@ export default function ManajemenKegiatan({
                                 {/* Hasil Evaluasi Section */}
                                 {previewActivity.dokumentasi_kegiatan
                                     .hasil_evaluasi && (
-                                    <div className="space-y-2 border-t border-outline-variant/40 pt-4">
-                                        <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
-                                            <span>
-                                                Hasil Evaluasi Kegiatan (Dari
-                                                Petugas)
-                                            </span>
-                                            <a
-                                                href={
-                                                    previewActivity
-                                                        .dokumentasi_kegiatan
-                                                        .hasil_evaluasi
-                                                }
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                            >
-                                                <Download className="h-3.5 w-3.5" />{' '}
-                                                Unduh
-                                            </a>
-                                        </h4>
-                                        {isPdf(
-                                            previewActivity.dokumentasi_kegiatan
-                                                .hasil_evaluasi,
-                                        ) ? (
-                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
-                                                <iframe
-                                                    src={`${previewActivity.dokumentasi_kegiatan.hasil_evaluasi}#toolbar=0&navpanes=0`}
-                                                    className="h-[1000px] w-full border-none"
-                                                    title="Evaluasi PDF Preview"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
-                                                <span className="font-medium text-on-surface-variant">
-                                                    {getFileName(
+                                        <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                            <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                                <span>
+                                                    Hasil Evaluasi Kegiatan (Dari
+                                                    Petugas)
+                                                </span>
+                                                <a
+                                                    href={
                                                         previewActivity
                                                             .dokumentasi_kegiatan
-                                                            .hasil_evaluasi,
-                                                    )}
-                                                </span>
-                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
-                                                    * Preview hanya tersedia
-                                                    untuk file PDF. Silakan
-                                                    unduh untuk melihat dokumen
-                                                    Word.
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                                            .hasil_evaluasi
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                                >
+                                                    <Download className="h-3.5 w-3.5" />{' '}
+                                                    Unduh
+                                                </a>
+                                            </h4>
+                                            {isPdf(
+                                                previewActivity.dokumentasi_kegiatan
+                                                    .hasil_evaluasi,
+                                            ) ? (
+                                                <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                    <iframe
+                                                        src={`${previewActivity.dokumentasi_kegiatan.hasil_evaluasi}#toolbar=0&navpanes=0`}
+                                                        className="h-[1000px] w-full border-none"
+                                                        title="Evaluasi PDF Preview"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                    <span className="font-medium text-on-surface-variant">
+                                                        {getFileName(
+                                                            previewActivity
+                                                                .dokumentasi_kegiatan
+                                                                .hasil_evaluasi,
+                                                        )}
+                                                    </span>
+                                                    <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                        * Preview hanya tersedia
+                                                        untuk file PDF. Silakan
+                                                        unduh untuk melihat dokumen
+                                                        Word.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                             </div>
 
                             {/* Footer */}

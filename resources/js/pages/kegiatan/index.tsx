@@ -26,6 +26,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { daftar, batal } from '@/routes/kegiatan';
+import { cn } from '@/lib/utils';
 
 interface Organisasi {
     id_organisasi: number;
@@ -50,10 +51,10 @@ interface Kegiatan {
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-        | 'Mendatang'
-        | 'Sedang berlangsung'
-        | 'Selesai'
-        | 'Dibatalkan';
+    | 'Mendatang'
+    | 'Sedang berlangsung'
+    | 'Selesai'
+    | 'Dibatalkan';
     peserta_kegiatan_count: number;
     profil_organisasi: ProfilOrganisasi;
 }
@@ -215,6 +216,7 @@ export default function Index({
                 );
                 regReset();
             },
+            preserveScroll: true,
             onError: (err) => {
                 if (err.nim) {
                     toast.error(err.nim);
@@ -250,6 +252,7 @@ export default function Index({
                 id_peserta: cancelPesertaId,
             }),
             {
+                preserveScroll: true,
                 onSuccess: () => {
                     setIsCancelOpen(false);
                     toast.success(
@@ -436,7 +439,7 @@ export default function Index({
                                     Math.round(
                                         (item.peserta_kegiatan_count /
                                             item.kuota_peserta) *
-                                            100,
+                                        100,
                                     ),
                                 );
                                 const barColorClass =
@@ -682,12 +685,7 @@ export default function Index({
                                                     selectedKegiatan.biaya_pendaftaran,
                                                 )}
                                             </span>{' '}
-                                            ke rekening Bendahara UKM
-                                            penyelenggara:
-                                            <p className="mt-1 font-bold">
-                                                Bank BNI: 0883-2947-23 (a.n.
-                                                SIMKOM RPL)
-                                            </p>
+                                            ke nomor rekening yang telah disampaikan dalam pengumuman.
                                         </div>
                                     </div>
 
@@ -779,6 +777,7 @@ export default function Index({
 
                     {cancelKegiatan && (
                         <form
+                            method="post"
                             className="space-y-4"
                             onSubmit={handleCancelSubmit}
                         >
@@ -815,7 +814,7 @@ export default function Index({
                                 </div>
                             )}
 
-                            <DialogFooter className="gap-2 sm:gap-0">
+                            <DialogFooter>
                                 <Button
                                     type="button"
                                     variant="outline"

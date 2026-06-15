@@ -290,8 +290,8 @@ export default function StaffManagement({
                     <button
                         onClick={() => setStatusFilter('all')}
                         className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === 'all'
-                                ? 'bg-white text-primary shadow-sm'
-                                : 'border-none bg-transparent text-on-surface-variant hover:text-primary'
+                            ? 'bg-white text-primary shadow-sm'
+                            : 'border-none bg-transparent text-on-surface-variant hover:text-primary'
                             }`}
                     >
                         Semua ({pengurusList.length})
@@ -299,8 +299,8 @@ export default function StaffManagement({
                     <button
                         onClick={() => setStatusFilter('active')}
                         className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === 'active'
-                                ? 'bg-white text-green-700 shadow-sm'
-                                : 'border-none bg-transparent text-on-surface-variant hover:text-green-700'
+                            ? 'bg-white text-green-700 shadow-sm'
+                            : 'border-none bg-transparent text-on-surface-variant hover:text-green-700'
                             }`}
                     >
                         Aktif (
@@ -309,8 +309,8 @@ export default function StaffManagement({
                     <button
                         onClick={() => setStatusFilter('inactive')}
                         className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === 'inactive'
-                                ? 'bg-white text-red-700 shadow-sm'
-                                : 'border-none bg-transparent text-on-surface-variant hover:text-red-700'
+                            ? 'bg-white text-red-700 shadow-sm'
+                            : 'border-none bg-transparent text-on-surface-variant hover:text-red-700'
                             }`}
                     >
                         Nonaktif (
@@ -359,9 +359,9 @@ export default function StaffManagement({
                                     <th className="px-6 py-4 text-center">
                                         Status
                                     </th>
-                                    <th className="px-6 py-4 text-right">
+                                    {/* <th className="px-6 py-4 text-right">
                                         Aksi
-                                    </th>
+                                    </th> */}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-outline-variant/60 font-body-sm text-sm text-on-surface">
@@ -423,8 +423,8 @@ export default function StaffManagement({
                                             <td className="px-6 py-4 text-center">
                                                 <span
                                                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${officer.status_aktif
-                                                            ? 'border border-green-200 bg-green-50 text-green-700'
-                                                            : 'border border-red-200 bg-red-50 text-red-700'
+                                                        ? 'border border-green-200 bg-green-50 text-green-700'
+                                                        : 'border border-red-200 bg-red-50 text-red-700'
                                                         }`}
                                                 >
                                                     <span
@@ -435,7 +435,7 @@ export default function StaffManagement({
                                                         : 'Nonaktif'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-right">
+                                            {/* <td className="px-6 py-4 text-right">
                                                 <div className="flex justify-end gap-1">
                                                     <button
                                                         onClick={() =>
@@ -472,7 +472,7 @@ export default function StaffManagement({
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
                                                 </div>
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     );
                                 })}
