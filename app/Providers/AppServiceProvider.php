@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use App\Models\AdminKemahasiswaan;
 use App\Models\Kegiatan;
 use App\Models\Mahasiswa;
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
 
         Relation::morphMap([
             'Mahasiswa' => Mahasiswa::class,
@@ -91,7 +96,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Password::defaults(
-            fn (): ?Password => app()->isProduction()
+            fn(): ?Password => app()->isProduction()
             ? Password::min(12)
                 ->mixedCase()
                 ->letters()

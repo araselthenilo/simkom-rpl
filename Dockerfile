@@ -24,7 +24,7 @@ COPY . /var/www/html
 
 # Install PHP dependencies
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --optimize-autoloader --no-interaction
 
 # Install Frontend dependencies & Build React Inertia
 RUN npm install && npm run build
