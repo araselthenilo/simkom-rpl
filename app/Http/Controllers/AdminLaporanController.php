@@ -139,10 +139,10 @@ class AdminLaporanController extends Controller
                     'is_admin_all' => ($filterOrg === 'all'),
                 ])->setPaper('a4', 'landscape')->output();
 
-                Storage::disk('public')->put($storagePath, $pdfContent);
+                Storage::disk('local')->put($storagePath, $pdfContent);
             } else {
                 $export = new LaporanKeuanganExport($rows);
-                Excel::store($export, $storagePath, 'public');
+                Excel::store($export, $storagePath, 'local');
             }
 
             ArsipLaporan::create([
@@ -217,10 +217,10 @@ class AdminLaporanController extends Controller
                     'generated_at' => now()->format('d/m/Y H:i:s'),
                 ])->setPaper('a4', 'landscape')->output();
 
-                Storage::disk('public')->put($storagePath, $pdfContent);
+                Storage::disk('local')->put($storagePath, $pdfContent);
             } else {
                 $export = new LaporanKegiatanExport($rows);
-                Excel::store($export, $storagePath, 'public');
+                Excel::store($export, $storagePath, 'local');
             }
 
             ArsipLaporan::create([
@@ -241,12 +241,12 @@ class AdminLaporanController extends Controller
         Gate::authorize('is-admin');
 
         abort_unless(
-            Storage::disk('public')->exists($arsipLaporan->file_laporan),
+            Storage::disk('local')->exists($arsipLaporan->file_laporan),
             404,
             'File laporan tidak ditemukan di storage.'
         );
 
-        return Storage::disk('public')->download(
+        return Storage::disk('local')->download(
             $arsipLaporan->file_laporan,
             basename($arsipLaporan->file_laporan)
         );
@@ -257,7 +257,7 @@ class AdminLaporanController extends Controller
         Gate::authorize('is-admin');
 
         if ($arsipLaporan->file_laporan) {
-            Storage::disk('public')->delete($arsipLaporan->file_laporan);
+            Storage::disk('local')->delete($arsipLaporan->file_laporan);
         }
         $arsipLaporan->delete();
 

@@ -111,6 +111,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Pengurus Organisasi Routes
     require __DIR__.'/pengurus.php';
+
+    // Secure Document and Image Routes
+    Route::get('/anggota/{anggotaOrganisasi}/ktm', [AnggotaOrganisasiController::class, 'showKtm'])
+        ->name('anggota.ktm');
+    Route::get('/transaksi-keuangan/{transaksi}/bukti', [\App\Http\Controllers\TransaksiKeuanganController::class, 'showBuktiTrans'])
+        ->name('transaksi-keuangan.bukti');
+    Route::get('/dokumentasi-kegiatan/{dokumentasi}/download/{type}', [\App\Http\Controllers\PengurusKegiatanController::class, 'downloadDoc'])
+        ->name('dokumentasi.download-doc');
 });
 
 require __DIR__.'/settings.php';

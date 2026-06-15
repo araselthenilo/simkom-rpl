@@ -28,13 +28,13 @@ class AdminKegiatanController extends Controller
             ->map(function ($kegiatan) {
                 if ($kegiatan->dokumentasiKegiatan) {
                     $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal 
-                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_proposal) 
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal']) 
                         : null;
                     $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj 
-                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_lpj) 
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj']) 
                         : null;
                     $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi 
-                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->hasil_evaluasi) 
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi']) 
                         : null;
                 }
                 return $kegiatan;
@@ -155,7 +155,15 @@ class AdminKegiatanController extends Controller
 
         $pesertaList = PesertaKegiatan::where('id_kegiatan', $kegiatan->id_kegiatan)
             ->with(['mahasiswa', 'transaksiKeuangan'])
-            ->get();
+            ->get()
+            ->map(function ($peserta) {
+                if ($peserta->transaksiKeuangan) {
+                    $peserta->transaksiKeuangan->foto_bukti_transaksi = $peserta->transaksiKeuangan->foto_bukti_transaksi
+                        ? route('transaksi-keuangan.bukti', $peserta->transaksiKeuangan->id_transaksi)
+                        : null;
+                }
+                return $peserta;
+            });
 
         return Inertia::render('admin/peserta-kegiatan', [
             'kegiatan' => $kegiatan,

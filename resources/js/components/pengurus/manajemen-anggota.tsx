@@ -51,7 +51,7 @@ export default function ManajemenAnggota({
     const [activeTab, setActiveTab] = useState<
         'Semua' | 'Aktif' | 'Diproses' | 'Ditolak'
     >('Semua');
-    const [selectedKtm, setSelectedKtm] = useState<string | null>(null);
+    const [selectedKtm, setSelectedKtm] = useState<{ id_keanggotaan: number; path: string } | null>(null);
 
     const members = initialMembers;
     const stats = initialStats;
@@ -262,9 +262,10 @@ export default function ManajemenAnggota({
                                         <div className="flex justify-end gap-2">
                                             <button
                                                 onClick={() =>
-                                                    setSelectedKtm(
-                                                        member.foto_ktm,
-                                                    )
+                                                    setSelectedKtm({
+                                                        id_keanggotaan: member.id_keanggotaan,
+                                                        path: member.foto_ktm,
+                                                    })
                                                 }
                                                 className="rounded-lg p-2 text-primary transition-colors hover:bg-primary-fixed"
                                                 title="Lihat KTM"
@@ -369,7 +370,7 @@ export default function ManajemenAnggota({
                     <div className="flex items-center justify-center overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low p-2">
                         {selectedKtm ? (
                             <img
-                                src={`/storage/${selectedKtm}`}
+                                src={`/anggota/${selectedKtm.id_keanggotaan}/ktm`}
                                 alt="KTM Mahasiswa"
                                 className="max-h-[70vh] w-full rounded-md object-contain"
                             />

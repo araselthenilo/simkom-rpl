@@ -42,7 +42,7 @@ class PembinaTransaksiKeuanganController extends Controller
                 'tanggal_transaksi'      => $t->tanggal_transaksi,
                 'sumber_tujuan_transaksi'=> $t->sumber_tujuan_transaksi,
                 'foto_bukti_transaksi'   => $t->foto_bukti_transaksi
-                    ? Storage::disk('public')->url($t->foto_bukti_transaksi)
+                    ? route('transaksi-keuangan.bukti', $t->id_transaksi)
                     : null,
                 'catatan_koreksi'        => $t->catatan_koreksi,
                 'created_at'             => $t->created_at ? $t->created_at->toIso8601String() : null,

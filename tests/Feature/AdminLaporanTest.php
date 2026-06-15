@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 test('admin can generate and archive Kegiatan reports', function () {
-    Storage::fake('public');
+    Storage::fake('local');
 
     // 1. Create admin user
     $admin = User::factory()->create([
@@ -70,5 +70,5 @@ test('admin can generate and archive Kegiatan reports', function () {
     // 8. Verify report file exists in storage
     $arsip = ArsipLaporan::first();
     expect($arsip->file_laporan)->not->toBeNull();
-    Storage::disk('public')->assertExists($arsip->file_laporan);
+    Storage::disk('local')->assertExists($arsip->file_laporan);
 });

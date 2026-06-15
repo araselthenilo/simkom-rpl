@@ -427,7 +427,7 @@ export default function KeuanganPage({
                                             Dokumen Bukti Transfer (PDF)
                                         </p>
                                         <a
-                                            href={`/storage/${selectedReceipt}`}
+                                            href={selectedReceipt}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-label-md font-semibold text-on-primary hover:opacity-95"
@@ -437,7 +437,7 @@ export default function KeuanganPage({
                                     </div>
                                 ) : (
                                     <img
-                                        src={`/storage/${selectedReceipt}`}
+                                        src={selectedReceipt}
                                         alt="Bukti Transaksi"
                                         className="h-auto max-h-[350px] w-full rounded object-contain shadow-sm"
                                     />

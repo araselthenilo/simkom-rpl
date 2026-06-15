@@ -11,6 +11,7 @@ use App\Models\PesertaKegiatan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -69,13 +70,13 @@ class PengurusKegiatanController extends Controller
             ->map(function ($kegiatan) {
                 if ($kegiatan->dokumentasiKegiatan) {
                     $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal 
-                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_proposal) 
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal']) 
                         : null;
                     $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj 
-                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->dokumen_lpj) 
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj']) 
                         : null;
                     $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi 
-                        ? Storage::disk('public')->url($kegiatan->dokumentasiKegiatan->hasil_evaluasi) 
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi']) 
                         : null;
                 }
                 return $kegiatan;
@@ -195,7 +196,15 @@ class PengurusKegiatanController extends Controller
 
         $pesertaList = PesertaKegiatan::where('id_kegiatan', $kegiatan->id_kegiatan)
             ->with(['mahasiswa', 'transaksiKeuangan'])
-            ->get();
+            ->get()
+            ->map(function ($peserta) {
+                if ($peserta->transaksiKeuangan) {
+                    $peserta->transaksiKeuangan->foto_bukti_transaksi = $peserta->transaksiKeuangan->foto_bukti_transaksi
+                        ? route('transaksi-keuangan.bukti', $peserta->transaksiKeuangan->id_transaksi)
+                        : null;
+                }
+                return $peserta;
+            });
 
         return Inertia::render('pengurus/peserta-kegiatan', [
             'kegiatan' => $kegiatan,
@@ -221,9 +230,9 @@ class PengurusKegiatanController extends Controller
             $formattedDokumentasi = [
                 'id_dokumentasi' => $dokumentasi->id_dokumentasi,
                 'id_kegiatan' => $dokumentasi->id_kegiatan,
-                'dokumen_proposal' => $dokumentasi->dokumen_proposal ? Storage::disk('public')->url($dokumentasi->dokumen_proposal) : null,
-                'dokumen_lpj' => $dokumentasi->dokumen_lpj ? Storage::disk('public')->url($dokumentasi->dokumen_lpj) : null,
-                'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? Storage::disk('public')->url($dokumentasi->hasil_evaluasi) : null,
+                'dokumen_proposal' => $dokumentasi->dokumen_proposal ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'proposal']) : null,
+                'dokumen_lpj' => $dokumentasi->dokumen_lpj ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'lpj']) : null,
+                'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'evaluasi']) : null,
                 'status_dokumentasi' => $dokumentasi->status_dokumentasi,
                 'created_at' => $dokumentasi->created_at,
                 'updated_at' => $dokumentasi->updated_at,
@@ -283,16 +292,16 @@ class PengurusKegiatanController extends Controller
 
         if ($request->hasFile('dokumen_proposal')) {
             if ($dokumentasi && $dokumentasi->dokumen_proposal) {
-                Storage::disk('public')->delete($dokumentasi->dokumen_proposal);
+                Storage::disk('local')->delete($dokumentasi->dokumen_proposal);
             }
-            $data['dokumen_proposal'] = $request->file('dokumen_proposal')->store('dokumentasi/proposal', 'public');
+            $data['dokumen_proposal'] = $request->file('dokumen_proposal')->store('dokumentasi/proposal', 'local');
         }
 
         if ($request->hasFile('dokumen_lpj')) {
             if ($dokumentasi && $dokumentasi->dokumen_lpj) {
-                Storage::disk('public')->delete($dokumentasi->dokumen_lpj);
+                Storage::disk('local')->delete($dokumentasi->dokumen_lpj);
             }
-            $data['dokumen_lpj'] = $request->file('dokumen_lpj')->store('dokumentasi/lpj', 'public');
+            $data['dokumen_lpj'] = $request->file('dokumen_lpj')->store('dokumentasi/lpj', 'local');
         }
 
         if ($dokumentasi) {
@@ -405,5 +414,69 @@ class PengurusKegiatanController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    public function downloadDoc(DokumentasiKegiatan $dokumentasi, string $type)
+    {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
+        $kegiatan = $dokumentasi->kegiatan;
+        if (!$kegiatan) {
+            abort(404, 'Kegiatan tidak ditemukan.');
+        }
+
+        $orgId = $kegiatan->profilOrganisasi->id_organisasi ?? null;
+
+        // Authorization check:
+        // Admin: allow.
+        // Pembina: check if manages orgId.
+        // Pengurus: check if is active staff of orgId.
+        $user = auth()->user();
+        $isAuthorized = false;
+
+        if ($user->role === 'Admin Kemahasiswaan') {
+            $isAuthorized = true;
+        } elseif ($user->role === 'Pembina Organisasi') {
+            $pembina = $user->profilPengguna;
+            $managedOrgIds = $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
+            if (in_array($orgId, $managedOrgIds)) {
+                $isAuthorized = true;
+            }
+        } elseif ($user->role === 'Mahasiswa' && $user->isActiveOrganizationStaff) {
+            $nim = $user->profilPengguna->nim ?? null;
+            $isStaff = $nim ? PengurusOrganisasi::where('status_aktif', true)
+                ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
+                    $q->where('nim', $nim);
+                })
+                ->whereHas('profilOrganisasi', function ($q) use ($orgId) {
+                    $q->where('id_organisasi', $orgId);
+                })
+                ->exists() : false;
+
+            if ($isStaff) {
+                $isAuthorized = true;
+            }
+        }
+
+        if (!$isAuthorized) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        $filePath = null;
+        if ($type === 'proposal') {
+            $filePath = $dokumentasi->dokumen_proposal;
+        } elseif ($type === 'lpj') {
+            $filePath = $dokumentasi->dokumen_lpj;
+        } elseif ($type === 'evaluasi') {
+            $filePath = $dokumentasi->hasil_evaluasi;
+        }
+
+        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
+            abort(404, 'Dokumen tidak ditemukan.');
+        }
+
+        return Storage::disk('local')->download($filePath, basename($filePath));
     }
 }

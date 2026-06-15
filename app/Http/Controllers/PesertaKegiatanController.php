@@ -143,7 +143,7 @@ class PesertaKegiatanController extends Controller
 
             if ($kegiatan->biaya_pendaftaran > 0) {
                 $path = $request->file('foto_bukti_transaksi')
-                    ->store('transaksi-bukti', 'public');
+                    ->store('transaksi-bukti', 'local');
 
                 $transaksi = TransaksiKeuangan::create([
                     'id_kegiatan' => $kegiatan->id_kegiatan,

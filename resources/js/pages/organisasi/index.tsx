@@ -102,6 +102,7 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                                         <Clock className="h-3 w-3 animate-pulse" />{' '}
                                                         Diproses
                                                     </span>
+                                                    <span className="text-label-xs text-on-surface-variant/80 mt-1 block">Diajukan: {org.tanggal_daftar}</span>
                                                 </div>
                                             </div>
 
@@ -112,49 +113,60 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                             )}
                                         </div>
 
-                                        <div className="mt-6 flex items-center justify-between border-t border-outline-variant/30 pt-4">
-                                            <span className="text-label-sm text-on-surface-variant/80">
-                                                Diajukan: {org.tanggal_daftar}
-                                            </span>
-                                            <div className="flex items-center gap-4">
-                                                <Link
-                                                    href={
-                                                        organisasiKeuangan(
-                                                            org.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                        <div className="mt-6 flex flex-col gap-3 border-t border-outline-variant/30 pt-4">
+                                            <div className="flex items-center justify-between">
+                                                <button
+                                                    onClick={() => toggleExpand(org.id)}
+                                                    className="cursor-pointer hover:text-primary inline-flex items-center gap-1 text-label-md font-semibold text-on-surface-variant transition-colors"
                                                 >
-                                                    Lihat Keuangan
-                                                </Link>
-                                                <Link
-                                                    href={
-                                                        organisasiKegiatan(
-                                                            org.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
-                                                >
-                                                    Lihat Kegiatan
-                                                </Link>
-                                                <Link
-                                                    href={
-                                                        organisasiPengurus(
-                                                            org.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
-                                                >
-                                                    Lihat Pengurus
-                                                </Link>
+                                                    {expandedOrgs[org.id] ? 'Sembunyikan Menu' : 'Tampilkan Menu'}
+                                                    <ChevronDown
+                                                        className={`h-4 w-4 transition-transform duration-200 ${expandedOrgs[org.id] ? 'rotate-180' : ''
+                                                            }`}
+                                                    />
+                                                </button>
                                                 <Link
                                                     href={detail(org.id)}
                                                     className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary transition-colors"
                                                 >
-                                                    Lihat Detail{' '}
+                                                    Lihat Profil{' '}
                                                     <ChevronRight className="h-4 w-4" />
                                                 </Link>
                                             </div>
+                                            {expandedOrgs[org.id] && (
+                                                <div className="animate-fade-in flex flex-wrap items-center gap-4 border-t border-dashed border-outline-variant/30 pt-3">
+                                                    <Link
+                                                        href={
+                                                            organisasiKeuangan(
+                                                                org.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    >
+                                                        Lihat Keuangan
+                                                    </Link>
+                                                    <Link
+                                                        href={
+                                                            organisasiKegiatan(
+                                                                org.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    >
+                                                        Lihat Kegiatan
+                                                    </Link>
+                                                    <Link
+                                                        href={
+                                                            organisasiPengurus(
+                                                                org.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:text-primary-dim inline-flex items-center gap-1 text-label-md font-semibold text-primary/80 transition-colors"
+                                                    >
+                                                        Lihat Pengurus
+                                                    </Link>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -214,11 +226,11 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                                     </h3>
                                                     {org.status ===
                                                         'Ditolak' && (
-                                                        <span className="text-label-sm mt-1 inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 font-medium text-error">
-                                                            <XCircle className="h-3 w-3" />{' '}
-                                                            Pendaftaran Ditolak
-                                                        </span>
-                                                    )}
+                                                            <span className="text-label-sm mt-1 inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 font-medium text-error">
+                                                                <XCircle className="h-3 w-3" />{' '}
+                                                                Pendaftaran Ditolak
+                                                            </span>
+                                                        )}
                                                 </div>
                                             </div>
 
@@ -238,13 +250,12 @@ export default function Index({ followed, applied, joinable }: IndexProps) {
                                             <div className="flex items-center justify-between">
                                                 <button
                                                     onClick={() => toggleExpand(org.id)}
-                                                    className="hover:text-primary inline-flex items-center gap-1 text-label-md font-semibold text-on-surface-variant transition-colors"
+                                                    className="cursor-pointer hover:text-primary inline-flex items-center gap-1 text-label-md font-semibold text-on-surface-variant transition-colors"
                                                 >
                                                     {expandedOrgs[org.id] ? 'Sembunyikan Menu' : 'Tampilkan Menu'}
                                                     <ChevronDown
-                                                        className={`h-4 w-4 transition-transform duration-200 ${
-                                                            expandedOrgs[org.id] ? 'rotate-180' : ''
-                                                        }`}
+                                                        className={`h-4 w-4 transition-transform duration-200 ${expandedOrgs[org.id] ? 'rotate-180' : ''
+                                                            }`}
                                                     />
                                                 </button>
                                                 <Link

@@ -67,7 +67,7 @@ class TransaksiKeuanganController extends Controller
         ]);
 
         $path = $request->file('foto_bukti_transaksi')
-            ->store('transaksi_keuangan/bukti', 'public');
+            ->store('transaksi_keuangan/bukti', 'local');
 
         TransaksiKeuangan::create([
             'id_kegiatan' => $kegiatan->id_kegiatan,
@@ -128,11 +128,11 @@ class TransaksiKeuanganController extends Controller
         ]);
 
         if ($request->hasFile('foto_bukti_transaksi')) {
-            Storage::disk('public')->delete($transaksiKeuangan->foto_bukti_transaksi);
+            Storage::disk('local')->delete($transaksiKeuangan->foto_bukti_transaksi);
 
             $validated['foto_bukti_transaksi'] = $request
                 ->file('foto_bukti_transaksi')
-                ->store('transaksi_keuangan/bukti', 'public');
+                ->store('transaksi_keuangan/bukti', 'local');
         } else {
             $validated['foto_bukti_transaksi'] = $transaksiKeuangan->foto_bukti_transaksi;
         }
@@ -153,7 +153,7 @@ class TransaksiKeuanganController extends Controller
         $this->authorizeKegiatanOwnership($kegiatan, $transaksiKeuangan);
 
         // Delete bukti foto from on-premise storage
-        Storage::disk('public')->delete($transaksiKeuangan->foto_bukti_transaksi);
+        Storage::disk('local')->delete($transaksiKeuangan->foto_bukti_transaksi);
 
         $transaksiKeuangan->delete();
 
@@ -208,7 +208,7 @@ class TransaksiKeuanganController extends Controller
             'tanggal_transaksi' => $transaksi->tanggal_transaksi,
             'sumber_tujuan_transaksi' => $transaksi->sumber_tujuan_transaksi,
             'foto_bukti_transaksi' => $transaksi->foto_bukti_transaksi
-                ? $disk->url($transaksi->foto_bukti_transaksi)
+                ? route('transaksi-keuangan.bukti', $transaksi->id_transaksi)
                 : null,
             'catatan_koreksi' => $transaksi->catatan_koreksi,
         ];
@@ -281,7 +281,7 @@ class TransaksiKeuanganController extends Controller
                     'tanggal_transaksi' => $t->tanggal_transaksi,
                     'sumber_tujuan_transaksi' => $t->sumber_tujuan_transaksi,
                     'foto_bukti_transaksi' => $t->foto_bukti_transaksi
-                        ? Storage::disk('public')->url($t->foto_bukti_transaksi)
+                        ? route('transaksi-keuangan.bukti', $t->id_transaksi)
                         : null,
                     'catatan_koreksi' => $t->catatan_koreksi,
                     'created_at' => $t->created_at ? $t->created_at->toIso8601String() : null,
@@ -336,7 +336,7 @@ class TransaksiKeuanganController extends Controller
         ]);
 
         $path = $request->file('foto_bukti_transaksi')
-            ->store('transaksi_keuangan/bukti', 'public');
+            ->store('transaksi_keuangan/bukti', 'local');
 
         TransaksiKeuangan::create([
             'id_kegiatan' => $validated['id_kegiatan'],
@@ -383,12 +383,12 @@ class TransaksiKeuanganController extends Controller
         if ($request->hasFile('foto_bukti_transaksi')) {
             // Delete old file
             if ($transaksi->foto_bukti_transaksi) {
-                Storage::disk('public')->delete($transaksi->foto_bukti_transaksi);
+                Storage::disk('local')->delete($transaksi->foto_bukti_transaksi);
             }
 
             $validated['foto_bukti_transaksi'] = $request
                 ->file('foto_bukti_transaksi')
-                ->store('transaksi_keuangan/bukti', 'public');
+                ->store('transaksi_keuangan/bukti', 'local');
         } else {
             unset($validated['foto_bukti_transaksi']); // Keep existing
         }
@@ -423,7 +423,7 @@ class TransaksiKeuanganController extends Controller
                     'tanggal_transaksi'      => $t->tanggal_transaksi,
                     'sumber_tujuan_transaksi'=> $t->sumber_tujuan_transaksi,
                     'foto_bukti_transaksi'   => $t->foto_bukti_transaksi
-                        ? $disk->url($t->foto_bukti_transaksi)
+                        ? route('transaksi-keuangan.bukti', $t->id_transaksi)
                         : null,
                     'catatan_koreksi'        => $t->catatan_koreksi,
                     'created_at'             => $t->created_at ? $t->created_at->toIso8601String() : null,
@@ -470,5 +470,75 @@ class TransaksiKeuanganController extends Controller
                 'total_pengeluaran'  => (float) $totalPengeluaran,
             ],
         ]);
+    }
+
+    public function showBuktiTrans(TransaksiKeuangan $transaksi)
+    {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
+        $filePath = $transaksi->foto_bukti_transaksi;
+        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
+            abort(404, 'Bukti transaksi tidak ditemukan.');
+        }
+
+        $user = auth()->user();
+        $isAuthorized = false;
+
+        // Admin / Petugas: allowed
+        if (Gate::check('is-admin') || Gate::check('is-petugas')) {
+            $isAuthorized = true;
+        }
+
+        // If it is a registration receipt (transaksi-bukti/...)
+        if (str_starts_with($filePath, 'transaksi-bukti')) {
+            // Retrieve associated event participant
+            $participant = \App\Models\PesertaKegiatan::where('id_transaksi', $transaksi->id_transaksi)->first();
+            if ($participant) {
+                // If it is the student themselves, allow
+                if ($user->role === 'Mahasiswa' && $user->profilPengguna && $user->profilPengguna->nim === $participant->nim) {
+                    $isAuthorized = true;
+                }
+                
+                // If Pembina managing the organization of the activity
+                if (!$isAuthorized && Gate::check('is-pembina')) {
+                    $pembina = $user->profilPengguna;
+                    $managedOrgIds = $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
+                    $orgId = $transaksi->kegiatan->profilOrganisasi->id_organisasi ?? null;
+                    if (in_array($orgId, $managedOrgIds)) {
+                        $isAuthorized = true;
+                    }
+                }
+                
+                // If Pengurus managing the organization of the activity
+                if (!$isAuthorized && Gate::check('is-pengurus-organisasi')) {
+                    $nim = $user->profilPengguna->nim ?? null;
+                    $orgId = $transaksi->kegiatan->profilOrganisasi->id_organisasi ?? null;
+                    $isStaff = $nim && $orgId ? PengurusOrganisasi::where('status_aktif', true)
+                        ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
+                            $q->where('nim', $nim);
+                        })
+                        ->whereHas('profilOrganisasi', function ($q) use ($orgId) {
+                            $q->where('id_organisasi', $orgId);
+                        })
+                        ->exists() : false;
+                        
+                    if ($isStaff) {
+                        $isAuthorized = true;
+                    }
+                }
+            }
+        } else {
+            // General financial transaction proof (transaksi_keuangan/bukti/...)
+            // Accessible by all authenticated roles (students for transparency, pembina/pengurus/admin)
+            $isAuthorized = true;
+        }
+
+        if (!$isAuthorized) {
+            abort(403, 'Anda tidak memiliki akses ke bukti transaksi ini.');
+        }
+
+        return response()->file(Storage::disk('local')->path($filePath));
     }
 }

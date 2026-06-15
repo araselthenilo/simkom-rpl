@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -51,7 +52,7 @@ class AnggotaOrganisasiController extends Controller
         }
 
         $fotoKtmPath = $request->file('foto_ktm')
-            ->store('foto_ktm', 'public');
+            ->store('foto_ktm', 'local');
 
         AnggotaOrganisasi::create([
             'id_organisasi' => $validated['id_organisasi'],
@@ -213,5 +214,55 @@ class AnggotaOrganisasiController extends Controller
             'members' => $members,
             'stats' => $stats,
         ]);
+    }
+
+    public function showKtm(AnggotaOrganisasi $anggotaOrganisasi)
+    {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
+        $isAuthorized = false;
+
+        // Admin / Petugas: allowed
+        if (Gate::check('is-admin') || Gate::check('is-petugas')) {
+            $isAuthorized = true;
+        }
+
+        // Pembina Organisasi: check if they oversee the organization
+        if (Gate::check('is-pembina')) {
+            $pembina = auth()->user()->profilPengguna;
+            $managedOrgIds = $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
+            if (in_array($anggotaOrganisasi->id_organisasi, $managedOrgIds)) {
+                $isAuthorized = true;
+            }
+        }
+
+        // Pengurus Organisasi: check if they are active staff of the organization
+        if (Gate::check('is-pengurus-organisasi')) {
+            $nim = auth()->user()->profilPengguna->nim ?? null;
+            $isStaff = $nim ? PengurusOrganisasi::where('status_aktif', true)
+                ->whereHas('anggotaOrganisasi', function ($q) use ($nim) {
+                    $q->where('nim', $nim);
+                })
+                ->whereHas('profilOrganisasi', function ($q) use ($anggotaOrganisasi) {
+                    $q->where('id_organisasi', $anggotaOrganisasi->id_organisasi);
+                })
+                ->exists() : false;
+
+            if ($isStaff) {
+                $isAuthorized = true;
+            }
+        }
+
+        if (!$isAuthorized) {
+            abort(403, 'Anda tidak memiliki akses ke foto KTM ini.');
+        }
+
+        if (!Storage::disk('local')->exists($anggotaOrganisasi->foto_ktm)) {
+            abort(404, 'File KTM tidak ditemukan.');
+        }
+
+        return response()->file(Storage::disk('local')->path($anggotaOrganisasi->foto_ktm));
     }
 }

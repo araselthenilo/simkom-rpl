@@ -270,13 +270,18 @@ class UserOrganisasiController extends Controller
             ->where('status_aktif', true)
             ->first();
 
-        // Fetch all financial transactions of this organization (via kegiatan relationship)
         $transaksiList = TransaksiKeuangan::whereHas('kegiatan.profilOrganisasi', function ($q) use ($organisasi) {
             $q->where('id_organisasi', $organisasi->id_organisasi);
         })
             ->with('kegiatan')
             ->orderBy('tanggal_transaksi', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($t) {
+                $t->foto_bukti_transaksi = $t->foto_bukti_transaksi
+                    ? route('transaksi-keuangan.bukti', $t->id_transaksi)
+                    : null;
+                return $t;
+            });
 
         return Inertia::render('organisasi/keuangan', [
             'profil' => $profil,

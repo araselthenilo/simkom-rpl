@@ -48,9 +48,9 @@ class AdminDokumentasiKegiatanController extends Controller
         $formatted = [
             'id_dokumentasi' => $dokumentasi->id_dokumentasi,
             'id_kegiatan' => $dokumentasi->id_kegiatan,
-            'dokumen_proposal' => $dokumentasi->dokumen_proposal ? Storage::disk('public')->url($dokumentasi->dokumen_proposal) : null,
-            'dokumen_lpj' => $dokumentasi->dokumen_lpj ? Storage::disk('public')->url($dokumentasi->dokumen_lpj) : null,
-            'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? Storage::disk('public')->url($dokumentasi->hasil_evaluasi) : null,
+            'dokumen_proposal' => $dokumentasi->dokumen_proposal ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'proposal']) : null,
+            'dokumen_lpj' => $dokumentasi->dokumen_lpj ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'lpj']) : null,
+            'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'evaluasi']) : null,
             'status_dokumentasi' => $dokumentasi->status_dokumentasi,
             'created_at' => $dokumentasi->created_at->toIso8601String(),
             'updated_at' => $dokumentasi->updated_at->toIso8601String(),
@@ -98,9 +98,9 @@ class AdminDokumentasiKegiatanController extends Controller
 
         if ($request->hasFile('hasil_evaluasi')) {
             if ($dokumentasi->hasil_evaluasi) {
-                Storage::disk('public')->delete($dokumentasi->hasil_evaluasi);
+                Storage::disk('local')->delete($dokumentasi->hasil_evaluasi);
             }
-            $data['hasil_evaluasi'] = $request->file('hasil_evaluasi')->store('dokumentasi/evaluasi', 'public');
+            $data['hasil_evaluasi'] = $request->file('hasil_evaluasi')->store('dokumentasi/evaluasi', 'local');
         }
 
         $dokumentasi->update($data);
