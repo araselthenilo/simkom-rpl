@@ -15,9 +15,12 @@ Route::middleware('can:is-pembina')->prefix('pembina')->name('pembina.')->group(
     Route::get('/organisasi', [PembinaOrganisasiController::class, 'index'])->name('organisasi');
     
     // NOTE: Pembina Organisasi cannot create organizations or assign pembinas, but they can view profile history and update profiles.
-    Route::get('/organisasi/{organisasi}/profil', [PembinaOrganisasiController::class, 'profilHistory'])->name('organisasi.profil');
-    Route::get('/organisasi/{organisasi}/profil/create', [PembinaOrganisasiController::class, 'createProfil'])->name('profil-organisasi.create');
-    Route::post('/organisasi/{organisasi}/profil', [PembinaOrganisasiController::class, 'storeProfil'])->name('profil-organisasi.store');
+    Route::middleware('can:is-pembina-organisasi,organisasi')->group(function () {
+        Route::get('/organisasi/{organisasi}/profil', [PembinaOrganisasiController::class, 'profilHistory'])->name('organisasi.profil');
+        Route::get('/organisasi/{organisasi}/profil/create', [PembinaOrganisasiController::class, 'createProfil'])->name('profil-organisasi.create');
+        Route::post('/organisasi/{organisasi}/profil', [PembinaOrganisasiController::class, 'storeProfil'])->name('profil-organisasi.store');
+    });
+
     Route::get('/profil-organisasi/{profilOrganisasi}/edit', [PembinaOrganisasiController::class, 'editProfil'])->name('profil-organisasi.edit');
     Route::put('/profil-organisasi/{profilOrganisasi}', [PembinaOrganisasiController::class, 'updateProfil'])->name('profil-organisasi.update');
     Route::get('/profil-organisasi/{profilOrganisasi}/pengurus', [PembinaOrganisasiController::class, 'showPengurus'])->name('profil-organisasi.pengurus');

@@ -10,7 +10,7 @@ use App\Models\Organisasi;
 use App\Models\PengurusOrganisasi;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('can:is-pengurus')->prefix('pengurus')->group(function () {
+Route::middleware('can:is-pengurus-organisasi')->prefix('pengurus')->group(function () {
     Route::get('/', [PengurusDashboardController::class, 'index'])->name('pengurus');
     Route::get('/keuangan', [TransaksiKeuanganController::class, 'pengurusIndex'])->name('pengurus.keuangan');
     Route::post('/keuangan/store', [TransaksiKeuanganController::class, 'pengurusStore'])->name('pengurus.keuangan.store');

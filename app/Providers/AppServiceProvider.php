@@ -7,6 +7,7 @@ use App\Models\Kegiatan;
 use App\Models\Mahasiswa;
 use App\Models\PembinaOrganisasi;
 use App\Models\PengurusOrganisasi;
+use App\Models\Organisasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Date;
@@ -35,6 +36,14 @@ class AppServiceProvider extends ServiceProvider
             return $user->role === 'Pembina Organisasi';
         });
 
+        Gate::define('is-pembina-organisasi', function ($user, Organisasi $organisasi) {
+            if ($user->role !== 'Pembina Organisasi') {
+                return false;
+            }
+            $pembina = $user->profilPengguna;
+            return $pembina ? $pembina->pembinaan()->where('id_organisasi', $organisasi->id_organisasi)->exists() : false;
+        });
+
         Gate::define('is-admin', function ($user) {
             return $user->role === 'Admin Kemahasiswaan';
         });
@@ -44,11 +53,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('is-pengurus', function ($user) {
-            return PengurusOrganisasi::whereHas('anggotaOrganisasi.mahasiswa', function ($query) use ($user) {
-                $query->where('username', $user->username);
-            })
-                ->whereHas('anggotaOrganisasi.organisasi')
-                ->exists();
+            return $user->isActiveOrganizationStaff;
         });
 
         Gate::define('is-pengurus-organisasi', function ($user) {
