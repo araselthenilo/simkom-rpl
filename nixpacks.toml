@@ -1,6 +1,0 @@
-[phases.setup]
-aptPkgs = []
-
-[environment]
-# Ini memberi tahu Nixpacks untuk menginstall ekstensi PHP gd saat deployment
-NIXPACKS_PHP_EXTENSIONS = "gd"
