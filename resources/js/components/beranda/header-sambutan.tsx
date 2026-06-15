@@ -1,6 +1,6 @@
-import type { Auth } from '@/types/auth';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import type { Auth } from '@/types/auth';
 
 export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
     const namaUser = user.name;

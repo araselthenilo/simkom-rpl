@@ -53,7 +53,7 @@ class DashboardTestDataSeeder extends Seeder
 
         foreach ($students as $s) {
             // Check if user already exists
-            if (!DB::table('users')->where('username', $s['username'])->exists()) {
+            if (! DB::table('users')->where('username', $s['username'])->exists()) {
                 DB::table('users')->insert([
                     'username' => $s['username'],
                     'email' => $s['email'],
@@ -81,7 +81,7 @@ class DashboardTestDataSeeder extends Seeder
                 ->where('nim', $s['nim'])
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 DB::table('anggota_organisasi')->insert([
                     'id_organisasi' => $idOrganisasi,
                     'nim' => $s['nim'],
@@ -126,7 +126,7 @@ class DashboardTestDataSeeder extends Seeder
 
             $idKegiatan = $existing ? $existing->id_kegiatan : null;
 
-            if (!$existing) {
+            if (! $existing) {
                 $idKegiatan = DB::table('kegiatan')->insertGetId([
                     'id_profil' => $idProfil,
                     'nama_kegiatan' => $act['nama_kegiatan'],
@@ -183,20 +183,20 @@ class DashboardTestDataSeeder extends Seeder
                 ];
 
                 foreach ($regDates as $idx => $dateStr) {
-                    $randNim = '22002000' . (($idx % 4) + 1); // Andi, Clara, Doni, Elisa
-                    
+                    $randNim = '22002000'.(($idx % 4) + 1); // Andi, Clara, Doni, Elisa
+
                     // check unique key on (nim, id_kegiatan)
                     $exists = DB::table('peserta_kegiatan')
                         ->where('nim', $randNim)
                         ->where('id_kegiatan', $idKegiatan)
                         ->exists();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         DB::table('peserta_kegiatan')->insert([
                             'nim' => $randNim,
                             'id_kegiatan' => $idKegiatan,
-                            'created_at' => $dateStr . ' 10:00:00',
-                            'updated_at' => $dateStr . ' 10:00:00',
+                            'created_at' => $dateStr.' 10:00:00',
+                            'updated_at' => $dateStr.' 10:00:00',
                         ]);
                     }
                 }

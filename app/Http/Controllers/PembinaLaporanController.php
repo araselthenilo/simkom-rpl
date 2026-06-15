@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\LaporanKeuanganExport;
 use App\Exports\LaporanKegiatanExport;
+use App\Exports\LaporanKeuanganExport;
 use App\Models\ArsipLaporan;
+use App\Models\Kegiatan;
 use App\Models\Organisasi;
 use App\Models\TransaksiKeuangan;
-use App\Models\Kegiatan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,6 +23,7 @@ class PembinaLaporanController extends Controller
     private function getManagedOrgIds(): array
     {
         $pembina = auth()->user()->profilPengguna;
+
         return $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
     }
 
@@ -109,12 +110,12 @@ class PembinaLaporanController extends Controller
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
                     $q->where('sumber_tujuan_transaksi', 'like', "%{$search}%")
-                      ->orWhereHas('kegiatan', function ($qk) use ($search) {
-                          $qk->where('nama_kegiatan', 'like', "%{$search}%")
-                            ->orWhereHas('profilOrganisasi.organisasi', function ($qo) use ($search) {
-                                $qo->where('nama_organisasi', 'like', "%{$search}%");
-                            });
-                      });
+                        ->orWhereHas('kegiatan', function ($qk) use ($search) {
+                            $qk->where('nama_kegiatan', 'like', "%{$search}%")
+                                ->orWhereHas('profilOrganisasi.organisasi', function ($qo) use ($search) {
+                                    $qo->where('nama_organisasi', 'like', "%{$search}%");
+                                });
+                        });
                 });
             }
 
@@ -171,11 +172,11 @@ class PembinaLaporanController extends Controller
                 ->route('pembina.laporan.index')
                 ->with('success', 'Laporan Keuangan berhasil dibuat.');
         } else {
-            $query = Kegiatan::whereHas('profilOrganisasi', function($q) use ($managedOrgIds) {
+            $query = Kegiatan::whereHas('profilOrganisasi', function ($q) use ($managedOrgIds) {
                 $q->whereIn('id_organisasi', $managedOrgIds);
             })
-            ->withCount('pesertaKegiatan')
-            ->with(['profilOrganisasi.organisasi', 'transaksiKeuangan']);
+                ->withCount('pesertaKegiatan')
+                ->with(['profilOrganisasi.organisasi', 'transaksiKeuangan']);
 
             if ($request->filled('status_kegiatan') && $request->input('status_kegiatan') !== 'Semua') {
                 $query->where('status_kegiatan', $request->input('status_kegiatan'));

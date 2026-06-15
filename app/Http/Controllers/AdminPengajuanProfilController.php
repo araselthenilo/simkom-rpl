@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\PengajuanProfilOrganisasi;
 use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -23,10 +22,10 @@ class AdminPengajuanProfilController extends Controller
         $submissions = PengajuanProfilOrganisasi::with([
             'pengurusOrganisasi.profilOrganisasi.organisasi',
             'pengurusOrganisasi.anggotaOrganisasi.mahasiswa',
-            'penggunaPetugas'
+            'penggunaPetugas',
         ])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('admin/pengajuan-profil', [
             'submissions' => $submissions,

@@ -29,8 +29,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { detail } from '@/routes/organisasi';
 import { daftar, batal } from '@/routes/kegiatan';
+import { detail } from '@/routes/organisasi';
 
 interface Organisasi {
     id_organisasi: number;
@@ -193,6 +193,7 @@ export default function KegiatanPage({
         result.sort((a, b) => {
             const dateA = new Date(a.tanggal_pelaksanaan).getTime();
             const dateB = new Date(b.tanggal_pelaksanaan).getTime();
+
             return sortBy === 'date-asc' ? dateA - dateB : dateB - dateA;
         });
 
@@ -207,7 +208,10 @@ export default function KegiatanPage({
 
     const handleRegisterSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedKegiatan) return;
+
+        if (!selectedKegiatan) {
+return;
+}
 
         regPost(daftar.url(selectedKegiatan.id_kegiatan), {
             onSuccess: () => {
@@ -239,7 +243,10 @@ export default function KegiatanPage({
 
     const handleCancelSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!cancelKegiatan || !cancelPesertaId) return;
+
+        if (!cancelKegiatan || !cancelPesertaId) {
+return;
+}
 
         cancelDelete(
             batal.url({
@@ -294,6 +301,7 @@ export default function KegiatanPage({
             'NOV',
             'DES',
         ];
+
         return {
             day: d.getDate(),
             month: monthNames[d.getMonth()],
@@ -718,6 +726,7 @@ export default function KegiatanPage({
                                             accept="image/png, image/jpeg, image/jpg, application/pdf"
                                             onChange={(e) => {
                                                 const files = e.target.files;
+
                                                 if (files && files.length > 0) {
                                                     setRegData(
                                                         'foto_bukti_transaksi',

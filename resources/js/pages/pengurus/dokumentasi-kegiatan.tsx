@@ -106,11 +106,15 @@ export default function DokumentasiKegiatanPage({
     // Handle single photo upload
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+
+        if (!file) {
+return;
+}
 
         // Check file size (5MB limit)
         if (file.size > 5 * 1024 * 1024) {
             alert('Ukuran foto maksimal 5 MB!');
+
             return;
         }
 
@@ -144,7 +148,9 @@ export default function DokumentasiKegiatanPage({
                 `/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/foto/${idFoto}`,
                 {
                     onSuccess: () => {
-                        if (previewPhoto) setPreviewPhoto(null);
+                        if (previewPhoto) {
+setPreviewPhoto(null);
+}
                     },
                     onError: (err) => {
                         const message = Object.values(err).join('\n');
@@ -172,9 +178,13 @@ export default function DokumentasiKegiatanPage({
     };
 
     const formatDate = (dateStr?: string) => {
-        if (!dateStr) return '-';
+        if (!dateStr) {
+return '-';
+}
+
         try {
             const date = new Date(dateStr);
+
             return new Intl.DateTimeFormat('id-ID', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
@@ -185,14 +195,22 @@ export default function DokumentasiKegiatanPage({
     };
 
     const getFileName = (urlPath: string | null) => {
-        if (!urlPath) return '';
+        if (!urlPath) {
+return '';
+}
+
         const parts = urlPath.split('/');
+
         return parts[parts.length - 1];
     };
 
     const isPdf = (urlPath: string | null) => {
-        if (!urlPath) return false;
+        if (!urlPath) {
+return false;
+}
+
         const cleanPath = urlPath.split('?')[0];
+
         return cleanPath.toLowerCase().endsWith('.pdf');
     };
 

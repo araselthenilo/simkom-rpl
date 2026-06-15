@@ -67,8 +67,12 @@ export default function PengajuanProfilShow({
 
     // Derive academic year (angkatan) from NIM
     const getStaffYear = (nim?: string) => {
-        if (!nim || nim === '-') return '-';
+        if (!nim || nim === '-') {
+return '-';
+}
+
         const prefix = nim.substring(0, 2);
+
         return '20' + prefix;
     };
     const staffYear = getStaffYear(mahasiswa?.nim);
@@ -144,7 +148,10 @@ export default function PengajuanProfilShow({
     };
 
     const formatLogoUrl = (logo: string) => {
-        if (!logo) return null;
+        if (!logo) {
+return null;
+}
+
         return logo.startsWith('http') || logo.startsWith('data:')
             ? logo
             : `/storage/${logo}`;

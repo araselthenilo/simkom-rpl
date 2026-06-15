@@ -19,6 +19,7 @@ class PembinaOrganisasiController extends Controller
     private function getManagedOrgIds(): array
     {
         $pembina = auth()->user()->profilPengguna;
+
         return $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
     }
 
@@ -60,6 +61,7 @@ class PembinaOrganisasiController extends Controller
                 if ($p) {
                     $p->id_pembinaan = $pembinaan->id_pembinaan;
                 }
+
                 return $p;
             })->filter()->values();
 

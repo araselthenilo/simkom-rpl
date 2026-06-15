@@ -280,6 +280,7 @@ class UserOrganisasiController extends Controller
                 $t->foto_bukti_transaksi = $t->foto_bukti_transaksi
                     ? route('transaksi-keuangan.bukti', $t->id_transaksi)
                     : null;
+
                 return $t;
             });
 

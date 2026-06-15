@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia;
@@ -199,8 +200,8 @@ test('admin dashboard returns correct activities statistics as inertia props', f
 
     // Insert Organisasi
     $id_organisasi = DB::table('organisasi')->insertGetId([
-        'nama_organisasi' => 'UKM A', 
-        'status_aktif' => true
+        'nama_organisasi' => 'UKM A',
+        'status_aktif' => true,
     ]);
 
     // Insert Profil Organisasi
@@ -214,7 +215,7 @@ test('admin dashboard returns correct activities statistics as inertia props', f
         'status_aktif' => true,
     ]);
 
-    $now = \Carbon\Carbon::now();
+    $now = Carbon::now();
 
     // Insert Kegiatan
     DB::table('kegiatan')->insert([
@@ -269,7 +270,7 @@ test('admin dashboard returns correct activities statistics as inertia props', f
             'status_kegiatan' => 'Mendatang',
             'created_at' => now(),
             'updated_at' => now(),
-        ]
+        ],
     ]);
 
     $response = $this->actingAs($admin)->get(route('admin.dashboard'));

@@ -75,7 +75,10 @@ export default function PengurusPage({
     });
 
     const getInitials = (name: string) => {
-        if (!name) return '?';
+        if (!name) {
+return '?';
+}
+
         return name
             .split(' ')
             .map((n) => n[0])
@@ -86,15 +89,19 @@ export default function PengurusPage({
 
     const getRoleBadgeColor = (role: string) => {
         const r = role.toLowerCase();
+
         if (r.includes('ketua')) {
             return 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20';
         }
+
         if (r.includes('sekretaris')) {
             return 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20';
         }
+
         if (r.includes('bendahara')) {
             return 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20';
         }
+
         return 'bg-slate-500/10 text-slate-700 dark:text-slate-400 border border-slate-500/20';
     };
 
@@ -181,7 +188,10 @@ export default function PengurusPage({
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         {filteredPengurus.map((p) => {
                             const student = p.anggota_organisasi?.mahasiswa;
-                            if (!student) return null;
+
+                            if (!student) {
+return null;
+}
 
                             return (
                                 <Card

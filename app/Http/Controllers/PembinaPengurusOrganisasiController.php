@@ -17,6 +17,7 @@ class PembinaPengurusOrganisasiController extends Controller
     private function getManagedOrgIds(): array
     {
         $pembina = auth()->user()->profilPengguna;
+
         return $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
     }
 
@@ -37,15 +38,15 @@ class PembinaPengurusOrganisasiController extends Controller
             ->with('mahasiswa')
             ->get();
 
-        $pengurusList = PengurusOrganisasi::whereHas('profilOrganisasi', function($q) use ($managedOrgIds) {
+        $pengurusList = PengurusOrganisasi::whereHas('profilOrganisasi', function ($q) use ($managedOrgIds) {
             $q->whereIn('id_organisasi', $managedOrgIds);
         })
-        ->with([
-            'anggotaOrganisasi.mahasiswa',
-            'profilOrganisasi.organisasi',
-        ])
-        ->orderBy('id_pengurus', 'desc')
-        ->get();
+            ->with([
+                'anggotaOrganisasi.mahasiswa',
+                'profilOrganisasi.organisasi',
+            ])
+            ->orderBy('id_pengurus', 'desc')
+            ->get();
 
         return Inertia::render('pembina/pengurus/index', [
             'organisasiList' => $organisasiList,

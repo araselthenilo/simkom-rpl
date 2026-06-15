@@ -20,9 +20,9 @@ import {
     Image,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import pembina from '@/routes/pembina';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import pembina from '@/routes/pembina';
 
 interface Activity {
     id_kegiatan: number;
@@ -94,15 +94,23 @@ export default function DokumentasiKegiatanShow({ dokumentasi }: Props) {
         'Organisasi';
 
     const getFileName = (urlPath: string | null) => {
-        if (!urlPath) return '';
+        if (!urlPath) {
+return '';
+}
+
         const cleanPath = urlPath.split('?')[0];
         const parts = cleanPath.split('/');
+
         return parts[parts.length - 1];
     };
 
     const isPdf = (urlPath: string | null) => {
-        if (!urlPath) return false;
+        if (!urlPath) {
+return false;
+}
+
         const cleanPath = urlPath.split('?')[0];
+
         return cleanPath.toLowerCase().endsWith('.pdf');
     };
 
@@ -143,9 +151,13 @@ export default function DokumentasiKegiatanShow({ dokumentasi }: Props) {
     };
 
     const formatDate = (dateStr?: string) => {
-        if (!dateStr) return '-';
+        if (!dateStr) {
+return '-';
+}
+
         try {
             const date = new Date(dateStr);
+
             return new Intl.DateTimeFormat('id-ID', {
                 dateStyle: 'medium',
                 timeStyle: 'short',

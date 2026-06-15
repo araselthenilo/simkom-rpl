@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\PembinaDashboardController;
-use App\Http\Controllers\PembinaKegiatanController;
-use App\Http\Controllers\PembinaPengajuanProfilController;
 use App\Http\Controllers\PembinaDokumentasiKegiatanController;
+use App\Http\Controllers\PembinaKegiatanController;
 use App\Http\Controllers\PembinaLaporanController;
 use App\Http\Controllers\PembinaOrganisasiController;
+use App\Http\Controllers\PembinaPengajuanProfilController;
 use App\Http\Controllers\PembinaPengurusOrganisasiController;
 use App\Http\Controllers\PembinaTransaksiKeuanganController;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('can:is-pembina')->prefix('pembina')->name('pembina.')->group(function () {
     Route::get('/dashboard', [PembinaDashboardController::class, 'index'])->name('dashboard');
     Route::get('/organisasi', [PembinaOrganisasiController::class, 'index'])->name('organisasi');
-    
+
     // NOTE: Pembina Organisasi cannot create organizations or assign pembinas, but they can view profile history and update profiles.
     Route::middleware('can:is-pembina-organisasi,organisasi')->group(function () {
         Route::get('/organisasi/{organisasi}/profil', [PembinaOrganisasiController::class, 'profilHistory'])->name('organisasi.profil');

@@ -438,7 +438,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'catatan_koreksi' => null,
                         'created_at' => now()->subDays(2),
                         'updated_at' => now()->subDays(2),
-                    ]
+                    ],
                 ]);
             }
 
@@ -465,7 +465,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'catatan_koreksi' => 'Harap lampirkan nota toko fisik juga',
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ]
+                    ],
                 ]);
             }
 
@@ -481,7 +481,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'catatan_koreksi' => null,
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ]
+                    ],
                 ]);
             }
 

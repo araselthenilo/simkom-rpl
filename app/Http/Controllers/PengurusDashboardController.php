@@ -71,6 +71,7 @@ class PengurusDashboardController extends Controller
             'Sat' => 'Sab',
             'Sun' => 'Min',
         ];
+
         return $map[$dayOfWeekName] ?? $dayOfWeekName;
     }
 
@@ -188,7 +189,7 @@ class PengurusDashboardController extends Controller
             $dayOfWeekName = now()->subDays($i)->format('l'); // Monday, Tuesday, etc.
             $trend7Days->put($date, [
                 'day' => $this->getIndonesianDayName($dayOfWeekName),
-                'count' => 0
+                'count' => 0,
             ]);
         }
 
@@ -208,7 +209,8 @@ class PengurusDashboardController extends Controller
 
         $max7 = $trend7Days->max('count');
         $trendData7Days = $trend7Days->map(function ($item) use ($max7) {
-            $item['height'] = $max7 > 0 ? round(($item['count'] / $max7) * 100) . '%' : '0%';
+            $item['height'] = $max7 > 0 ? round(($item['count'] / $max7) * 100).'%' : '0%';
+
             return $item;
         })->values()->all();
 
@@ -218,7 +220,7 @@ class PengurusDashboardController extends Controller
             $date = now()->subDays($i)->format('Y-m-d');
             $trend30Days->put($date, [
                 'day' => now()->subDays($i)->format('d/m'),
-                'count' => 0
+                'count' => 0,
             ]);
         }
 
@@ -238,7 +240,8 @@ class PengurusDashboardController extends Controller
 
         $max30 = $trend30Days->max('count');
         $trendData30Days = $trend30Days->map(function ($item) use ($max30) {
-            $item['height'] = $max30 > 0 ? round(($item['count'] / $max30) * 100) . '%' : '0%';
+            $item['height'] = $max30 > 0 ? round(($item['count'] / $max30) * 100).'%' : '0%';
+
             return $item;
         })->values()->all();
 

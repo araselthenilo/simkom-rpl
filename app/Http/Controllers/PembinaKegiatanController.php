@@ -9,7 +9,6 @@ use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,6 +17,7 @@ class PembinaKegiatanController extends Controller
     private function getManagedOrgIds(): array
     {
         $pembina = auth()->user()->profilPengguna;
+
         return $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
     }
 
@@ -29,23 +29,24 @@ class PembinaKegiatanController extends Controller
         $activities = Kegiatan::whereHas('profilOrganisasi', function ($q) use ($managedOrgIds) {
             $q->whereIn('id_organisasi', $managedOrgIds);
         })
-        ->with(['profilOrganisasi.organisasi', 'dokumentasiKegiatan'])
-        ->orderBy('tanggal_pelaksanaan', 'desc')
-        ->get()
-        ->map(function ($kegiatan) {
-            if ($kegiatan->dokumentasiKegiatan) {
-                $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal 
-                    ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal']) 
-                    : null;
-                $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj 
-                    ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj']) 
-                    : null;
-                $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi 
-                    ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi']) 
-                    : null;
-            }
-            return $kegiatan;
-        });
+            ->with(['profilOrganisasi.organisasi', 'dokumentasiKegiatan'])
+            ->orderBy('tanggal_pelaksanaan', 'desc')
+            ->get()
+            ->map(function ($kegiatan) {
+                if ($kegiatan->dokumentasiKegiatan) {
+                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal'])
+                        : null;
+                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj'])
+                        : null;
+                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi'])
+                        : null;
+                }
+
+                return $kegiatan;
+            });
 
         $profilList = ProfilOrganisasi::where('status_aktif', true)
             ->whereIn('id_organisasi', $managedOrgIds)
@@ -179,6 +180,7 @@ class PembinaKegiatanController extends Controller
                         ? route('transaksi-keuangan.bukti', $peserta->transaksiKeuangan->id_transaksi)
                         : null;
                 }
+
                 return $peserta;
             });
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\CatatanRevisi;
 use App\Models\DokumentasiKegiatan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,8 +23,8 @@ class AdminDokumentasiKegiatanController extends Controller
         $submissions = DokumentasiKegiatan::with([
             'kegiatan.profilOrganisasi.organisasi',
         ])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('admin/dokumentasi-kegiatan', [
             'submissions' => $submissions,
@@ -106,8 +106,8 @@ class AdminDokumentasiKegiatanController extends Controller
         $dokumentasi->update($data);
 
         // If status is 'Butuh Revisi' and notes are provided, create a CatatanRevisi
-        if ($validated['status_dokumentasi'] === 'Butuh Revisi' && !empty($validated['isi_catatan'])) {
-            \App\Models\CatatanRevisi::create([
+        if ($validated['status_dokumentasi'] === 'Butuh Revisi' && ! empty($validated['isi_catatan'])) {
+            CatatanRevisi::create([
                 'id_dokumentasi' => $dokumentasi->id_dokumentasi,
                 'username_petugas' => auth()->user()->username,
                 'isi_catatan' => $validated['isi_catatan'],

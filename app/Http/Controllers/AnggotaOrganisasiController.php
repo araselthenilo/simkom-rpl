@@ -8,8 +8,8 @@ use App\Models\PengurusOrganisasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -218,7 +218,7 @@ class AnggotaOrganisasiController extends Controller
 
     public function showKtm(AnggotaOrganisasi $anggotaOrganisasi)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403);
         }
 
@@ -255,11 +255,11 @@ class AnggotaOrganisasiController extends Controller
             }
         }
 
-        if (!$isAuthorized) {
+        if (! $isAuthorized) {
             abort(403, 'Anda tidak memiliki akses ke foto KTM ini.');
         }
 
-        if (!Storage::disk('local')->exists($anggotaOrganisasi->foto_ktm)) {
+        if (! Storage::disk('local')->exists($anggotaOrganisasi->foto_ktm)) {
             abort(404, 'File KTM tidak ditemukan.');
         }
 

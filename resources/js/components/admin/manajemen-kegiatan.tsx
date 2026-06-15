@@ -110,14 +110,22 @@ export default function ManajemenKegiatan({
     );
 
     const getFileName = (urlPath: string | null) => {
-        if (!urlPath) return '';
+        if (!urlPath) {
+return '';
+}
+
         const parts = urlPath.split('/');
+
         return parts[parts.length - 1];
     };
 
     const isPdf = (urlPath: string | null) => {
-        if (!urlPath) return false;
+        if (!urlPath) {
+return false;
+}
+
         const cleanPath = urlPath.split('?')[0];
+
         return cleanPath.toLowerCase().endsWith('.pdf');
     };
 
@@ -145,8 +153,10 @@ export default function ManajemenKegiatan({
     const handleCreateAndArchiveReport = () => {
         if (!targetOrganisasiId) {
             alert('Silakan pilih organisasi tujuan arsip.');
+
             return;
         }
+
         setIsArchiving(true);
         router.post(
             '/admin/laporan/generate',
@@ -186,16 +196,19 @@ export default function ManajemenKegiatan({
                 (a) => a.status_kegiatan === exportFilters.status,
             );
         }
+
         // Filter by jenis
         if (exportFilters.jenis !== 'Semua') {
             data = data.filter((a) => a.jenis_kegiatan === exportFilters.jenis);
         }
+
         // Filter by date range
         if (exportFilters.tanggalMulai) {
             data = data.filter(
                 (a) => a.tanggal_pelaksanaan >= exportFilters.tanggalMulai,
             );
         }
+
         if (exportFilters.tanggalAkhir) {
             data = data.filter(
                 (a) => a.tanggal_pelaksanaan <= exportFilters.tanggalAkhir,
@@ -206,13 +219,16 @@ export default function ManajemenKegiatan({
         data.sort((a, b) => {
             const valA = a[exportSort.field];
             const valB = b[exportSort.field];
+
             if (typeof valA === 'number' && typeof valB === 'number') {
                 return exportSort.direction === 'asc'
                     ? valA - valB
                     : valB - valA;
             }
+
             const sA = String(valA ?? '');
             const sB = String(valB ?? '');
+
             return exportSort.direction === 'asc'
                 ? sA.localeCompare(sB, 'id')
                 : sB.localeCompare(sA, 'id');

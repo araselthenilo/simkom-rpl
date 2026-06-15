@@ -11,7 +11,6 @@ use App\Models\PesertaKegiatan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -69,16 +68,17 @@ class PengurusKegiatanController extends Controller
             ->get()
             ->map(function ($kegiatan) {
                 if ($kegiatan->dokumentasiKegiatan) {
-                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal 
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal']) 
+                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal'])
                         : null;
-                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj 
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj']) 
+                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj'])
                         : null;
-                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi 
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi']) 
+                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi'])
                         : null;
                 }
+
                 return $kegiatan;
             });
 
@@ -203,6 +203,7 @@ class PengurusKegiatanController extends Controller
                         ? route('transaksi-keuangan.bukti', $peserta->transaksiKeuangan->id_transaksi)
                         : null;
                 }
+
                 return $peserta;
             });
 
@@ -418,12 +419,12 @@ class PengurusKegiatanController extends Controller
 
     public function downloadDoc(DokumentasiKegiatan $dokumentasi, string $type)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403);
         }
 
         $kegiatan = $dokumentasi->kegiatan;
-        if (!$kegiatan) {
+        if (! $kegiatan) {
             abort(404, 'Kegiatan tidak ditemukan.');
         }
 
@@ -460,7 +461,7 @@ class PengurusKegiatanController extends Controller
             }
         }
 
-        if (!$isAuthorized) {
+        if (! $isAuthorized) {
             abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
         }
 
@@ -473,7 +474,7 @@ class PengurusKegiatanController extends Controller
             $filePath = $dokumentasi->hasil_evaluasi;
         }
 
-        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
+        if (! $filePath || ! Storage::disk('local')->exists($filePath)) {
             abort(404, 'Dokumen tidak ditemukan.');
         }
 

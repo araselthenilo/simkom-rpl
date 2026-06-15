@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AnggotaOrganisasiController;
+use App\Http\Controllers\PengurusKegiatanController;
 use App\Http\Controllers\PesertaKegiatanController;
+use App\Http\Controllers\TransaksiKeuanganController;
 use App\Http\Controllers\UserKegiatanController;
 use App\Http\Controllers\UserOrganisasiController;
 use App\Models\AnggotaOrganisasi;
@@ -115,9 +117,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Secure Document and Image Routes
     Route::get('/anggota/{anggotaOrganisasi}/ktm', [AnggotaOrganisasiController::class, 'showKtm'])
         ->name('anggota.ktm');
-    Route::get('/transaksi-keuangan/{transaksi}/bukti', [\App\Http\Controllers\TransaksiKeuanganController::class, 'showBuktiTrans'])
+    Route::get('/transaksi-keuangan/{transaksi}/bukti', [TransaksiKeuanganController::class, 'showBuktiTrans'])
         ->name('transaksi-keuangan.bukti');
-    Route::get('/dokumentasi-kegiatan/{dokumentasi}/download/{type}', [\App\Http\Controllers\PengurusKegiatanController::class, 'downloadDoc'])
+    Route::get('/dokumentasi-kegiatan/{dokumentasi}/download/{type}', [PengurusKegiatanController::class, 'downloadDoc'])
         ->name('dokumentasi.download-doc');
 });
 

@@ -5,9 +5,9 @@ namespace App\Providers;
 use App\Models\AdminKemahasiswaan;
 use App\Models\Kegiatan;
 use App\Models\Mahasiswa;
+use App\Models\Organisasi;
 use App\Models\PembinaOrganisasi;
 use App\Models\PengurusOrganisasi;
-use App\Models\Organisasi;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Date;
@@ -15,13 +15,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Telescope\TelescopeServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
-            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+        if ($this->app->environment('local') && class_exists(TelescopeServiceProvider::class)) {
+            $this->app->register(TelescopeServiceProvider::class);
             $this->app->register(\App\Providers\TelescopeServiceProvider::class);
         }
     }
@@ -49,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
                 return false;
             }
             $pembina = $user->profilPengguna;
+
             return $pembina ? $pembina->pembinaan()->where('id_organisasi', $organisasi->id_organisasi)->exists() : false;
         });
 

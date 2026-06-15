@@ -85,14 +85,22 @@ export default function ManajemenKegiatan({
     );
 
     const getFileName = (urlPath: string | null) => {
-        if (!urlPath) return '';
+        if (!urlPath) {
+return '';
+}
+
         const parts = urlPath.split('/');
+
         return parts[parts.length - 1];
     };
 
     const isPdf = (urlPath: string | null) => {
-        if (!urlPath) return false;
+        if (!urlPath) {
+return false;
+}
+
         const cleanPath = urlPath.split('?')[0];
+
         return cleanPath.toLowerCase().endsWith('.pdf');
     };
 

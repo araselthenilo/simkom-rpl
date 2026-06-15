@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\PengajuanProfilOrganisasi;
 use App\Models\ProfilOrganisasi;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -16,6 +15,7 @@ class PembinaPengajuanProfilController extends Controller
     private function getManagedOrgIds(): array
     {
         $pembina = auth()->user()->profilPengguna;
+
         return $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
     }
 
@@ -27,13 +27,13 @@ class PembinaPengajuanProfilController extends Controller
         $submissions = PengajuanProfilOrganisasi::whereHas('pengurusOrganisasi.profilOrganisasi', function ($q) use ($managedOrgIds) {
             $q->whereIn('id_organisasi', $managedOrgIds);
         })
-        ->with([
-            'pengurusOrganisasi.profilOrganisasi.organisasi',
-            'pengurusOrganisasi.anggotaOrganisasi.mahasiswa',
-            'penggunaPetugas'
-        ])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->with([
+                'pengurusOrganisasi.profilOrganisasi.organisasi',
+                'pengurusOrganisasi.anggotaOrganisasi.mahasiswa',
+                'penggunaPetugas',
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('pembina/pengajuan-profil', [
             'submissions' => $submissions,

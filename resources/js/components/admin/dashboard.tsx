@@ -48,15 +48,28 @@ export default function Dashboard({
         const diffHours = Math.floor(diffMins / 60);
         const diffDays = Math.floor(diffHours / 24);
 
-        if (diffMins < 1) return 'Baru saja';
-        if (diffMins < 60) return `${diffMins} menit yang lalu`;
-        if (diffHours < 24) return `${diffHours} jam yang lalu`;
-        if (diffDays === 1) return 'Kemarin';
+        if (diffMins < 1) {
+return 'Baru saja';
+}
+
+        if (diffMins < 60) {
+return `${diffMins} menit yang lalu`;
+}
+
+        if (diffHours < 24) {
+return `${diffHours} jam yang lalu`;
+}
+
+        if (diffDays === 1) {
+return 'Kemarin';
+}
+
         return `${diffDays} hari yang lalu`;
     };
 
     const getFormatDate = (dateStr: string) => {
         const parts = dateStr.split('-');
+
         if (parts.length === 3) {
             const year = parseInt(parts[0], 10);
             const monthIdx = parseInt(parts[1], 10) - 1;
@@ -75,8 +88,10 @@ export default function Dashboard({
                 'Nov',
                 'Des',
             ];
+
             return { day, month: months[monthIdx] };
         }
+
         const date = new Date(dateStr);
         const day = date.getDate();
         const months = [
@@ -93,8 +108,10 @@ export default function Dashboard({
             'Nov',
             'Des',
         ];
+
         return { day, month: months[date.getMonth()] };
     };
+
     return (
         <div className="mx-auto max-w-container-max space-y-unit-lg p-margin-desktop">
             <section className="flex flex-col items-start justify-between gap-unit-md md:flex-row md:items-center">
@@ -354,6 +371,7 @@ export default function Dashboard({
                                     const { day, month } = getFormatDate(
                                         item.tanggal_pelaksanaan,
                                     );
+
                                     return (
                                         <div
                                             key={item.id_kegiatan}

@@ -25,8 +25,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { daftar, batal } from '@/routes/kegiatan';
 import { cn } from '@/lib/utils';
+import { daftar, batal } from '@/routes/kegiatan';
 
 interface Organisasi {
     id_organisasi: number;

@@ -13,8 +13,8 @@ import {
     AlertCircle,
 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -79,6 +79,7 @@ export default function KeuanganPage({
 
         transaksiList.forEach((t) => {
             const amount = Number(t.nominal_transaksi);
+
             if (t.jenis_transaksi === 'Pemasukan') {
                 income += amount;
             } else {

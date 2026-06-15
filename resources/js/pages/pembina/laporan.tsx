@@ -1,7 +1,4 @@
 import { Head, router } from '@inertiajs/react';
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { 
     Download, 
     Trash2, 
@@ -10,6 +7,9 @@ import {
     FileSpreadsheet, 
     BarChart3 
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface ReportArchive {
     id_laporan: number;
@@ -29,13 +29,20 @@ export default function PembinaLaporanPage({ arsip = [] }: PembinaLaporanPagePro
     const [searchQuery, setSearchQuery] = useState('');
 
     const formatDate = (dateStr?: string) => {
-        if (!dateStr) return '';
+        if (!dateStr) {
+return '';
+}
+
         const months = [
             'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
             'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
         ];
         const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr;
+
+        if (isNaN(d.getTime())) {
+return dateStr;
+}
+
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} WITA`;
     };
 

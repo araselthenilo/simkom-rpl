@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,7 +14,15 @@ return new class extends Migration
             $table->string('username', 30)->unique();
             $table->string('nama_lengkap', 150);
             $table->string('nomor_telepon', 15);
-            $table->enum('role', ['Pembina Organisasi'])->default('Pembina Organisasi');
+            if (DB::getDriverName() === 'mysql') {
+                $table->enum('role', [
+                    'Mahasiswa',
+                    'Pembina Organisasi',
+                    'Admin Kemahasiswaan',
+                ])->default('Pembina Organisasi');
+            } else {
+                $table->enum('role', ['Pembina Organisasi'])->default('Pembina Organisasi');
+            }
             $table->timestamps();
             $table->softDeletes();
 
@@ -22,6 +31,10 @@ return new class extends Migration
                 ->on('users')
                 ->cascadeOnDelete();
         });
+
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE pembina_organisasi ADD CONSTRAINT chk_pembina_role CHECK (role = "Pembina Organisasi")');
+        }
     }
 
     public function down(): void

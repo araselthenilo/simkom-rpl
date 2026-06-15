@@ -11,11 +11,11 @@ import {
     User,
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { toUrl } from '@/lib/utils';
 import { logout, pengurus, home } from '@/routes';
 import { keuangan, anggota, kegiatan } from '@/routes/pengurus';
 import staff from '@/routes/pengurus/staff';
 import { edit as profileEdit } from '@/routes/profile';
-import { toUrl } from '@/lib/utils';
 
 interface NavItem {
     title: string;

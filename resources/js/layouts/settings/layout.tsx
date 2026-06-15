@@ -1,14 +1,15 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Palette, Shield, User } from 'lucide-react';
-import { useState, type PropsWithChildren } from 'react';
+import { useState  } from 'react';
+import type {PropsWithChildren} from 'react';
 import Heading from '@/components/heading';
-import HomeLayout from '@/layouts/home-layout';
-import AdminLayout from '@/layouts/admin-layout';
-import PengurusLayout from '@/layouts/pengurus-layout';
-import PembinaLayout from '@/layouts/pembina-layout';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import AdminLayout from '@/layouts/admin-layout';
+import HomeLayout from '@/layouts/home-layout';
+import PembinaLayout from '@/layouts/pembina-layout';
+import PengurusLayout from '@/layouts/pengurus-layout';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
@@ -47,22 +48,29 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
             const fromParam = urlParams.get('from');
+
             if (fromParam === 'staff') {
                 sessionStorage.setItem('settings_layout_context', 'staff');
+
                 return 'staff';
             } else if (fromParam === 'student') {
                 sessionStorage.setItem('settings_layout_context', 'student');
+
                 return 'student';
             }
+
             const cached = sessionStorage.getItem('settings_layout_context');
+
             if (cached === 'staff' || cached === 'student') {
                 return cached;
             }
         }
+
         // Default context
         if (auth.user?.role === 'Admin Kemahasiswaan' || auth.user?.role === 'Pembina Organisasi') {
             return 'staff';
         }
+
         return 'student';
     });
 
@@ -135,6 +143,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         if (layoutContext === 'staff') {
             return <PengurusLayout>{content}</PengurusLayout>;
         }
+
         return <HomeLayout>{content}</HomeLayout>;
     }
 

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
+use App\Models\Organisasi;
 use App\Models\PengurusOrganisasi;
+use App\Models\PesertaKegiatan;
 use App\Models\TransaksiKeuangan;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
@@ -416,24 +418,24 @@ class TransaksiKeuanganController extends Controller
                 $disk = Storage::disk('public');
 
                 return [
-                    'id_transaksi'           => $t->id_transaksi,
-                    'id_kegiatan'            => $t->id_kegiatan,
-                    'jenis_transaksi'        => $t->jenis_transaksi,
-                    'nominal_transaksi'      => (float) $t->nominal_transaksi,
-                    'tanggal_transaksi'      => $t->tanggal_transaksi,
-                    'sumber_tujuan_transaksi'=> $t->sumber_tujuan_transaksi,
-                    'foto_bukti_transaksi'   => $t->foto_bukti_transaksi
+                    'id_transaksi' => $t->id_transaksi,
+                    'id_kegiatan' => $t->id_kegiatan,
+                    'jenis_transaksi' => $t->jenis_transaksi,
+                    'nominal_transaksi' => (float) $t->nominal_transaksi,
+                    'tanggal_transaksi' => $t->tanggal_transaksi,
+                    'sumber_tujuan_transaksi' => $t->sumber_tujuan_transaksi,
+                    'foto_bukti_transaksi' => $t->foto_bukti_transaksi
                         ? route('transaksi-keuangan.bukti', $t->id_transaksi)
                         : null,
-                    'catatan_koreksi'        => $t->catatan_koreksi,
-                    'created_at'             => $t->created_at ? $t->created_at->toIso8601String() : null,
-                    'kegiatan'               => $t->kegiatan ? [
-                        'id_kegiatan'       => $t->kegiatan->id_kegiatan,
-                        'nama_kegiatan'     => $t->kegiatan->nama_kegiatan,
+                    'catatan_koreksi' => $t->catatan_koreksi,
+                    'created_at' => $t->created_at ? $t->created_at->toIso8601String() : null,
+                    'kegiatan' => $t->kegiatan ? [
+                        'id_kegiatan' => $t->kegiatan->id_kegiatan,
+                        'nama_kegiatan' => $t->kegiatan->nama_kegiatan,
                         'profil_organisasi' => $t->kegiatan->profilOrganisasi ? [
-                            'id_profil'    => $t->kegiatan->profilOrganisasi->id_profil,
-                            'organisasi'   => $t->kegiatan->profilOrganisasi->organisasi ? [
-                                'id_organisasi'   => $t->kegiatan->profilOrganisasi->organisasi->id_organisasi,
+                            'id_profil' => $t->kegiatan->profilOrganisasi->id_profil,
+                            'organisasi' => $t->kegiatan->profilOrganisasi->organisasi ? [
+                                'id_organisasi' => $t->kegiatan->profilOrganisasi->organisasi->id_organisasi,
                                 'nama_organisasi' => $t->kegiatan->profilOrganisasi->organisasi->nama_organisasi,
                             ] : null,
                         ] : null,
@@ -442,44 +444,44 @@ class TransaksiKeuanganController extends Controller
             });
 
         // Aggregate stats across all transactions
-        $totalPemasukan   = TransaksiKeuangan::where('jenis_transaksi', 'Pemasukan')->sum('nominal_transaksi');
+        $totalPemasukan = TransaksiKeuangan::where('jenis_transaksi', 'Pemasukan')->sum('nominal_transaksi');
         $totalPengeluaran = TransaksiKeuangan::where('jenis_transaksi', 'Pengeluaran')->sum('nominal_transaksi');
-        $totalSaldo       = $totalPemasukan - $totalPengeluaran;
+        $totalSaldo = $totalPemasukan - $totalPengeluaran;
 
         // All activities
         $activities = Kegiatan::all()->map(fn (Kegiatan $k) => [
-            'id_kegiatan'   => $k->id_kegiatan,
+            'id_kegiatan' => $k->id_kegiatan,
             'nama_kegiatan' => $k->nama_kegiatan,
         ]);
 
         // All active organisations
-        $organisasiList = \App\Models\Organisasi::where('status_aktif', true)
+        $organisasiList = Organisasi::where('status_aktif', true)
             ->get()
             ->map(fn ($org) => [
-                'id_organisasi'   => $org->id_organisasi,
+                'id_organisasi' => $org->id_organisasi,
                 'nama_organisasi' => $org->nama_organisasi,
             ]);
 
         return Inertia::render('admin/manajemen-keuangan', [
-            'transactions'   => $transactions,
-            'activities'     => $activities,
+            'transactions' => $transactions,
+            'activities' => $activities,
             'organisasiList' => $organisasiList,
-            'stats'          => [
-                'total_saldo'        => (float) $totalSaldo,
-                'total_pemasukan'    => (float) $totalPemasukan,
-                'total_pengeluaran'  => (float) $totalPengeluaran,
+            'stats' => [
+                'total_saldo' => (float) $totalSaldo,
+                'total_pemasukan' => (float) $totalPemasukan,
+                'total_pengeluaran' => (float) $totalPengeluaran,
             ],
         ]);
     }
 
     public function showBuktiTrans(TransaksiKeuangan $transaksi)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403);
         }
 
         $filePath = $transaksi->foto_bukti_transaksi;
-        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
+        if (! $filePath || ! Storage::disk('local')->exists($filePath)) {
             abort(404, 'Bukti transaksi tidak ditemukan.');
         }
 
@@ -494,15 +496,15 @@ class TransaksiKeuanganController extends Controller
         // If it is a registration receipt (transaksi-bukti/...)
         if (str_starts_with($filePath, 'transaksi-bukti')) {
             // Retrieve associated event participant
-            $participant = \App\Models\PesertaKegiatan::where('id_transaksi', $transaksi->id_transaksi)->first();
+            $participant = PesertaKegiatan::where('id_transaksi', $transaksi->id_transaksi)->first();
             if ($participant) {
                 // If it is the student themselves, allow
                 if ($user->role === 'Mahasiswa' && $user->profilPengguna && $user->profilPengguna->nim === $participant->nim) {
                     $isAuthorized = true;
                 }
-                
+
                 // If Pembina managing the organization of the activity
-                if (!$isAuthorized && Gate::check('is-pembina')) {
+                if (! $isAuthorized && Gate::check('is-pembina')) {
                     $pembina = $user->profilPengguna;
                     $managedOrgIds = $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
                     $orgId = $transaksi->kegiatan->profilOrganisasi->id_organisasi ?? null;
@@ -510,9 +512,9 @@ class TransaksiKeuanganController extends Controller
                         $isAuthorized = true;
                     }
                 }
-                
+
                 // If Pengurus managing the organization of the activity
-                if (!$isAuthorized && Gate::check('is-pengurus-organisasi')) {
+                if (! $isAuthorized && Gate::check('is-pengurus-organisasi')) {
                     $nim = $user->profilPengguna->nim ?? null;
                     $orgId = $transaksi->kegiatan->profilOrganisasi->id_organisasi ?? null;
                     $isStaff = $nim && $orgId ? PengurusOrganisasi::where('status_aktif', true)
@@ -523,7 +525,7 @@ class TransaksiKeuanganController extends Controller
                             $q->where('id_organisasi', $orgId);
                         })
                         ->exists() : false;
-                        
+
                     if ($isStaff) {
                         $isAuthorized = true;
                     }
@@ -535,7 +537,7 @@ class TransaksiKeuanganController extends Controller
             $isAuthorized = true;
         }
 
-        if (!$isAuthorized) {
+        if (! $isAuthorized) {
             abort(403, 'Anda tidak memiliki akses ke bukti transaksi ini.');
         }
 

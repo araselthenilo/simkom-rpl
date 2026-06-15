@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import {
     Plus,
     Download,
@@ -14,8 +15,6 @@ import {
     MoreVertical,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { kegiatan, anggota } from '@/routes/pengurus';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -32,6 +31,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { kegiatan, anggota } from '@/routes/pengurus';
 
 interface DashboardProps {
     stats: {

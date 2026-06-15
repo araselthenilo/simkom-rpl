@@ -7,17 +7,25 @@ const pagesDir = 'resources/js/pages';
 
 function getFiles(dir, ext) {
     let results = [];
-    if (!fs.existsSync(dir)) return results;
+
+    if (!fs.existsSync(dir)) {
+return results;
+}
+
     const list = fs.readdirSync(dir);
     list.forEach(file => {
         file = path.join(dir, file);
         const stat = fs.statSync(file);
+
         if (stat && stat.isDirectory()) { 
             results = results.concat(getFiles(file, ext));
         } else { 
-            if (file.endsWith(ext)) results.push(file);
+            if (file.endsWith(ext)) {
+results.push(file);
+}
         }
     });
+
     return results;
 }
 
@@ -29,6 +37,7 @@ const controllerFiles = getFiles(controllersDir, '.php');
 const usedControllers = [];
 controllerFiles.forEach(f => {
     const basename = path.basename(f, '.php');
+
     if (routeContents.includes(basename)) {
         usedControllers.push(f);
     }
@@ -43,6 +52,7 @@ const pages = getFiles(pagesDir, '.tsx');
 const unusedPages = [];
 pages.forEach(p => {
     let relPath = path.relative(pagesDir, p).replace('.tsx', '').replace(/\\/g, '/');
+
     if (!activeContentsLower.includes(relPath.toLowerCase())) {
         unusedPages.push(p);
     }

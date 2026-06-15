@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import {
     Wallet,
     TrendingUp,
@@ -17,7 +18,6 @@ import {
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { router } from '@inertiajs/react';
 import { DialogFooter } from '../ui/dialog';
 
 interface Transaction {
@@ -83,7 +83,10 @@ function TransactionDetailModal({ transaction, onClose }: DetailModalProps) {
             .replace('IDR', 'Rp');
 
     const formatDate = (dateStr: string) => {
-        if (!dateStr) return '';
+        if (!dateStr) {
+return '';
+}
+
         const months = [
             'Jan',
             'Feb',
@@ -99,12 +102,16 @@ function TransactionDetailModal({ transaction, onClose }: DetailModalProps) {
             'Des',
         ];
         const parts = dateStr.split('-');
+
         if (parts.length === 3) {
             const day = parseInt(parts[2], 10);
             const monthIdx = parseInt(parts[1], 10) - 1;
+
             return `${day} ${months[monthIdx]} ${parts[0]}`;
         }
+
         const d = new Date(dateStr);
+
         return isNaN(d.getTime())
             ? dateStr
             : `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
@@ -275,6 +282,7 @@ export default function ManajemenKeuangan({
 
         if (!orgId) {
             alert('Silakan pilih organisasi terlebih dahulu.');
+
             return;
         }
 
@@ -304,7 +312,10 @@ export default function ManajemenKeuangan({
         }
 
         const filtered = transactions.filter((t) => {
-            if (selectedStatsOrganisasiId === 'all') return true;
+            if (selectedStatsOrganisasiId === 'all') {
+return true;
+}
+
             return (
                 t.kegiatan?.profil_organisasi?.organisasi?.id_organisasi ===
                 parseInt(selectedStatsOrganisasiId, 10)
@@ -336,7 +347,10 @@ export default function ManajemenKeuangan({
             .replace('IDR', 'Rp');
 
     const formatDate = (dateStr: string) => {
-        if (!dateStr) return '';
+        if (!dateStr) {
+return '';
+}
+
         const months = [
             'Jan',
             'Feb',
@@ -352,22 +366,34 @@ export default function ManajemenKeuangan({
             'Des',
         ];
         const parts = dateStr.split('-');
+
         if (parts.length === 3) {
             const day = parseInt(parts[2], 10);
             const monthIdx = parseInt(parts[1], 10) - 1;
+
             return `${day} ${months[monthIdx]} ${parts[0]}`;
         }
+
         const d = new Date(dateStr);
+
         return isNaN(d.getTime())
             ? dateStr
             : `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     };
 
     const formatTime = (timeStr?: string | null) => {
-        if (!timeStr) return '--:-- WITA';
+        if (!timeStr) {
+return '--:-- WITA';
+}
+
         const d = new Date(timeStr);
-        if (isNaN(d.getTime())) return '';
+
+        if (isNaN(d.getTime())) {
+return '';
+}
+
         const pad = (n: number) => n.toString().padStart(2, '0');
+
         return `${pad(d.getHours())}:${pad(d.getMinutes())} WITA`;
     };
 
@@ -411,10 +437,16 @@ export default function ManajemenKeuangan({
             const dateB = new Date(b.tanggal_transaksi).getTime();
 
             if (sortBy === 'newest') {
-                if (dateA !== dateB) return dateB - dateA;
+                if (dateA !== dateB) {
+return dateB - dateA;
+}
+
                 return b.id_transaksi - a.id_transaksi;
             } else {
-                if (dateA !== dateB) return dateA - dateB;
+                if (dateA !== dateB) {
+return dateA - dateB;
+}
+
                 return a.id_transaksi - b.id_transaksi;
             }
         });
@@ -431,9 +463,12 @@ export default function ManajemenKeuangan({
             : 0;
 
     let financialStatus = 'Seimbang';
-    if (computedStats.totalSaldo > 0) financialStatus = 'Sehat & Stabil';
-    else if (computedStats.totalSaldo < 0)
-        financialStatus = 'Defisit (Evaluasi)';
+
+    if (computedStats.totalSaldo > 0) {
+financialStatus = 'Sehat & Stabil';
+} else if (computedStats.totalSaldo < 0) {
+financialStatus = 'Defisit (Evaluasi)';
+}
 
     return (
         <div className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
@@ -471,6 +506,7 @@ export default function ManajemenKeuangan({
                             } else {
                                 setTargetOrganisasiId('');
                             }
+
                             setIsReportModalOpen(true);
                         }}
                         className="flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"

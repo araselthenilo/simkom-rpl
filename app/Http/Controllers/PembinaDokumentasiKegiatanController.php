@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\CatatanRevisi;
 use App\Models\DokumentasiKegiatan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +16,7 @@ class PembinaDokumentasiKegiatanController extends Controller
     private function getManagedOrgIds(): array
     {
         $pembina = auth()->user()->profilPengguna;
+
         return $pembina ? $pembina->pembinaan()->pluck('id_organisasi')->toArray() : [];
     }
 
@@ -27,11 +28,11 @@ class PembinaDokumentasiKegiatanController extends Controller
         $submissions = DokumentasiKegiatan::whereHas('kegiatan.profilOrganisasi', function ($q) use ($managedOrgIds) {
             $q->whereIn('id_organisasi', $managedOrgIds);
         })
-        ->with([
-            'kegiatan.profilOrganisasi.organisasi',
-        ])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->with([
+                'kegiatan.profilOrganisasi.organisasi',
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('pembina/dokumentasi-kegiatan', [
             'submissions' => $submissions,
@@ -113,8 +114,8 @@ class PembinaDokumentasiKegiatanController extends Controller
 
         $dokumentasi->update($data);
 
-        if ($validated['status_dokumentasi'] === 'Butuh Revisi' && !empty($validated['isi_catatan'])) {
-            \App\Models\CatatanRevisi::create([
+        if ($validated['status_dokumentasi'] === 'Butuh Revisi' && ! empty($validated['isi_catatan'])) {
+            CatatanRevisi::create([
                 'id_dokumentasi' => $dokumentasi->id_dokumentasi,
                 'username_petugas' => auth()->user()->username,
                 'isi_catatan' => $validated['isi_catatan'],
