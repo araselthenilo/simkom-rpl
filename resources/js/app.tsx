@@ -2,7 +2,6 @@ import { createInertiaApp } from '@inertiajs/react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
-import AppLayout from '@/layouts/app-layout';
 import PengurusLayout from '@/layouts/pengurus-layout';
 import AdminLayout from './layouts/admin-layout';
 import PembinaLayout from './layouts/pembina-layout';
@@ -16,8 +15,7 @@ createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     layout: (name) => {
         switch (true) {
-            case name === 'welcome' ||
-                name === 'auth/login' ||
+            case name === 'auth/login' ||
                 name === 'auth/forgot-password' ||
                 name === 'auth/confirm-password' ||
                 name === 'auth/reset-password':
@@ -37,7 +35,7 @@ createInertiaApp({
             case name.startsWith('pembina/'):
                 return [PembinaLayout];
             default:
-                return AppLayout;
+                return null;
         }
     },
     strictMode: true,
