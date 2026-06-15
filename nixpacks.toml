@@ -1,5 +1,10 @@
 [phases.setup]
 aptPkgs = []
+# Kita tambahkan ekstensi gd di sini agar otomatis di-install oleh sistem php
+providers = ["php"]
 
 [phases.install]
-cmds = ["composer install --ignore-platform-reqs --no-dev", "npm install"]
+cmds = [
+    "composer install --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs",
+    "npm install"
+]
