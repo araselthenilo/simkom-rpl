@@ -49,14 +49,22 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                     Reset Password
                                 </h1>
                                 <p className="font-body-md text-body-md text-on-surface-variant">
-                                    Silakan masukkan password baru Anda di bawah ini.
+                                    Silakan masukkan password baru Anda di bawah
+                                    ini.
                                 </p>
                             </div>
 
                             <Form
                                 {...update.form()}
-                                transform={(data) => ({ ...data, token, email })}
-                                resetOnSuccess={['password', 'password_confirmation']}
+                                transform={(data) => ({
+                                    ...data,
+                                    token,
+                                    email,
+                                })}
+                                resetOnSuccess={[
+                                    'password',
+                                    'password_confirmation',
+                                ]}
                                 className="space-y-unit-lg"
                                 noValidate
                             >
@@ -105,7 +113,9 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                                     autoComplete="new-password"
                                                     autoFocus
                                                     className="w-full rounded-lg border border-outline-variant bg-surface-container py-6 pr-12 pl-11 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                                    passwordrules={passwordRules}
+                                                    passwordrules={
+                                                        passwordRules
+                                                    }
                                                     required
                                                 />
                                             </div>
@@ -131,12 +141,16 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                                     placeholder="••••••••"
                                                     autoComplete="new-password"
                                                     className="w-full rounded-lg border border-outline-variant bg-surface-container py-6 pr-12 pl-11 font-body-lg transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                                    passwordrules={passwordRules}
+                                                    passwordrules={
+                                                        passwordRules
+                                                    }
                                                     required
                                                 />
                                             </div>
                                             <InputError
-                                                message={errors.password_confirmation}
+                                                message={
+                                                    errors.password_confirmation
+                                                }
                                                 className="mt-1 text-xs"
                                             />
                                         </div>

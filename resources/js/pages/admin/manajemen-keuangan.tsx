@@ -32,6 +32,7 @@ interface Stats {
 interface ActivityOption {
     id_kegiatan: number;
     nama_kegiatan: string;
+    id_organisasi?: number;
 }
 
 interface OrganisasiOption {

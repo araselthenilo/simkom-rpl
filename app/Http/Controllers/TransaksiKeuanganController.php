@@ -449,9 +449,10 @@ class TransaksiKeuanganController extends Controller
         $totalSaldo = $totalPemasukan - $totalPengeluaran;
 
         // All activities
-        $activities = Kegiatan::all()->map(fn (Kegiatan $k) => [
+        $activities = Kegiatan::with('profilOrganisasi')->get()->map(fn (Kegiatan $k) => [
             'id_kegiatan' => $k->id_kegiatan,
             'nama_kegiatan' => $k->nama_kegiatan,
+            'id_organisasi' => $k->profilOrganisasi?->id_organisasi,
         ]);
 
         // All active organisations

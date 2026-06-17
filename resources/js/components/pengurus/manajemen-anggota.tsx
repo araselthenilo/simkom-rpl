@@ -1,6 +1,5 @@
 import { router } from '@inertiajs/react';
 import {
-    Download,
     Users,
     Hourglass,
     CheckCircle2,
@@ -8,9 +7,8 @@ import {
     Search,
     ChevronLeft,
     ChevronRight,
-    ArrowRight,
-    HelpCircle,
     IdCard,
+    Power,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -51,7 +49,10 @@ export default function ManajemenAnggota({
     const [activeTab, setActiveTab] = useState<
         'Semua' | 'Aktif' | 'Diproses' | 'Ditolak'
     >('Semua');
-    const [selectedKtm, setSelectedKtm] = useState<{ id_keanggotaan: number; path: string } | null>(null);
+    const [selectedKtm, setSelectedKtm] = useState<{
+        id_keanggotaan: number;
+        path: string;
+    } | null>(null);
 
     const members = initialMembers;
     const stats = initialStats;
@@ -86,6 +87,22 @@ export default function ManajemenAnggota({
             {
                 status_keanggotaan: 'Ditolak',
                 alasan_penolakan: reason,
+            },
+            {
+                preserveScroll: true,
+            },
+        );
+    };
+
+    const handleDeactivate = (id_keanggotaan: number) => {
+        if (!confirm('Apakah Anda yakin ingin menonaktifkan anggota ini?')) {
+            return;
+        }
+
+        router.patch(
+            `/pengurus/anggota/${id_keanggotaan}`,
+            {
+                status_keanggotaan: 'Tidak Aktif',
             },
             {
                 preserveScroll: true,
@@ -176,10 +193,11 @@ export default function ManajemenAnggota({
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
+                                className={`rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${
+                                    activeTab === tab
                                         ? 'bg-white font-semibold text-primary shadow-sm'
                                         : 'text-on-surface-variant hover:text-primary'
-                                    }`}
+                                }`}
                             >
                                 {tab}
                             </button>
@@ -247,13 +265,17 @@ export default function ManajemenAnggota({
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <span
-                                            className={`rounded-full px-3 py-1 text-[12px] font-semibold ${member.status === 'Aktif'
+                                            className={`rounded-full px-3 py-1 text-[12px] font-semibold ${
+                                                member.status === 'Aktif'
                                                     ? 'bg-green-100 text-green-700'
                                                     : member.status ===
                                                         'Diproses'
-                                                        ? 'bg-secondary-container text-on-secondary-container'
+                                                      ? 'bg-secondary-container text-on-secondary-container'
+                                                      : member.status ===
+                                                          'Tidak Aktif'
+                                                        ? 'bg-slate-100 text-slate-500'
                                                         : 'bg-error-container text-error'
-                                                }`}
+                                            }`}
                                         >
                                             {member.status}
                                         </span>
@@ -263,7 +285,8 @@ export default function ManajemenAnggota({
                                             <button
                                                 onClick={() =>
                                                     setSelectedKtm({
-                                                        id_keanggotaan: member.id_keanggotaan,
+                                                        id_keanggotaan:
+                                                            member.id_keanggotaan,
                                                         path: member.foto_ktm,
                                                     })
                                                 }
@@ -273,41 +296,63 @@ export default function ManajemenAnggota({
                                                 <IdCard className="h-5 w-5" />
                                             </button>
 
-                                            <button
-                                                onClick={() =>
-                                                    handleAccept(
-                                                        member.id_keanggotaan,
-                                                    )
-                                                }
-                                                className={`rounded-lg p-2 transition-colors ${member.status === 'Aktif'
-                                                        ? 'cursor-not-allowed text-outline-variant'
-                                                        : 'text-green-700 hover:bg-green-100'
-                                                    }`}
-                                                disabled={
-                                                    member.status === 'Aktif'
-                                                }
-                                                title="Terima"
-                                            >
-                                                <CheckCircle2 className="h-5 w-5" />
-                                            </button>
+                                            {member.status === 'Aktif' ? (
+                                                <button
+                                                    onClick={() =>
+                                                        handleDeactivate(
+                                                            member.id_keanggotaan,
+                                                        )
+                                                    }
+                                                    className="rounded-lg p-2 text-error transition-colors hover:bg-error-container"
+                                                    title="Nonaktifkan"
+                                                >
+                                                    <Power className="h-5 w-5" />
+                                                </button>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleAccept(
+                                                                member.id_keanggotaan,
+                                                            )
+                                                        }
+                                                        className={`rounded-lg p-2 transition-colors ${
+                                                            member.status ===
+                                                            'Aktif'
+                                                                ? 'cursor-not-allowed text-outline-variant'
+                                                                : 'text-green-700 hover:bg-green-100'
+                                                        }`}
+                                                        disabled={
+                                                            member.status ===
+                                                            'Aktif'
+                                                        }
+                                                        title="Terima"
+                                                    >
+                                                        <CheckCircle2 className="h-5 w-5" />
+                                                    </button>
 
-                                            <button
-                                                onClick={() =>
-                                                    handleReject(
-                                                        member.id_keanggotaan,
-                                                    )
-                                                }
-                                                className={`rounded-lg p-2 transition-colors ${member.status === 'Ditolak'
-                                                        ? 'cursor-not-allowed text-outline-variant'
-                                                        : 'text-error hover:bg-error-container'
-                                                    }`}
-                                                disabled={
-                                                    member.status === 'Ditolak'
-                                                }
-                                                title="Tolak"
-                                            >
-                                                <XCircle className="h-5 w-5" />
-                                            </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleReject(
+                                                                member.id_keanggotaan,
+                                                            )
+                                                        }
+                                                        className={`rounded-lg p-2 transition-colors ${
+                                                            member.status ===
+                                                            'Ditolak'
+                                                                ? 'cursor-not-allowed text-outline-variant'
+                                                                : 'text-error hover:bg-error-container'
+                                                        }`}
+                                                        disabled={
+                                                            member.status ===
+                                                            'Ditolak'
+                                                        }
+                                                        title="Tolak"
+                                                    >
+                                                        <XCircle className="h-5 w-5" />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Telescope\TelescopeServiceProvider;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use App\Helpers\ActivityLogger;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -84,6 +88,17 @@ class AppServiceProvider extends ServiceProvider
                         ->whereHas('organisasi');
                 })
                 ->exists();
+        });
+
+        // Log authentication events
+        Event::listen(Login::class, function (Login $event) {
+            ActivityLogger::log('Autentikasi', "User {$event->user->username} ({$event->user->role}) berhasil masuk ke dalam sistem");
+        });
+
+        Event::listen(Logout::class, function (Logout $event) {
+            if ($event->user) {
+                ActivityLogger::log('Autentikasi', "User {$event->user->username} ({$event->user->role}) keluar dari sistem");
+            }
         });
     }
 

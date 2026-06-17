@@ -77,6 +77,7 @@ interface Props {
 
 export default function DokumentasiKegiatanShow({ dokumentasi }: Props) {
     const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+    const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
     const [actionType, setActionType] = useState<'approve' | 'revisi' | null>(
         null,
     );
@@ -95,8 +96,8 @@ export default function DokumentasiKegiatanShow({ dokumentasi }: Props) {
 
     const getFileName = (urlPath: string | null) => {
         if (!urlPath) {
-return '';
-}
+            return '';
+        }
 
         const cleanPath = urlPath.split('?')[0];
         const parts = cleanPath.split('/');
@@ -106,8 +107,8 @@ return '';
 
     const isPdf = (urlPath: string | null) => {
         if (!urlPath) {
-return false;
-}
+            return false;
+        }
 
         const cleanPath = urlPath.split('?')[0];
 
@@ -136,6 +137,7 @@ return false;
             `/admin/dokumentasi-kegiatan/${dokumentasi.id_dokumentasi}/update-status`,
             {
                 forceFormData: true,
+                preserveScroll: true,
                 onSuccess: () => {
                     setActionType(null);
                     reset();
@@ -152,8 +154,8 @@ return false;
 
     const formatDate = (dateStr?: string) => {
         if (!dateStr) {
-return '-';
-}
+            return '-';
+        }
 
         try {
             const date = new Date(dateStr);
@@ -192,6 +194,11 @@ return '-';
                 return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
+
+    const photos = dokumentasi?.foto_kegiatan || [];
+    const activePhoto = photos[selectedPhotoIndex]
+        ? photos[selectedPhotoIndex]
+        : photos[0] || null;
 
     return (
         <>
@@ -591,14 +598,14 @@ return '-';
                             )}
                         </Card>
 
-                        {/* Evaluation Report (Optional) */}
-                        {dokumentasi.hasil_evaluasi && (
-                            <Card className="rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
-                                <h4 className="mb-4 flex items-center justify-between font-headline-sm font-bold text-primary">
-                                    <span className="flex items-center gap-2">
-                                        <Check className="h-5 w-5 text-green-700" />
-                                        Hasil Evaluasi Kegiatan (Dari Petugas)
-                                    </span>
+                        {/* Evaluation Report */}
+                        <Card className="rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
+                            <h4 className="mb-4 flex items-center justify-between font-headline-sm font-bold text-primary">
+                                <span className="flex items-center gap-2">
+                                    <FileText className="h-5 w-5 text-primary" />
+                                    Hasil Evaluasi Kegiatan (Dari Petugas)
+                                </span>
+                                {dokumentasi.hasil_evaluasi && (
                                     <a
                                         href={dokumentasi.hasil_evaluasi}
                                         target="_blank"
@@ -608,9 +615,11 @@ return '-';
                                         <Download className="h-3.5 w-3.5" />
                                         Unduh
                                     </a>
-                                </h4>
+                                )}
+                            </h4>
 
-                                {isPdf(dokumentasi.hasil_evaluasi) ? (
+                            {dokumentasi.hasil_evaluasi ? (
+                                isPdf(dokumentasi.hasil_evaluasi) ? (
                                     <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
                                         <iframe
                                             src={`${dokumentasi.hasil_evaluasi}#toolbar=0&navpanes=0`}
@@ -643,9 +652,20 @@ return '-';
                                             Unduh
                                         </a>
                                     </div>
-                                )}
-                            </Card>
-                        )}
+                                )
+                            ) : (
+                                <div className="rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low p-8 text-center text-on-surface-variant">
+                                    <AlertCircle className="mx-auto mb-2 h-10 w-10 text-on-surface-variant/30" />
+                                    <p className="text-sm font-semibold">
+                                        Hasil Evaluasi Kegiatan belum diunggah
+                                    </p>
+                                    <p className="mt-1 text-xs text-on-surface-variant/80">
+                                        Petugas belum mengunggah dokumen hasil
+                                        evaluasi untuk kegiatan ini.
+                                    </p>
+                                </div>
+                            )}
+                        </Card>
 
                         {/* Photo Gallery Grid */}
                         <Card className="rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-sm">
@@ -654,35 +674,103 @@ return '-';
                                 Foto Dokumentasi Kegiatan
                             </h4>
 
-                            {dokumentasi.foto_kegiatan &&
-                            dokumentasi.foto_kegiatan.length > 0 ? (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                                    {dokumentasi.foto_kegiatan.map((foto) => (
-                                        <div
-                                            key={foto.id_foto}
-                                            className="group relative aspect-square overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-xs"
-                                        >
+                            {dokumentasi.foto_kegiatan && photos.length > 0 ? (
+                                <div className="space-y-4">
+                                    {/* Main featured photo */}
+                                    {activePhoto && (
+                                        <div className="group/main-photo relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-outline-variant bg-black shadow-inner">
                                             <img
-                                                src={foto.url}
-                                                alt="Dokumentasi Kegiatan"
-                                                className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
+                                                src={activePhoto.url}
+                                                alt="Foto Dokumentasi Terpilih"
+                                                className="max-h-full max-w-full cursor-pointer object-contain transition-all duration-300 hover:scale-102"
+                                                onClick={() =>
+                                                    setPreviewPhoto(
+                                                        activePhoto.url,
+                                                    )
+                                                }
                                             />
-                                            {/* Hover action overlay */}
-                                            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+
+                                            {/* Main photo overlays & actions */}
+                                            <div className="absolute right-4 bottom-4 opacity-0 transition-opacity group-hover/main-photo:opacity-100">
                                                 <button
                                                     onClick={() =>
                                                         setPreviewPhoto(
-                                                            foto.url,
+                                                            activePhoto.url,
                                                         )
                                                     }
-                                                    className="cursor-pointer rounded-lg bg-white/20 p-1.5 text-white transition-colors hover:bg-white/40"
+                                                    className="cursor-pointer rounded-lg bg-black/60 p-2 text-white transition-colors hover:bg-black/85"
                                                     title="Lihat Penuh"
+                                                    type="button"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </button>
                                             </div>
+
+                                            {/* Navigation buttons */}
+                                            {photos.length > 1 && (
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            setSelectedPhotoIndex(
+                                                                (prev) =>
+                                                                    prev > 0
+                                                                        ? prev -
+                                                                          1
+                                                                        : photos.length -
+                                                                          1,
+                                                            )
+                                                        }
+                                                        className="absolute top-1/2 left-4 -translate-y-1/2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/75"
+                                                        type="button"
+                                                    >
+                                                        <ChevronLeft className="h-5 w-5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            setSelectedPhotoIndex(
+                                                                (prev) =>
+                                                                    prev <
+                                                                    photos.length -
+                                                                        1
+                                                                        ? prev +
+                                                                          1
+                                                                        : 0,
+                                                            )
+                                                        }
+                                                        className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/75"
+                                                        type="button"
+                                                    >
+                                                        <ChevronRight className="h-5 w-5" />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
-                                    ))}
+                                    )}
+
+                                    {/* Thumbnails list */}
+                                    <div className="flex scrollbar-thin gap-2 overflow-x-auto pb-2">
+                                        {photos.map((foto, index) => (
+                                            <button
+                                                key={foto.id_foto}
+                                                onClick={() =>
+                                                    setSelectedPhotoIndex(index)
+                                                }
+                                                className={`relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                                                    activePhoto?.id_foto ===
+                                                    foto.id_foto
+                                                        ? 'scale-95 border-primary ring-2 ring-primary/20'
+                                                        : 'border-outline-variant hover:border-primary/50'
+                                                }`}
+                                                type="button"
+                                            >
+                                                <img
+                                                    src={foto.url}
+                                                    alt="Thumbnail"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="rounded-lg border border-outline-variant bg-surface-container-low py-12 text-center text-on-surface-variant/60">

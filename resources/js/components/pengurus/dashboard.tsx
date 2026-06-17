@@ -111,12 +111,12 @@ export default function Dashboard({
             title: 'Saldo Kas',
             value: isSaldoVisible
                 ? new Intl.NumberFormat('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR',
-                    minimumFractionDigits: 0,
-                })
-                    .format(statsData.saldoKas)
-                    .replace('IDR', 'Rp')
+                      style: 'currency',
+                      currency: 'IDR',
+                      minimumFractionDigits: 0,
+                  })
+                      .format(statsData.saldoKas)
+                      .replace('IDR', 'Rp')
                 : 'Rp *********',
             icon: Wallet,
             iconBg: 'bg-tertiary-container/10 text-tertiary dark:bg-tertiary-container dark:text-on-tertiary-container',
@@ -273,10 +273,11 @@ export default function Dashboard({
                                         <TooltipTrigger asChild>
                                             <div className="group flex h-full w-full cursor-pointer flex-col items-center justify-end">
                                                 <div
-                                                    className={`relative h-2/3 w-full rounded-t-lg transition-all ${data.count > 0
-                                                        ? 'bg-primary/10 dark:bg-primary-container/45'
-                                                        : 'bg-transparent'
-                                                        } group-hover:bg-primary/5 dark:group-hover:bg-primary-container/10`}
+                                                    className={`relative h-2/3 w-full rounded-t-lg transition-all ${
+                                                        data.count > 0
+                                                            ? 'bg-primary/10 dark:bg-primary-container/45'
+                                                            : 'bg-transparent'
+                                                    } group-hover:bg-primary/5 dark:group-hover:bg-primary-container/10`}
                                                 >
                                                     <div
                                                         className="absolute bottom-0 w-full rounded-t-lg bg-primary transition-all duration-700 ease-out"
@@ -349,9 +350,7 @@ export default function Dashboard({
                         className="mt-auto cursor-pointer pt-6 text-center text-label-lg font-bold text-primary shadow-none hover:text-primary/80 hover:underline"
                         asChild
                     >
-                        <Link href={kegiatan()}>
-                            Lihat Semua Kegiatan
-                        </Link>
+                        <Link href={kegiatan()}>Lihat Semua Kegiatan</Link>
                     </Button>
                 </Card>
             </section>
@@ -412,14 +411,15 @@ export default function Dashboard({
                                     </td>
                                     <td className="px-unit-lg py-4">
                                         <Badge
-                                            className={`h-auto rounded-full border-none px-3 py-1 text-[12px] font-bold shadow-none ${member.status === 'Approved' ||
+                                            className={`h-auto rounded-full border-none px-3 py-1 text-[12px] font-bold shadow-none ${
+                                                member.status === 'Approved' ||
                                                 member.status === 'Aktif'
-                                                ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-950/50'
-                                                : member.status ===
-                                                    'Ditolak'
-                                                    ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
-                                                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
-                                                }`}
+                                                    ? 'bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-400 dark:hover:bg-green-950/50'
+                                                    : member.status ===
+                                                        'Ditolak'
+                                                      ? 'bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-950/50'
+                                                      : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-950/50 dark:text-yellow-400 dark:hover:bg-yellow-950/50'
+                                            }`}
                                         >
                                             {member.status}
                                         </Badge>

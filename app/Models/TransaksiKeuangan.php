@@ -23,7 +23,7 @@ class TransaksiKeuangan extends Model
     protected $primaryKey = 'id_transaksi';
 
     protected $casts = [
-        'tanggal_transaksi' => 'date',
+        'tanggal_transaksi' => 'date:Y-m-d',
     ];
 
     public function kegiatan(): BelongsTo

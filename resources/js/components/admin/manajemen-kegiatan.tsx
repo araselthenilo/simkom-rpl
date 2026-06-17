@@ -51,10 +51,10 @@ interface Activity {
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-    | 'Mendatang'
-    | 'Sedang berlangsung'
-    | 'Selesai'
-    | 'Dibatalkan';
+        | 'Mendatang'
+        | 'Sedang berlangsung'
+        | 'Selesai'
+        | 'Dibatalkan';
     alasan_pembatalan: string | null;
     profil_organisasi?: {
         id_profil: number;
@@ -111,8 +111,8 @@ export default function ManajemenKegiatan({
 
     const getFileName = (urlPath: string | null) => {
         if (!urlPath) {
-return '';
-}
+            return '';
+        }
 
         const parts = urlPath.split('/');
 
@@ -121,8 +121,8 @@ return '';
 
     const isPdf = (urlPath: string | null) => {
         if (!urlPath) {
-return false;
-}
+            return false;
+        }
 
         const cleanPath = urlPath.split('?')[0];
 
@@ -179,12 +179,13 @@ return false;
                 onError: (errors) => {
                     setIsArchiving(false);
                     const msg = Object.values(errors).join('\n');
-                    alert(msg || 'Gagal membuat dan menyimpan laporan kegiatan.');
+                    alert(
+                        msg || 'Gagal membuat dan menyimpan laporan kegiatan.',
+                    );
                 },
             },
         );
     };
-
 
     // Compute the data to export based on filters & sort
     const getExportData = useCallback(() => {
@@ -236,7 +237,6 @@ return false;
 
         return data;
     }, [activities, exportFilters, exportSort]);
-
 
     // Form inputs state
     const [formData, setFormData] = useState({
@@ -401,7 +401,7 @@ return false;
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                        'Terjadi kesalahan saat memperbarui kegiatan.',
+                            'Terjadi kesalahan saat memperbarui kegiatan.',
                     );
                 },
             },
@@ -442,7 +442,7 @@ return false;
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                        'Terjadi kesalahan saat membatalkan kegiatan.',
+                            'Terjadi kesalahan saat membatalkan kegiatan.',
                     );
                 },
             },
@@ -486,7 +486,7 @@ return false;
                     const message = Object.values(errors).join('\n');
                     alert(
                         message ||
-                        'Terjadi kesalahan saat memperbarui status kegiatan.',
+                            'Terjadi kesalahan saat memperbarui status kegiatan.',
                     );
                 },
             },
@@ -581,10 +581,11 @@ return false;
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
-                                ? 'bg-white font-semibold text-primary shadow-sm'
-                                : 'text-on-surface-variant hover:text-primary'
-                                }`}
+                            className={`cursor-pointer rounded-md px-5 py-2 font-label-lg text-nowrap transition-all ${
+                                activeTab === tab
+                                    ? 'bg-white font-semibold text-primary shadow-sm'
+                                    : 'text-on-surface-variant hover:text-primary'
+                            }`}
                         >
                             {tab}
                         </button>
@@ -725,7 +726,7 @@ return false;
                                     <td className="px-unit-lg py-4">
                                         <div className="flex flex-col items-start gap-1">
                                             {activity.status_kegiatan ===
-                                                'Dibatalkan' ? (
+                                            'Dibatalkan' ? (
                                                 <span className="flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-[12px] font-semibold text-red-700">
                                                     {activity.status_kegiatan}
                                                 </span>
@@ -737,14 +738,15 @@ return false;
                                                             activity.status_kegiatan,
                                                         )
                                                     }
-                                                    className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${activity.status_kegiatan ===
+                                                    className={`group/status-badge flex cursor-pointer items-center gap-1.5 rounded-full border-none px-3 py-1 text-[12px] font-semibold shadow-xs transition-all hover:scale-105 hover:shadow-sm active:scale-95 ${
+                                                        activity.status_kegiatan ===
                                                         'Selesai'
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
-                                                        : activity.status_kegiatan ===
-                                                            'Sedang berlangsung'
-                                                            ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
-                                                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
-                                                        }`}
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200/80'
+                                                            : activity.status_kegiatan ===
+                                                                'Sedang berlangsung'
+                                                              ? 'bg-amber-100 text-amber-800 hover:bg-amber-200/80'
+                                                              : 'bg-blue-100 text-blue-700 hover:bg-blue-200/80'
+                                                    }`}
                                                     title="Klik untuk maju ke tahap selanjutnya"
                                                 >
                                                     <span>
@@ -819,18 +821,18 @@ return false;
                                             {/* Cancel Button */}
                                             {activity.status_kegiatan !==
                                                 'Dibatalkan' && (
-                                                    <button
-                                                        onClick={() =>
-                                                            openCancelModal(
-                                                                activity,
-                                                            )
-                                                        }
-                                                        className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
-                                                        title="Batalkan Kegiatan"
-                                                    >
-                                                        <XCircle className="h-4 w-4" />
-                                                    </button>
-                                                )}
+                                                <button
+                                                    onClick={() =>
+                                                        openCancelModal(
+                                                            activity,
+                                                        )
+                                                    }
+                                                    className="cursor-pointer rounded-lg p-2 text-error transition-colors hover:bg-error-container"
+                                                    title="Batalkan Kegiatan"
+                                                >
+                                                    <XCircle className="h-4 w-4" />
+                                                </button>
+                                            )}
 
                                             {/* Delete Button */}
                                             <button
@@ -1598,11 +1600,12 @@ return false;
                                                         direction: 'asc',
                                                     })
                                                 }
-                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${exportSort.direction ===
+                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
+                                                    exportSort.direction ===
                                                     'asc'
-                                                    ? 'border-primary bg-primary text-on-primary'
-                                                    : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
-                                                    }`}
+                                                        ? 'border-primary bg-primary text-on-primary'
+                                                        : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
+                                                }`}
                                             >
                                                 ↑ A–Z / Terkecil
                                             </button>
@@ -1614,11 +1617,12 @@ return false;
                                                         direction: 'desc',
                                                     })
                                                 }
-                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${exportSort.direction ===
+                                                className={`flex-1 cursor-pointer rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
+                                                    exportSort.direction ===
                                                     'desc'
-                                                    ? 'border-primary bg-primary text-on-primary'
-                                                    : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
-                                                    }`}
+                                                        ? 'border-primary bg-primary text-on-primary'
+                                                        : 'border-outline-variant bg-background text-on-surface-variant hover:border-primary/50'
+                                                }`}
                                             >
                                                 ↓ Z–A / Terbesar
                                             </button>
@@ -1645,22 +1649,30 @@ return false;
                                             Format Dokumen Laporan
                                         </label>
                                         <div className="flex gap-4 py-2">
-                                            <label className="flex items-center gap-2 text-sm cursor-pointer text-on-surface-variant">
+                                            <label className="flex cursor-pointer items-center gap-2 text-sm text-on-surface-variant">
                                                 <input
                                                     type="radio"
                                                     name="reportFormat"
-                                                    checked={reportFormat === 'pdf'}
-                                                    onChange={() => setReportFormat('pdf')}
+                                                    checked={
+                                                        reportFormat === 'pdf'
+                                                    }
+                                                    onChange={() =>
+                                                        setReportFormat('pdf')
+                                                    }
                                                     className="h-4 w-4 accent-primary"
                                                 />
                                                 PDF (.pdf)
                                             </label>
-                                            <label className="flex items-center gap-2 text-sm cursor-pointer text-on-surface-variant">
+                                            <label className="flex cursor-pointer items-center gap-2 text-sm text-on-surface-variant">
                                                 <input
                                                     type="radio"
                                                     name="reportFormat"
-                                                    checked={reportFormat === 'excel'}
-                                                    onChange={() => setReportFormat('excel')}
+                                                    checked={
+                                                        reportFormat === 'excel'
+                                                    }
+                                                    onChange={() =>
+                                                        setReportFormat('excel')
+                                                    }
                                                     className="h-4 w-4 accent-primary"
                                                 />
                                                 Excel (.xlsx)
@@ -1671,18 +1683,30 @@ return false;
                                     {/* Target Organisasi */}
                                     <div>
                                         <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
-                                            Simpan Laporan Pada Arsip Organisasi *
+                                            Simpan Laporan Pada Arsip Organisasi
+                                            *
                                         </label>
                                         <select
                                             required
                                             value={targetOrganisasiId}
-                                            onChange={(e) => setTargetOrganisasiId(e.target.value)}
+                                            onChange={(e) =>
+                                                setTargetOrganisasiId(
+                                                    e.target.value,
+                                                )
+                                            }
                                             className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         >
-                                            <option value="">-- Pilih Organisasi --</option>
+                                            <option value="">
+                                                -- Pilih Organisasi --
+                                            </option>
                                             {profilList.map((profil) => (
-                                                <option key={profil.id_profil} value={profil.id_organisasi.toString()}>
-                                                    {profil.organisasi?.nama_organisasi ?? `Profil #${profil.id_profil}`}
+                                                <option
+                                                    key={profil.id_profil}
+                                                    value={profil.id_organisasi.toString()}
+                                                >
+                                                    {profil.organisasi
+                                                        ?.nama_organisasi ??
+                                                        `Profil #${profil.id_profil}`}
                                                 </option>
                                             ))}
                                         </select>
@@ -1759,17 +1783,18 @@ return false;
                                         {previewActivity.nama_kegiatan}
                                     </h3>
                                     <span
-                                        className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${previewActivity.dokumentasi_kegiatan
-                                            .status_dokumentasi ===
-                                            'Diterima'
-                                            ? 'bg-green-100 text-green-700'
-                                            : previewActivity
-                                                .dokumentasi_kegiatan
+                                        className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                                            previewActivity.dokumentasi_kegiatan
                                                 .status_dokumentasi ===
-                                                'Butuh Revisi'
-                                                ? 'bg-red-100 text-red-700'
-                                                : 'bg-blue-100 text-blue-700'
-                                            }`}
+                                            'Diterima'
+                                                ? 'bg-green-100 text-green-700'
+                                                : previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .status_dokumentasi ===
+                                                    'Butuh Revisi'
+                                                  ? 'bg-red-100 text-red-700'
+                                                  : 'bg-blue-100 text-blue-700'
+                                        }`}
                                     >
                                         Status:{' '}
                                         {
@@ -1780,7 +1805,7 @@ return false;
                                 </div>
                                 <button
                                     onClick={() => {
-                                        setIsExportModalOpen(false);
+                                        setIsPreviewModalOpen(false);
                                         setPreviewActivity(null);
                                     }}
                                     className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
@@ -1797,20 +1822,20 @@ return false;
                                         <span>Dokumen Proposal</span>
                                         {previewActivity.dokumentasi_kegiatan
                                             .dokumen_proposal && (
-                                                <a
-                                                    href={
-                                                        previewActivity
-                                                            .dokumentasi_kegiatan
-                                                            .dokumen_proposal
-                                                    }
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                                >
-                                                    <Download className="h-3.5 w-3.5" />{' '}
-                                                    Unduh
-                                                </a>
-                                            )}
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .dokumen_proposal
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
                                     </h4>
                                     {previewActivity.dokumentasi_kegiatan
                                         .dokumen_proposal ? (
@@ -1858,20 +1883,20 @@ return false;
                                         </span>
                                         {previewActivity.dokumentasi_kegiatan
                                             .dokumen_lpj && (
-                                                <a
-                                                    href={
-                                                        previewActivity
-                                                            .dokumentasi_kegiatan
-                                                            .dokumen_lpj
-                                                    }
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                                >
-                                                    <Download className="h-3.5 w-3.5" />{' '}
-                                                    Unduh
-                                                </a>
-                                            )}
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .dokumen_lpj
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
                                     </h4>
                                     {previewActivity.dokumentasi_kegiatan
                                         .dokumen_lpj ? (
@@ -1911,58 +1936,66 @@ return false;
                                 </div>
 
                                 {/* Hasil Evaluasi Section */}
-                                {previewActivity.dokumentasi_kegiatan
-                                    .hasil_evaluasi && (
-                                        <div className="space-y-2 border-t border-outline-variant/40 pt-4">
-                                            <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
-                                                <span>
-                                                    Hasil Evaluasi Kegiatan (Dari
-                                                    Petugas)
-                                                </span>
-                                                <a
-                                                    href={
+                                <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                    <h4 className="flex items-center justify-between text-sm font-semibold text-primary">
+                                        <span>
+                                            Hasil Evaluasi Kegiatan (Dari
+                                            Petugas)
+                                        </span>
+                                        {previewActivity.dokumentasi_kegiatan
+                                            .hasil_evaluasi && (
+                                            <a
+                                                href={
+                                                    previewActivity
+                                                        .dokumentasi_kegiatan
+                                                        .hasil_evaluasi
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />{' '}
+                                                Unduh
+                                            </a>
+                                        )}
+                                    </h4>
+                                    {previewActivity.dokumentasi_kegiatan
+                                        .hasil_evaluasi ? (
+                                        isPdf(
+                                            previewActivity.dokumentasi_kegiatan
+                                                .hasil_evaluasi,
+                                        ) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${previewActivity.dokumentasi_kegiatan.hasil_evaluasi}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Evaluasi PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
+                                                <span className="font-medium text-on-surface-variant">
+                                                    {getFileName(
                                                         previewActivity
                                                             .dokumentasi_kegiatan
-                                                            .hasil_evaluasi
-                                                    }
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                                >
-                                                    <Download className="h-3.5 w-3.5" />{' '}
-                                                    Unduh
-                                                </a>
-                                            </h4>
-                                            {isPdf(
-                                                previewActivity.dokumentasi_kegiatan
-                                                    .hasil_evaluasi,
-                                            ) ? (
-                                                <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
-                                                    <iframe
-                                                        src={`${previewActivity.dokumentasi_kegiatan.hasil_evaluasi}#toolbar=0&navpanes=0`}
-                                                        className="h-[1000px] w-full border-none"
-                                                        title="Evaluasi PDF Preview"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div className="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs">
-                                                    <span className="font-medium text-on-surface-variant">
-                                                        {getFileName(
-                                                            previewActivity
-                                                                .dokumentasi_kegiatan
-                                                                .hasil_evaluasi,
-                                                        )}
-                                                    </span>
-                                                    <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
-                                                        * Preview hanya tersedia
-                                                        untuk file PDF. Silakan
-                                                        unduh untuk melihat dokumen
-                                                        Word.
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </div>
+                                                            .hasil_evaluasi,
+                                                    )}
+                                                </span>
+                                                <p className="mt-1 text-[11px] text-on-surface-variant/70 italic">
+                                                    * Preview hanya tersedia
+                                                    untuk file PDF. Silakan
+                                                    unduh untuk melihat dokumen
+                                                    Word.
+                                                </p>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <p className="rounded-lg border border-outline-variant/40 bg-surface-container-low p-3 text-xs text-on-surface-variant/60 italic">
+                                            Hasil Evaluasi Kegiatan belum
+                                            diunggah.
+                                        </p>
                                     )}
+                                </div>
                             </div>
 
                             {/* Footer */}

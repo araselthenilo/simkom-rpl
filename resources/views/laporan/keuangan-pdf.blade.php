@@ -127,6 +127,12 @@
             <td class="label" style="text-align: right;">Filter Wilayah</td>
             <td style="text-align: right;">: {{ isset($is_admin_all) && $is_admin_all ? 'Semua Organisasi' : 'Organisasi Terkait' }}</td>
         </tr>
+        <tr>
+            <td class="label">Periode</td>
+            <td>: {{ $periode ?? 'Semua Periode' }}</td>
+            <td></td>
+            <td></td>
+        </tr>
     </table>
 
     <table class="data-table">

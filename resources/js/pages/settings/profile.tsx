@@ -65,13 +65,17 @@ export default function Profile({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="nomor_telepon">Phone number</Label>
+                                <Label htmlFor="nomor_telepon">
+                                    Phone number
+                                </Label>
 
                                 <Input
                                     id="nomor_telepon"
                                     type="tel"
                                     className="mt-1 block w-full"
-                                    defaultValue={auth.user.nomor_telepon as string}
+                                    defaultValue={
+                                        auth.user.nomor_telepon as string
+                                    }
                                     name="nomor_telepon"
                                     required
                                     placeholder="Phone number"

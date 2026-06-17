@@ -11,9 +11,17 @@ import {
     BookOpen,
     Download,
     PlusCircle,
+    X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import admin from '@/routes/admin';
+import { useState } from 'react';
+import { DialogFooter } from '../ui/dialog';
+
+interface OrganisasiItem {
+    id_organisasi: number;
+    nama_organisasi: string;
+}
 
 interface DashboardProps {
     totalOrganisasiAktif: number;
@@ -26,6 +34,7 @@ interface DashboardProps {
     kegiatanBulanIni?: number;
     perubahanKegiatanBulanLalu?: number;
     agendaTerdekat?: any[];
+    organisasiList?: OrganisasiItem[];
 }
 
 export default function Dashboard({
@@ -39,7 +48,31 @@ export default function Dashboard({
     kegiatanBulanIni = 0,
     perubahanKegiatanBulanLalu = 0,
     agendaTerdekat = [],
+    organisasiList = [],
 }: DashboardProps) {
+    const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+    const [filterOrg, setFilterOrg] = useState('all');
+    const [filterKat, setFilterKat] = useState('all');
+    const [tanggalMulai, setTanggalMulai] = useState('');
+    const [tanggalAkhir, setTanggalAkhir] = useState('');
+    const [format, setFormat] = useState('pdf');
+
+    const handleDownloadLogs = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const params = new URLSearchParams();
+        if (filterOrg !== 'all') params.append('id_organisasi', filterOrg);
+        if (filterKat !== 'all') params.append('kategori', filterKat);
+        if (tanggalMulai) params.append('tanggal_mulai', tanggalMulai);
+        if (tanggalAkhir) params.append('tanggal_akhir', tanggalAkhir);
+        params.append('format', format);
+
+        const url = `/admin/log-aktivitas/export?${params.toString()}`;
+        window.open(url, '_blank');
+
+        setIsLogModalOpen(false);
+    };
+
     const getRelativeTime = (dateStr: string) => {
         const date = new Date(dateStr);
         const now = new Date();
@@ -49,20 +82,20 @@ export default function Dashboard({
         const diffDays = Math.floor(diffHours / 24);
 
         if (diffMins < 1) {
-return 'Baru saja';
-}
+            return 'Baru saja';
+        }
 
         if (diffMins < 60) {
-return `${diffMins} menit yang lalu`;
-}
+            return `${diffMins} menit yang lalu`;
+        }
 
         if (diffHours < 24) {
-return `${diffHours} jam yang lalu`;
-}
+            return `${diffHours} jam yang lalu`;
+        }
 
         if (diffDays === 1) {
-return 'Kemarin';
-}
+            return 'Kemarin';
+        }
 
         return `${diffDays} hari yang lalu`;
     };
@@ -346,13 +379,16 @@ return 'Kemarin';
                 <div className="space-y-unit-lg">
                     <div className="rounded-xl border border-secondary/20 bg-secondary-container/30 p-unit-lg">
                         <h4 className="font-headline-sm text-headline-sm text-on-secondary-container">
-                            Aksi Cepat
+                            Audit
                         </h4>
                         <div className="mt-4 flex items-center justify-center">
-                            <button className="flex w-full cursor-pointer flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface p-4 text-center shadow-sm transition-all hover:bg-secondary-fixed/20">
+                            <button
+                                onClick={() => setIsLogModalOpen(true)}
+                                className="flex w-full cursor-pointer flex-col items-center gap-2 rounded-lg border border-outline-variant bg-surface p-4 text-center shadow-sm transition-all hover:bg-secondary-fixed/20"
+                            >
                                 <BookOpen className="h-5 w-5 text-secondary" />
                                 <span className="font-label-md text-label-md text-on-surface">
-                                    Log Aktivitas
+                                    Log Aktivitas Sistem
                                 </span>
                             </button>
                         </div>
@@ -401,6 +437,157 @@ return 'Kemarin';
                     </div>
                 </div>
             </section>
+
+            {/* ===================== Export Log Modal ===================== */}
+            {isLogModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16">
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setIsLogModalOpen(false)}
+                    />
+
+                    <div className="relative z-10 mb-8 w-full max-w-lg animate-in rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-2xl duration-200 fade-in-50 zoom-in-95">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 px-6 py-5">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                                    <BookOpen className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="font-headline-sm font-bold text-primary">
+                                        Ekspor Log Aktivitas Sistem
+                                    </h3>
+                                    <p className="text-xs text-on-surface-variant">
+                                        Pilih kriteria filter untuk log aktivitas sistem yang ingin Anda unduh
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsLogModalOpen(false)}
+                                className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary border-none bg-transparent"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleDownloadLogs}>
+                            {/* Modal Body */}
+                            <div className="space-y-4 p-6 text-left">
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                        Organisasi / UKM
+                                    </label>
+                                    <select
+                                        value={filterOrg}
+                                        onChange={(e) => setFilterOrg(e.target.value)}
+                                        className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                    >
+                                        <option value="all">Semua Organisasi</option>
+                                        {organisasiList.map((org) => (
+                                            <option key={org.id_organisasi} value={org.id_organisasi}>
+                                                {org.nama_organisasi}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                        Kategori Aktivitas
+                                    </label>
+                                    <select
+                                        value={filterKat}
+                                        onChange={(e) => setFilterKat(e.target.value)}
+                                        className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                    >
+                                        <option value="all">Semua Kategori</option>
+                                        <option value="Autentikasi">Autentikasi (Login/Logout)</option>
+                                        <option value="Profil">Manajemen Profil</option>
+                                        <option value="Kegiatan">Kegiatan & Dokumentasi</option>
+                                        <option value="Keuangan">Keuangan UKM</option>
+                                    </select>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                            Tanggal Mulai
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={tanggalMulai}
+                                            onChange={(e) => setTanggalMulai(e.target.value)}
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                            Tanggal Akhir
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={tanggalAkhir}
+                                            onChange={(e) => setTanggalAkhir(e.target.value)}
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                        Format Dokumen
+                                    </label>
+                                    <div className="flex gap-4">
+                                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-background px-4 py-2 hover:bg-secondary-fixed/10 flex-1 justify-center">
+                                            <input
+                                                type="radio"
+                                                name="format"
+                                                value="pdf"
+                                                checked={format === 'pdf'}
+                                                onChange={() => setFormat('pdf')}
+                                                className="text-primary"
+                                            />
+                                            <span className="font-label-lg text-label-lg text-on-surface">PDF (.pdf)</span>
+                                        </label>
+                                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-background px-4 py-2 hover:bg-secondary-fixed/10 flex-1 justify-center">
+                                            <input
+                                                type="radio"
+                                                name="format"
+                                                value="excel"
+                                                checked={format === 'excel'}
+                                                onChange={() => setFormat('excel')}
+                                                className="text-primary"
+                                            />
+                                            <span className="font-label-lg text-label-lg text-on-surface">Excel (.xlsx)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <DialogFooter className='border-t border-outline-variant/60 p-6 pt-4'>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsLogModalOpen(false)}
+                                    className="cursor-pointer"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-90 flex items-center gap-2"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Unduh Log
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

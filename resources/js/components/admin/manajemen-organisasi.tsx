@@ -66,8 +66,8 @@ export default function ManajemenOrganisasi({
             activeTab === 'Semua'
                 ? true
                 : activeTab === 'Aktif'
-                    ? org.status_aktif
-                    : !org.status_aktif;
+                  ? org.status_aktif
+                  : !org.status_aktif;
 
         return matchesSearch && matchesStatus;
     });
@@ -175,10 +175,11 @@ export default function ManajemenOrganisasi({
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`cursor-pointer rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${activeTab === tab
-                                ? 'bg-white font-semibold text-primary shadow-sm'
-                                : 'text-on-surface-variant hover:text-primary'
-                                }`}
+                            className={`cursor-pointer rounded-md px-6 py-2 font-label-lg text-nowrap transition-all ${
+                                activeTab === tab
+                                    ? 'bg-white font-semibold text-primary shadow-sm'
+                                    : 'text-on-surface-variant hover:text-primary'
+                            }`}
                         >
                             {tab}
                         </button>
@@ -289,10 +290,11 @@ export default function ManajemenOrganisasi({
                                         {/* Active Status Badge */}
                                         <td className="px-unit-lg py-4">
                                             <span
-                                                className={`flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${org.status_aktif
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-red-100 text-red-700'
-                                                    }`}
+                                                className={`flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold ${
+                                                    org.status_aktif
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-red-100 text-red-700'
+                                                }`}
                                             >
                                                 <span
                                                     className={`h-1.5 w-1.5 rounded-full ${org.status_aktif ? 'bg-green-700' : 'bg-red-700'}`}
@@ -326,10 +328,11 @@ export default function ManajemenOrganisasi({
                                                             org.nama_organisasi,
                                                         )
                                                     }
-                                                    className={`cursor-pointer rounded-lg p-2 transition-colors ${org.status_aktif
-                                                        ? 'text-amber-600 hover:bg-amber-50'
-                                                        : 'text-green-700 hover:bg-green-50'
-                                                        }`}
+                                                    className={`cursor-pointer rounded-lg p-2 transition-colors ${
+                                                        org.status_aktif
+                                                            ? 'text-amber-600 hover:bg-amber-50'
+                                                            : 'text-green-700 hover:bg-green-50'
+                                                    }`}
                                                     title={
                                                         org.status_aktif
                                                             ? 'Nonaktifkan UKM'

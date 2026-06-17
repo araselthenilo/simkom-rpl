@@ -62,20 +62,20 @@ export default function DokumentasiKegiatanIndex() {
         const diffDays = Math.floor(diffHours / 24);
 
         if (diffMins < 1) {
-return 'Baru saja';
-}
+            return 'Baru saja';
+        }
 
         if (diffMins < 60) {
-return `${diffMins} menit yang lalu`;
-}
+            return `${diffMins} menit yang lalu`;
+        }
 
         if (diffHours < 24) {
-return `${diffHours} jam yang lalu`;
-}
+            return `${diffHours} jam yang lalu`;
+        }
 
         if (diffDays === 1) {
-return 'Kemarin';
-}
+            return 'Kemarin';
+        }
 
         return `${diffDays} hari yang lalu`;
     };
@@ -83,8 +83,8 @@ return 'Kemarin';
     // Filter submissions
     const filteredSubmissions = submissions.filter((item) => {
         if (activeTab === 'Semua') {
-return true;
-}
+            return true;
+        }
 
         return item.status_dokumentasi === activeTab;
     });

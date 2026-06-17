@@ -119,7 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('anggota.ktm');
     Route::get('/transaksi-keuangan/{transaksi}/bukti', [TransaksiKeuanganController::class, 'showBuktiTrans'])
         ->name('transaksi-keuangan.bukti');
-    Route::get('/dokumentasi-kegiatan/{dokumentasi}/download/{type}', [PengurusKegiatanController::class, 'downloadDoc'])
+    Route::get('/dokumentasi-kegiatan/{dokumentasi}/download/{type}/{filename?}', [PengurusKegiatanController::class, 'downloadDoc'])
         ->name('dokumentasi.download-doc');
 });
 

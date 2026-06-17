@@ -48,9 +48,9 @@ class AdminDokumentasiKegiatanController extends Controller
         $formatted = [
             'id_dokumentasi' => $dokumentasi->id_dokumentasi,
             'id_kegiatan' => $dokumentasi->id_kegiatan,
-            'dokumen_proposal' => $dokumentasi->dokumen_proposal ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'proposal']) : null,
-            'dokumen_lpj' => $dokumentasi->dokumen_lpj ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'lpj']) : null,
-            'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'evaluasi']) : null,
+            'dokumen_proposal' => $dokumentasi->dokumen_proposal ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'proposal', basename($dokumentasi->dokumen_proposal)]) : null,
+            'dokumen_lpj' => $dokumentasi->dokumen_lpj ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'lpj', basename($dokumentasi->dokumen_lpj)]) : null,
+            'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'evaluasi', basename($dokumentasi->hasil_evaluasi)]) : null,
             'status_dokumentasi' => $dokumentasi->status_dokumentasi,
             'created_at' => $dokumentasi->created_at->toIso8601String(),
             'updated_at' => $dokumentasi->updated_at->toIso8601String(),

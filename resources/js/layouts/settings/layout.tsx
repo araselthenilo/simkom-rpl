@@ -1,7 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Palette, Shield, User } from 'lucide-react';
-import { useState  } from 'react';
-import type {PropsWithChildren} from 'react';
+import { useState } from 'react';
+import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -67,7 +67,10 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
         }
 
         // Default context
-        if (auth.user?.role === 'Admin Kemahasiswaan' || auth.user?.role === 'Pembina Organisasi') {
+        if (
+            auth.user?.role === 'Admin Kemahasiswaan' ||
+            auth.user?.role === 'Pembina Organisasi'
+        ) {
             return 'staff';
         }
 

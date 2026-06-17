@@ -17,6 +17,8 @@ import {
     X,
     Eye,
     Info,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -80,6 +82,7 @@ export default function DokumentasiKegiatanPage({
 }: Props) {
     const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
 
     // Form for documents
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -92,6 +95,7 @@ export default function DokumentasiKegiatanPage({
         e.preventDefault();
         post(`/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi`, {
             forceFormData: true,
+            preserveScroll: true,
             onSuccess: () => {
                 reset();
                 alert('Dokumen berhasil disimpan.');
@@ -108,8 +112,8 @@ export default function DokumentasiKegiatanPage({
         const file = e.target.files?.[0];
 
         if (!file) {
-return;
-}
+            return;
+        }
 
         // Check file size (5MB limit)
         if (file.size > 5 * 1024 * 1024) {
@@ -127,6 +131,7 @@ return;
             formData,
             {
                 forceFormData: true,
+                preserveScroll: true,
                 onSuccess: () => {
                     setUploadingPhoto(false);
                     // Reset file input
@@ -147,10 +152,11 @@ return;
             router.delete(
                 `/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/foto/${idFoto}`,
                 {
+                    preserveScroll: true,
                     onSuccess: () => {
                         if (previewPhoto) {
-setPreviewPhoto(null);
-}
+                            setPreviewPhoto(null);
+                        }
                     },
                     onError: (err) => {
                         const message = Object.values(err).join('\n');
@@ -168,6 +174,7 @@ setPreviewPhoto(null);
                 `/pengurus/kegiatan/${kegiatan.id_kegiatan}/dokumentasi/revisi/${idCatatan}/tindaklanjut`,
                 {},
                 {
+                    preserveScroll: true,
                     onError: (err) => {
                         const message = Object.values(err).join('\n');
                         alert(message || 'Gagal menindaklanjuti catatan.');
@@ -179,8 +186,8 @@ setPreviewPhoto(null);
 
     const formatDate = (dateStr?: string) => {
         if (!dateStr) {
-return '-';
-}
+            return '-';
+        }
 
         try {
             const date = new Date(dateStr);
@@ -196,8 +203,8 @@ return '-';
 
     const getFileName = (urlPath: string | null) => {
         if (!urlPath) {
-return '';
-}
+            return '';
+        }
 
         const parts = urlPath.split('/');
 
@@ -206,13 +213,18 @@ return '';
 
     const isPdf = (urlPath: string | null) => {
         if (!urlPath) {
-return false;
-}
+            return false;
+        }
 
         const cleanPath = urlPath.split('?')[0];
 
         return cleanPath.toLowerCase().endsWith('.pdf');
     };
+
+    const photos = dokumentasi?.foto_kegiatan || [];
+    const activePhoto = photos[selectedPhotoIndex]
+        ? photos[selectedPhotoIndex]
+        : photos[0] || null;
 
     return (
         <main className="mx-auto w-full max-w-container-max animate-in space-y-gutter p-margin-desktop duration-200 fade-in">
@@ -473,45 +485,61 @@ return false;
                             </div>
 
                             {/* Evaluation Report (Petugas only upload, Staff View Only) */}
-                            {dokumentasi?.hasil_evaluasi && (
-                                <div className="space-y-2 rounded-lg border border-outline-variant bg-surface-container-low p-4">
-                                    <h4 className="flex items-center gap-1 text-xs font-bold text-primary">
-                                        <CheckCircle2 className="h-3.5 w-3.5 text-green-700" />
-                                        Hasil Evaluasi Kegiatan dari Petugas
-                                    </h4>
-                                    <div className="flex items-center justify-between pt-1 text-xs">
-                                        <span className="max-w-sm truncate text-on-surface-variant">
-                                            {getFileName(
-                                                dokumentasi.hasil_evaluasi,
-                                            )}
-                                        </span>
-                                        <a
-                                            href={dokumentasi.hasil_evaluasi}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1.5 font-bold text-primary hover:underline"
-                                        >
-                                            <Download className="h-3.5 w-3.5" />
-                                            Unduh Evaluasi
-                                        </a>
-                                    </div>
-                                    {isPdf(dokumentasi.hasil_evaluasi) ? (
-                                        <div className="mt-2 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
-                                            <iframe
-                                                src={`${dokumentasi.hasil_evaluasi}#toolbar=0&navpanes=0`}
-                                                className="h-[1000px] w-full border-none"
-                                                title="Evaluasi PDF Preview"
-                                            />
+                            <div className="space-y-2 border-t border-outline-variant/40 pt-4">
+                                <label className="block text-sm font-semibold text-primary">
+                                    Hasil Evaluasi Kegiatan (Dari Petugas)
+                                </label>
+
+                                {dokumentasi?.hasil_evaluasi ? (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-xs transition-all hover:bg-surface-container-high">
+                                            <span className="max-w-md truncate font-medium text-on-surface-variant">
+                                                {getFileName(
+                                                    dokumentasi.hasil_evaluasi,
+                                                )}
+                                            </span>
+                                            <a
+                                                href={
+                                                    dokumentasi.hasil_evaluasi
+                                                }
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1.5 font-bold text-primary hover:underline"
+                                            >
+                                                <Download className="h-3.5 w-3.5" />
+                                                Unduh
+                                            </a>
                                         </div>
-                                    ) : (
-                                        <p className="mt-1 px-1 text-[11px] text-on-surface-variant/70 italic">
-                                            * Preview hanya tersedia untuk file
-                                            PDF. Silakan unduh untuk melihat
-                                            dokumen Word.
+                                        {isPdf(dokumentasi.hasil_evaluasi) ? (
+                                            <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-inner">
+                                                <iframe
+                                                    src={`${dokumentasi.hasil_evaluasi}#toolbar=0&navpanes=0`}
+                                                    className="h-[1000px] w-full border-none"
+                                                    title="Evaluasi PDF Preview"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="px-1 text-[11px] text-on-surface-variant/70 italic">
+                                                * Preview hanya tersedia untuk
+                                                file PDF. Silakan unduh untuk
+                                                melihat dokumen Word.
+                                            </p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-low p-8 text-center text-on-surface-variant">
+                                        <AlertCircle className="mx-auto mb-2 h-10 w-10 text-on-surface-variant/30" />
+                                        <p className="text-sm font-semibold">
+                                            Hasil Evaluasi Kegiatan belum
+                                            diunggah
                                         </p>
-                                    )}
-                                </div>
-                            )}
+                                        <p className="mt-1 text-xs text-on-surface-variant/80">
+                                            Petugas belum mengunggah dokumen
+                                            hasil evaluasi untuk kegiatan ini.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Form submit button */}
                             <div className="flex justify-end gap-2 border-t border-outline-variant/40 pt-4">
@@ -566,45 +594,115 @@ return false;
 
                         {/* Image Grid / Placeholders */}
                         {dokumentasi ? (
-                            dokumentasi.foto_kegiatan.length > 0 ? (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                                    {dokumentasi.foto_kegiatan.map((foto) => (
-                                        <div
-                                            key={foto.id_foto}
-                                            className="group relative aspect-square overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low shadow-xs"
-                                        >
+                            photos.length > 0 ? (
+                                <div className="space-y-4">
+                                    {/* Main featured photo */}
+                                    {activePhoto && (
+                                        <div className="group/main-photo relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-outline-variant bg-black shadow-inner">
                                             <img
-                                                src={foto.url}
-                                                alt="Dokumentasi Kegiatan"
-                                                className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
+                                                src={activePhoto.url}
+                                                alt="Foto Dokumentasi Terpilih"
+                                                className="max-h-full max-w-full cursor-pointer object-contain transition-all duration-300 hover:scale-102"
+                                                onClick={() =>
+                                                    setPreviewPhoto(
+                                                        activePhoto.url,
+                                                    )
+                                                }
                                             />
-                                            {/* Hover action overlay */}
-                                            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+
+                                            {/* Main photo overlays & actions */}
+                                            <div className="absolute right-4 bottom-4 flex gap-2 opacity-0 transition-opacity group-hover/main-photo:opacity-100">
                                                 <button
                                                     onClick={() =>
                                                         setPreviewPhoto(
-                                                            foto.url,
+                                                            activePhoto.url,
                                                         )
                                                     }
-                                                    className="rounded-lg bg-white/20 p-1.5 text-white transition-colors hover:bg-white/40"
+                                                    className="cursor-pointer rounded-lg bg-black/60 p-2 text-white transition-colors hover:bg-black/85"
                                                     title="Lihat Penuh"
+                                                    type="button"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </button>
                                                 <button
                                                     onClick={() =>
                                                         handleDeletePhoto(
-                                                            foto.id_foto,
+                                                            activePhoto.id_foto,
                                                         )
                                                     }
-                                                    className="rounded-lg bg-red-600/20 p-1.5 text-white transition-colors hover:bg-red-600/80"
-                                                    title="Hapus"
+                                                    className="cursor-pointer rounded-lg bg-red-600/60 p-2 text-white transition-colors hover:bg-red-600/90"
+                                                    title="Hapus Foto Terpilih"
+                                                    type="button"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>
                                             </div>
+
+                                            {/* Navigation buttons */}
+                                            {photos.length > 1 && (
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            setSelectedPhotoIndex(
+                                                                (prev) =>
+                                                                    prev > 0
+                                                                        ? prev -
+                                                                          1
+                                                                        : photos.length -
+                                                                          1,
+                                                            )
+                                                        }
+                                                        className="absolute top-1/2 left-4 -translate-y-1/2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/75"
+                                                        type="button"
+                                                    >
+                                                        <ChevronLeft className="h-5 w-5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            setSelectedPhotoIndex(
+                                                                (prev) =>
+                                                                    prev <
+                                                                    photos.length -
+                                                                        1
+                                                                        ? prev +
+                                                                          1
+                                                                        : 0,
+                                                            )
+                                                        }
+                                                        className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/75"
+                                                        type="button"
+                                                    >
+                                                        <ChevronRight className="h-5 w-5" />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
-                                    ))}
+                                    )}
+
+                                    {/* Thumbnails list */}
+                                    <div className="flex scrollbar-thin gap-2 overflow-x-auto pb-2">
+                                        {photos.map((foto, index) => (
+                                            <button
+                                                key={foto.id_foto}
+                                                onClick={() =>
+                                                    setSelectedPhotoIndex(index)
+                                                }
+                                                className={`relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                                                    activePhoto?.id_foto ===
+                                                    foto.id_foto
+                                                        ? 'scale-95 border-primary ring-2 ring-primary/20'
+                                                        : 'border-outline-variant hover:border-primary/50'
+                                                }`}
+                                                type="button"
+                                            >
+                                                <img
+                                                    src={foto.url}
+                                                    alt="Thumbnail"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="rounded-lg border border-outline-variant bg-surface-container-low py-10 text-center text-on-surface-variant/60">

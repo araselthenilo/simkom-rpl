@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class DummyOrganisasiSeeder extends Seeder
 {
@@ -259,11 +260,19 @@ class DummyOrganisasiSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
 
+                $logoOrganisasiPath = 'logo_organisasi/' . $id_organisasi . '_2026_2027.png';
+                Storage::disk('public')->makeDirectory('logo_organisasi');
+                if (file_exists(public_path('dummy_logo_organisasi.png'))) {
+                    Storage::disk('public')->put($logoOrganisasiPath, file_get_contents(public_path('dummy_logo_organisasi.png')));
+                } else {
+                    $logoOrganisasiPath = 'logo_organisasi/dummy.png';
+                }
+
                 // 4. Create Profil Organisasi Record
                 $id_profil = DB::table('profil_organisasi')->insertGetId([
                     'id_organisasi' => $id_organisasi,
                     'periode_kepengurusan' => '2026/2027',
-                    'logo_organisasi' => 'default_logo.png',
+                    'logo_organisasi' => $logoOrganisasiPath,
                     'deskripsi_organisasi' => $data['desc'],
                     'visi_organisasi' => $data['visi'],
                     'misi_organisasi' => $data['misi'],
@@ -304,12 +313,20 @@ class DummyOrganisasiSeeder extends Seeder
                 ]);
 
                 // 8. Create Anggota Organisasi Record
+                $fotoKtmPath = 'foto_ktm/' . $data['ketua']['nim'] . '.png';
+                Storage::disk('local')->makeDirectory('foto_ktm');
+                if (file_exists(public_path('dummy_ktm.png'))) {
+                    Storage::disk('local')->put($fotoKtmPath, file_get_contents(public_path('dummy_ktm.png')));
+                } else {
+                    $fotoKtmPath = 'foto_ktm/dummy.png';
+                }
+
                 $id_keanggotaan = DB::table('anggota_organisasi')->insertGetId([
                     'id_organisasi' => $id_organisasi,
                     'nim' => $data['ketua']['nim'],
                     'tanggal_bergabung' => '2026-06-01',
                     'status_keanggotaan' => 'Aktif',
-                    'foto_ktm' => 'foto_ktm/dummy.png',
+                    'foto_ktm' => $fotoKtmPath,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -449,7 +466,7 @@ class DummyOrganisasiSeeder extends Seeder
                         'jenis_transaksi' => 'Pemasukan',
                         'nominal_transaksi' => 2250000.00,
                         'tanggal_transaksi' => '2026-06-10',
-                        'sumber_tujuan_transaksi' => 'Uang Pendaftaran Peserta (30 Orang)',
+                        'sumber_tujuan_transaksi' => 'Donasi Wowo',
                         'foto_bukti_transaksi' => 'transaksi_keuangan/bukti/dummy_receipt.png',
                         'catatan_koreksi' => null,
                         'created_at' => now()->subDay(),

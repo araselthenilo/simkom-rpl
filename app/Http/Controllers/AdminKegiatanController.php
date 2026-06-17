@@ -27,14 +27,18 @@ class AdminKegiatanController extends Controller
             ->get()
             ->map(function ($kegiatan) {
                 if ($kegiatan->dokumentasiKegiatan) {
-                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal'])
+                    $prop = $kegiatan->dokumentasiKegiatan->dokumen_proposal;
+                    $lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj;
+                    $eval = $kegiatan->dokumentasiKegiatan->hasil_evaluasi;
+
+                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $prop
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal', basename($prop)])
                         : null;
-                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj'])
+                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $lpj
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj', basename($lpj)])
                         : null;
-                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi'])
+                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $eval
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi', basename($eval)])
                         : null;
                 }
 

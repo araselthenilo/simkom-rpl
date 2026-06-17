@@ -68,14 +68,18 @@ class PengurusKegiatanController extends Controller
             ->get()
             ->map(function ($kegiatan) {
                 if ($kegiatan->dokumentasiKegiatan) {
-                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $kegiatan->dokumentasiKegiatan->dokumen_proposal
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal'])
+                    $prop = $kegiatan->dokumentasiKegiatan->dokumen_proposal;
+                    $lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj;
+                    $eval = $kegiatan->dokumentasiKegiatan->hasil_evaluasi;
+
+                    $kegiatan->dokumentasiKegiatan->dokumen_proposal = $prop
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'proposal', basename($prop)])
                         : null;
-                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $kegiatan->dokumentasiKegiatan->dokumen_lpj
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj'])
+                    $kegiatan->dokumentasiKegiatan->dokumen_lpj = $lpj
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'lpj', basename($lpj)])
                         : null;
-                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $kegiatan->dokumentasiKegiatan->hasil_evaluasi
-                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi'])
+                    $kegiatan->dokumentasiKegiatan->hasil_evaluasi = $eval
+                        ? route('dokumentasi.download-doc', [$kegiatan->dokumentasiKegiatan->id_dokumentasi, 'evaluasi', basename($eval)])
                         : null;
                 }
 
@@ -231,9 +235,9 @@ class PengurusKegiatanController extends Controller
             $formattedDokumentasi = [
                 'id_dokumentasi' => $dokumentasi->id_dokumentasi,
                 'id_kegiatan' => $dokumentasi->id_kegiatan,
-                'dokumen_proposal' => $dokumentasi->dokumen_proposal ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'proposal']) : null,
-                'dokumen_lpj' => $dokumentasi->dokumen_lpj ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'lpj']) : null,
-                'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'evaluasi']) : null,
+                'dokumen_proposal' => $dokumentasi->dokumen_proposal ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'proposal', basename($dokumentasi->dokumen_proposal)]) : null,
+                'dokumen_lpj' => $dokumentasi->dokumen_lpj ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'lpj', basename($dokumentasi->dokumen_lpj)]) : null,
+                'hasil_evaluasi' => $dokumentasi->hasil_evaluasi ? route('dokumentasi.download-doc', [$dokumentasi->id_dokumentasi, 'evaluasi', basename($dokumentasi->hasil_evaluasi)]) : null,
                 'status_dokumentasi' => $dokumentasi->status_dokumentasi,
                 'created_at' => $dokumentasi->created_at,
                 'updated_at' => $dokumentasi->updated_at,
@@ -476,6 +480,14 @@ class PengurusKegiatanController extends Controller
 
         if (! $filePath || ! Storage::disk('local')->exists($filePath)) {
             abort(404, 'Dokumen tidak ditemukan.');
+        }
+
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        if ($extension === 'pdf' && ! request()->has('download')) {
+            return Storage::disk('local')->response($filePath, basename($filePath), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
+            ]);
         }
 
         return Storage::disk('local')->download($filePath, basename($filePath));

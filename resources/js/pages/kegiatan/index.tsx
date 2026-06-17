@@ -51,10 +51,10 @@ interface Kegiatan {
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-    | 'Mendatang'
-    | 'Sedang berlangsung'
-    | 'Selesai'
-    | 'Dibatalkan';
+        | 'Mendatang'
+        | 'Sedang berlangsung'
+        | 'Selesai'
+        | 'Dibatalkan';
     peserta_kegiatan_count: number;
     profil_organisasi: ProfilOrganisasi;
 }
@@ -439,7 +439,7 @@ export default function Index({
                                     Math.round(
                                         (item.peserta_kegiatan_count /
                                             item.kuota_peserta) *
-                                        100,
+                                            100,
                                     ),
                                 );
                                 const barColorClass =
@@ -685,7 +685,8 @@ export default function Index({
                                                     selectedKegiatan.biaya_pendaftaran,
                                                 )}
                                             </span>{' '}
-                                            ke nomor rekening yang telah disampaikan dalam pengumuman.
+                                            ke nomor rekening yang telah
+                                            disampaikan dalam pengumuman.
                                         </div>
                                     </div>
 

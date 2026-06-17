@@ -76,8 +76,8 @@ export default function PengurusPage({
 
     const getInitials = (name: string) => {
         if (!name) {
-return '?';
-}
+            return '?';
+        }
 
         return name
             .split(' ')
@@ -190,8 +190,8 @@ return '?';
                             const student = p.anggota_organisasi?.mahasiswa;
 
                             if (!student) {
-return null;
-}
+                                return null;
+                            }
 
                             return (
                                 <Card

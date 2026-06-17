@@ -210,8 +210,8 @@ export default function KegiatanPage({
         e.preventDefault();
 
         if (!selectedKegiatan) {
-return;
-}
+            return;
+        }
 
         regPost(daftar.url(selectedKegiatan.id_kegiatan), {
             onSuccess: () => {
@@ -245,8 +245,8 @@ return;
         e.preventDefault();
 
         if (!cancelKegiatan || !cancelPesertaId) {
-return;
-}
+            return;
+        }
 
         cancelDelete(
             batal.url({

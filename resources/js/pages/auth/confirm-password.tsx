@@ -97,7 +97,7 @@ export default function ConfirmPassword() {
                             <div className="mt-unit-lg flex justify-center border-t border-outline-variant pt-unit-lg">
                                 <button
                                     type="button"
-                                    className="flex items-center gap-2 font-label-lg text-label-lg text-primary transition-all hover:scale-105 hover:text-primary-fixed-dim active:scale-95 cursor-pointer"
+                                    className="flex cursor-pointer items-center gap-2 font-label-lg text-label-lg text-primary transition-all hover:scale-105 hover:text-primary-fixed-dim active:scale-95"
                                     onClick={() => window.history.back()}
                                 >
                                     <ArrowLeft className="text-[18px]" />

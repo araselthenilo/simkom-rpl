@@ -8,10 +8,12 @@ use App\Http\Controllers\AdminPengajuanProfilController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PengurusOrganisasiController;
 use App\Http\Controllers\TransaksiKeuanganController;
+use App\Http\Controllers\AdminLogAktivitasController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:is-admin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/log-aktivitas/export', [AdminLogAktivitasController::class, 'export'])->name('log-aktivitas.export');
     Route::get('/organisasi', [OrganisasiController::class, 'index'])->name('organisasi');
     Route::get('/organisasi/create', [OrganisasiController::class, 'create'])->name('organisasi.create');
     Route::post('/organisasi', [OrganisasiController::class, 'store'])->name('organisasi.store');

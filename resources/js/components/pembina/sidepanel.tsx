@@ -29,7 +29,11 @@ export default function Sidepanel() {
     const { isCurrentUrl } = useCurrentUrl();
 
     const menuItems: NavItem[] = [
-        { title: 'Dashboard', href: pembina.dashboard(), icon: LayoutDashboard },
+        {
+            title: 'Dashboard',
+            href: pembina.dashboard(),
+            icon: LayoutDashboard,
+        },
         { title: 'Organisasi', href: pembina.organisasi(), icon: Building2 },
         { title: 'Pengurus', href: pembina.pengurus.index(), icon: Users },
         {
@@ -71,10 +75,11 @@ export default function Sidepanel() {
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${isActive
+                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
+                                isActive
                                     ? 'border-l-4 border-secondary bg-secondary-container text-on-secondary-container'
                                     : 'text-on-primary/80 hover:bg-on-primary/10 hover:text-on-primary'
-                                }`}
+                            }`}
                         >
                             <Icon className="h-5 w-5 flex-shrink-0" />
                             <span className="font-label-lg text-label-lg">
@@ -94,10 +99,11 @@ export default function Sidepanel() {
                         <Link
                             key={item.title}
                             href={item.href}
-                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${isActive
+                            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
+                                isActive
                                     ? 'border-l-4 border-secondary bg-secondary-container text-on-secondary-container'
                                     : 'text-on-primary/80 hover:bg-on-primary/10 hover:text-on-primary'
-                                }`}
+                            }`}
                         >
                             <Icon className="h-5 w-5 flex-shrink-0" />
                             <span className="font-label-lg text-label-lg">

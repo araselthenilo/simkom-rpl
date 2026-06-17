@@ -1,11 +1,11 @@
 import { Head, router } from '@inertiajs/react';
-import { 
-    Download, 
-    Trash2, 
-    Search, 
-    FileText, 
-    FileSpreadsheet, 
-    BarChart3 
+import {
+    Download,
+    Trash2,
+    Search,
+    FileText,
+    FileSpreadsheet,
+    BarChart3,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -25,23 +25,35 @@ interface AdminLaporanPageProps {
     arsip?: ReportArchive[];
 }
 
-export default function AdminLaporanPage({ arsip = [] }: AdminLaporanPageProps) {
+export default function AdminLaporanPage({
+    arsip = [],
+}: AdminLaporanPageProps) {
     const [searchQuery, setSearchQuery] = useState('');
 
     const formatDate = (dateStr?: string) => {
         if (!dateStr) {
-return '';
-}
+            return '';
+        }
 
         const months = [
-            'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agu',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des',
         ];
         const d = new Date(dateStr);
 
         if (isNaN(d.getTime())) {
-return dateStr;
-}
+            return dateStr;
+        }
 
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} WITA`;
     };
@@ -51,7 +63,11 @@ return dateStr;
     };
 
     const handleDelete = (id_laporan: number) => {
-        if (confirm('Apakah Anda yakin ingin menghapus arsip laporan ini? Tindakan ini juga akan menghapus file fisik di penyimpanan.')) {
+        if (
+            confirm(
+                'Apakah Anda yakin ingin menghapus arsip laporan ini? Tindakan ini juga akan menghapus file fisik di penyimpanan.',
+            )
+        ) {
             router.delete(`/admin/laporan/${id_laporan}`);
         }
     };
@@ -61,7 +77,9 @@ return dateStr;
         const orgName = (report.nama_organisasi || '').toLowerCase();
         const creator = (report.username_petugas || '').toLowerCase();
         const reportType = (report.jenis_laporan || '').toLowerCase();
-        const filename = (report.file_laporan.split('/').pop() || '').toLowerCase();
+        const filename = (
+            report.file_laporan.split('/').pop() || ''
+        ).toLowerCase();
 
         return (
             orgName.includes(query) ||
@@ -82,7 +100,8 @@ return dateStr;
                             Arsip Laporan
                         </h2>
                         <p className="font-body-md text-body-md text-on-surface-variant">
-                            Daftar seluruh dokumen laporan kegiatan dan keuangan yang telah digenerate.
+                            Daftar seluruh dokumen laporan kegiatan dan keuangan
+                            yang telah digenerate.
                         </p>
                     </div>
                 </section>
@@ -137,9 +156,13 @@ return dateStr;
                             </thead>
                             <tbody className="divide-y divide-outline-variant/20">
                                 {filteredReports.map((report) => {
-                                    const ext = getFileExtension(report.file_laporan);
-                                    const filename = report.file_laporan.split('/').pop() || 'laporan';
-                                    
+                                    const ext = getFileExtension(
+                                        report.file_laporan,
+                                    );
+                                    const filename =
+                                        report.file_laporan.split('/').pop() ||
+                                        'laporan';
+
                                     return (
                                         <tr
                                             key={report.id_laporan}
@@ -147,7 +170,9 @@ return dateStr;
                                         >
                                             <td className="px-unit-lg py-4">
                                                 <span className="font-body-md text-body-md">
-                                                    {formatDate(report.created_at)}
+                                                    {formatDate(
+                                                        report.created_at,
+                                                    )}
                                                 </span>
                                             </td>
                                             <td className="px-unit-lg py-4">
@@ -173,7 +198,10 @@ return dateStr;
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="max-w-[200px] truncate px-unit-lg py-4 font-body-md text-body-md font-medium" title={filename}>
+                                            <td
+                                                className="max-w-[200px] truncate px-unit-lg py-4 font-body-md text-body-md font-medium"
+                                                title={filename}
+                                            >
                                                 {filename}
                                             </td>
                                             <td className="px-unit-lg py-4">
@@ -199,7 +227,11 @@ return dateStr;
                                                     </a>
                                                     <Button
                                                         variant="ghost"
-                                                        onClick={() => handleDelete(report.id_laporan)}
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                report.id_laporan,
+                                                            )
+                                                        }
                                                         className="flex h-8 items-center gap-1.5 rounded-lg px-3 py-1.5 font-label-md text-label-md text-error shadow-none hover:bg-error/10 hover:text-error"
                                                         title="Hapus Arsip"
                                                     >
@@ -217,7 +249,8 @@ return dateStr;
                                             colSpan={7}
                                             className="px-unit-lg py-8 text-center font-body-md text-on-surface-variant"
                                         >
-                                            Tidak ada arsip laporan yang ditemukan.
+                                            Tidak ada arsip laporan yang
+                                            ditemukan.
                                         </td>
                                     </tr>
                                 )}
@@ -228,7 +261,8 @@ return dateStr;
                     {/* Table Footer */}
                     <div className="border-t border-outline-variant/30 px-unit-lg py-4 text-on-surface-variant">
                         <p className="font-body-sm text-body-sm">
-                            Total {filteredReports.length} arsip laporan keuangan.
+                            Total {filteredReports.length} arsip laporan
+                            keuangan.
                         </p>
                     </div>
                 </Card>

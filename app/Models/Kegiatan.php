@@ -28,7 +28,7 @@ class Kegiatan extends Model
     protected $primaryKey = 'id_kegiatan';
 
     protected $casts = [
-        'tanggal_pelaksanaan' => 'date',
+        'tanggal_pelaksanaan' => 'date:Y-m-d',
     ];
 
     public function profilOrganisasi(): BelongsTo

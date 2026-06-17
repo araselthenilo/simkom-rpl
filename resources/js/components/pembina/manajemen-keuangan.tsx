@@ -13,10 +13,14 @@ import {
     Building2,
     Coins,
     FileText,
+    Calendar,
+    XCircle,
+    SlidersHorizontal,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { DialogFooter } from '../ui/dialog';
 
 interface Transaction {
     id_transaksi: number;
@@ -50,6 +54,7 @@ interface Stats {
 interface ActivityOption {
     id_kegiatan: number;
     nama_kegiatan: string;
+    id_organisasi?: number;
 }
 
 interface OrganisasiOption {
@@ -82,8 +87,8 @@ function TransactionDetailModal({ transaction, onClose }: DetailModalProps) {
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) {
-return '';
-}
+            return '';
+        }
 
         const months = [
             'Jan',
@@ -275,9 +280,27 @@ export default function ManajemenKeuangan({
     const [reportFormat, setReportFormat] = useState<'pdf' | 'excel'>('pdf');
     const [targetOrganisasiId, setTargetOrganisasiId] = useState<string>('');
 
+    // Flexible Report filters configuration states
+    const [reportOrganisasiId, setReportOrganisasiId] = useState<string>('all');
+    const [reportKegiatanId, setReportKegiatanId] = useState<string>('all');
+    const [reportJenis, setReportJenis] = useState<string>('all');
+    const [reportSortBy, setReportSortBy] = useState<string>('newest');
+    const [reportTanggalMulai, setReportTanggalMulai] = useState<string>('');
+    const [reportTanggalAkhir, setReportTanggalAkhir] = useState<string>('');
+
+    const handleReportOrganisasiChange = (val: string) => {
+        setReportOrganisasiId(val);
+        if (val !== 'all') {
+            setTargetOrganisasiId(val);
+        } else {
+            setTargetOrganisasiId('');
+        }
+        setReportKegiatanId('all');
+    };
+
     const handleCreateReport = (e: React.FormEvent) => {
         e.preventDefault();
-        const orgId = selectedOrganisasiId !== 'all' ? selectedOrganisasiId : targetOrganisasiId;
+        const orgId = targetOrganisasiId;
 
         if (!orgId) {
             alert('Silakan pilih organisasi terlebih dahulu.');
@@ -285,19 +308,24 @@ export default function ManajemenKeuangan({
             return;
         }
 
-        router.post('/pembina/laporan/generate', {
-            id_organisasi: parseInt(orgId, 10),
-            format: reportFormat,
-            filter_organisasi_id: selectedOrganisasiId,
-            id_kegiatan: selectedKegiatanId,
-            jenis_transaksi: selectedJenis,
-            search: searchQuery,
-            sort_by: sortBy,
-        }, {
-            onSuccess: () => {
-                setIsReportModalOpen(false);
-            }
-        });
+        router.post(
+            '/pembina/laporan/generate',
+            {
+                id_organisasi: parseInt(orgId, 10),
+                format: reportFormat,
+                filter_organisasi_id: reportOrganisasiId,
+                id_kegiatan: reportKegiatanId,
+                jenis_transaksi: reportJenis,
+                sort_by: reportSortBy,
+                tanggal_mulai: reportTanggalMulai || null,
+                tanggal_akhir: reportTanggalAkhir || null,
+            },
+            {
+                onSuccess: () => {
+                    setIsReportModalOpen(false);
+                },
+            },
+        );
     };
 
     // Dynamic stats computation based on selected organisasi
@@ -312,8 +340,8 @@ export default function ManajemenKeuangan({
 
         const filtered = transactions.filter((t) => {
             if (selectedStatsOrganisasiId === 'all') {
-return true;
-}
+                return true;
+            }
 
             return (
                 t.kegiatan?.profil_organisasi?.organisasi?.id_organisasi ===
@@ -347,8 +375,8 @@ return true;
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) {
-return '';
-}
+            return '';
+        }
 
         const months = [
             'Jan',
@@ -382,14 +410,14 @@ return '';
 
     const formatTime = (timeStr?: string | null) => {
         if (!timeStr) {
-return '--:-- WITA';
-}
+            return '--:-- WITA';
+        }
 
         const d = new Date(timeStr);
 
         if (isNaN(d.getTime())) {
-return '';
-}
+            return '';
+        }
 
         const pad = (n: number) => n.toString().padStart(2, '0');
 
@@ -437,14 +465,14 @@ return '';
 
             if (sortBy === 'newest') {
                 if (dateA !== dateB) {
-return dateB - dateA;
-}
+                    return dateB - dateA;
+                }
 
                 return b.id_transaksi - a.id_transaksi;
             } else {
                 if (dateA !== dateB) {
-return dateA - dateB;
-}
+                    return dateA - dateB;
+                }
 
                 return a.id_transaksi - b.id_transaksi;
             }
@@ -464,10 +492,10 @@ return dateA - dateB;
     let financialStatus = 'Seimbang';
 
     if (computedStats.totalSaldo > 0) {
-financialStatus = 'Sehat & Stabil';
-} else if (computedStats.totalSaldo < 0) {
-financialStatus = 'Defisit (Evaluasi)';
-}
+        financialStatus = 'Sehat & Stabil';
+    } else if (computedStats.totalSaldo < 0) {
+        financialStatus = 'Defisit (Evaluasi)';
+    }
 
     return (
         <div className="mx-auto w-full max-w-container-max space-y-gutter p-margin-desktop">
@@ -482,20 +510,46 @@ financialStatus = 'Defisit (Evaluasi)';
                         kemahasiswaan.
                     </p>
                 </div>
-                <div className="flex w-full flex-col items-stretch gap-gutter sm:flex-row sm:items-center md:w-auto">
-                    <Card className="flex items-center gap-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 px-unit-lg shadow-sm ring-0">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container/20 text-on-secondary-container">
-                            <Wallet className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="font-label-md text-label-md text-on-surface-variant">
-                                Total Saldo Keseluruhan
-                            </p>
-                            <p className="font-headline-sm text-headline-sm font-bold text-primary">
-                                {formatRupiah(computedStats.totalSaldo)}
-                            </p>
-                        </div>
-                    </Card>
+                <div className="flex flex-col items-center gap-4 md:flex-row">
+                    <div className="flex w-full flex-col items-stretch gap-gutter sm:flex-row sm:items-center md:w-auto">
+                        <Card className="flex items-center gap-4 rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-4 px-unit-lg shadow-sm ring-0">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container/20 text-on-secondary-container">
+                                <Wallet className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="font-label-md text-label-md text-on-surface-variant">
+                                    Total Saldo Keseluruhan
+                                </p>
+                                <p className="font-headline-sm text-headline-sm font-bold text-primary">
+                                    {formatRupiah(computedStats.totalSaldo)}
+                                </p>
+                            </div>
+                        </Card>
+                    </div>
+                    <Button
+                        onClick={() => {
+                            const initialOrg = selectedOrganisasiId;
+                            setReportOrganisasiId(initialOrg);
+                            setReportKegiatanId(selectedKegiatanId);
+                            setReportJenis(selectedJenis);
+                            setReportSortBy(sortBy);
+                            setReportTanggalMulai('');
+                            setReportTanggalAkhir('');
+
+                            if (initialOrg !== 'all') {
+                                setTargetOrganisasiId(initialOrg);
+                            } else {
+                                setTargetOrganisasiId('');
+                            }
+
+                            setIsReportModalOpen(true);
+                        }}
+                        className="flex h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-primary px-6 py-3 font-label-lg text-on-primary shadow-sm transition-all hover:opacity-90 active:scale-95 md:w-auto"
+                        title="Buat Laporan"
+                    >
+                        <FileText className="h-[18px] w-[18px]" />
+                        <span className="hidden sm:inline">Buat Laporan</span>
+                    </Button>
                 </div>
             </section>
 
@@ -598,23 +652,6 @@ financialStatus = 'Defisit (Evaluasi)';
                             <Filter
                                 className={`h-5 w-5 ${isFilterVisible ? 'text-white group-hover:text-primary' : 'text-primary'}`}
                             />
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                if (selectedOrganisasiId !== 'all') {
-                                    setTargetOrganisasiId(selectedOrganisasiId);
-                                } else {
-                                    setTargetOrganisasiId('');
-                                }
-
-                                setIsReportModalOpen(true);
-                            }}
-                            className="flex h-auto cursor-pointer items-center gap-2 rounded-lg border border-outline-variant/50 px-3 py-2 text-sm text-primary shadow-none hover:bg-surface-container-low"
-                            title="Buat Laporan"
-                        >
-                            <FileText className="h-5 w-5" />
-                            <span className="hidden sm:inline">Buat Laporan</span>
                         </Button>
                     </div>
                 </div>
@@ -900,122 +937,372 @@ financialStatus = 'Defisit (Evaluasi)';
             )}
 
             {/* Report Generation Modal */}
-            {isReportModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
-                        onClick={() => setIsReportModalOpen(false)}
-                    />
-                    <form onSubmit={handleCreateReport} className="custom-scrollbar relative z-10 max-h-[90vh] w-full max-w-md animate-in overflow-y-auto rounded-xl border border-outline-variant bg-surface-container-lowest p-unit-lg shadow-xl duration-150 fade-in-50 zoom-in-95">
-                        {/* Header */}
-                        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-unit-sm">
-                            <h3 className="flex items-center gap-2 font-headline-sm font-bold text-primary">
-                                <FileText className="h-5 w-5" />
-                                Buat Laporan Keuangan
-                            </h3>
-                            <button
-                                type="button"
+            {isReportModalOpen &&
+                (() => {
+                    const modalActivities =
+                        reportOrganisasiId === 'all'
+                            ? activities
+                            : activities.filter(
+                                  (act) =>
+                                      act.id_organisasi ===
+                                      parseInt(reportOrganisasiId, 10),
+                              );
+
+                    return (
+                        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16">
+                            {/* Backdrop */}
+                            <div
+                                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
                                 onClick={() => setIsReportModalOpen(false)}
-                                className="cursor-pointer text-xl font-bold text-on-surface-variant hover:text-primary"
-                            >
-                                ×
-                            </button>
-                        </div>
+                            />
 
-                        <div className="mt-4 space-y-4">
-                            <p className="text-sm text-on-surface-variant">
-                                Laporan akan dibuat berdasarkan mutasi kas dengan filter yang aktif saat ini.
-                            </p>
-
-                            {/* Filter Preview */}
-                            <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low/30 p-3 text-xs space-y-1">
-                                <p className="font-semibold text-primary">Preview Filter Aktif:</p>
-                                <p><span className="text-on-surface-variant font-medium">Organisasi:</span> {selectedOrganisasiId === 'all' ? 'Semua Organisasi' : organisasiList.find(o => o.id_organisasi.toString() === selectedOrganisasiId)?.nama_organisasi}</p>
-                                <p><span className="text-on-surface-variant font-medium">Kegiatan:</span> {selectedKegiatanId === 'all' ? 'Semua Kegiatan' : activities.find(a => a.id_kegiatan.toString() === selectedKegiatanId)?.nama_kegiatan}</p>
-                                <p><span className="text-on-surface-variant font-medium">Jenis Transaksi:</span> {selectedJenis === 'all' ? 'Semua Jenis' : selectedJenis}</p>
-                                {searchQuery && <p><span className="text-on-surface-variant font-medium">Pencarian:</span> "{searchQuery}"</p>}
-                            </div>
-
-                            {/* Form Fields */}
-                            <div className="space-y-3">
-                                {/* Format */}
-                                <div>
-                                    <label className="mb-1 block text-xs font-semibold text-primary">
-                                        Format Dokumen
-                                    </label>
-                                    <div className="flex gap-4">
-                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="reportFormat"
-                                                checked={reportFormat === 'pdf'}
-                                                onChange={() => setReportFormat('pdf')}
-                                                className="h-4 w-4 accent-primary"
-                                            />
-                                            PDF (.pdf)
-                                        </label>
-                                        <label className="flex items-center gap-2 text-sm cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="reportFormat"
-                                                checked={reportFormat === 'excel'}
-                                                onChange={() => setReportFormat('excel')}
-                                                className="h-4 w-4 accent-primary"
-                                            />
-                                            Excel (.xlsx)
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Destination Organisasi */}
-                                <div>
-                                    <label className="mb-1 block text-xs font-semibold text-primary">
-                                        Simpan Laporan Pada Arsip Organisasi
-                                    </label>
-                                    {selectedOrganisasiId !== 'all' ? (
-                                        <div className="rounded-lg border border-outline-variant/50 bg-surface-container-low/50 px-3 py-2 text-sm text-on-surface-variant font-medium">
-                                            {organisasiList.find(o => o.id_organisasi.toString() === selectedOrganisasiId)?.nama_organisasi}
+                            <div className="relative z-10 mb-8 w-full max-w-2xl animate-in rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-2xl duration-200 fade-in-50 zoom-in-95">
+                                {/* Modal Header */}
+                                <div className="flex items-center justify-between border-b border-outline-variant/60 px-6 py-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                                            <FileText className="h-5 w-5 text-primary" />
                                         </div>
-                                    ) : (
-                                        <select
-                                            required
-                                            value={targetOrganisasiId}
-                                            onChange={(e) => setTargetOrganisasiId(e.target.value)}
-                                            className="w-full cursor-pointer rounded-lg border border-outline-variant/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                        >
-                                            <option value="">-- Pilih Organisasi --</option>
-                                            {organisasiList.map((org) => (
-                                                <option key={org.id_organisasi} value={org.id_organisasi.toString()}>
-                                                    {org.nama_organisasi}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    )}
+                                        <div>
+                                            <h3 className="font-headline-sm font-bold text-primary">
+                                                Buat Laporan Keuangan
+                                            </h3>
+                                            <p className="text-xs text-on-surface-variant">
+                                                Pilih filter &amp; parameter
+                                                sebelum membuat laporan
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setIsReportModalOpen(false)
+                                        }
+                                        className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
+                                    >
+                                        <XCircle className="h-5 w-5" />
+                                    </button>
                                 </div>
-                            </div>
 
-                            {/* Actions */}
-                            <div className="flex justify-end gap-2 border-t border-outline-variant/30 pt-3">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => setIsReportModalOpen(false)}
-                                    className="h-9 cursor-pointer px-4 text-xs font-semibold"
+                                <form
+                                    onSubmit={handleCreateReport}
+                                    className="space-y-6 p-6"
                                 >
-                                    Batal
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    className="h-9 cursor-pointer px-6 text-xs font-semibold"
-                                    disabled={selectedOrganisasiId === 'all' && !targetOrganisasiId}
-                                >
-                                    Buat & Simpan
-                                </Button>
+                                    {/* ── Filter Section ── */}
+                                    <section>
+                                        <div className="mb-3 flex items-center gap-2">
+                                            <SlidersHorizontal className="h-4 w-4 text-primary" />
+                                            <span className="font-label-lg font-semibold text-primary">
+                                                Filter Data
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            {/* Filter Organisasi */}
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Filter Organisasi
+                                                </label>
+                                                <select
+                                                    value={reportOrganisasiId}
+                                                    onChange={(e) =>
+                                                        handleReportOrganisasiChange(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                    <option value="all">
+                                                        Semua Organisasi (Total)
+                                                    </option>
+                                                    {organisasiList.map(
+                                                        (org) => (
+                                                            <option
+                                                                key={
+                                                                    org.id_organisasi
+                                                                }
+                                                                value={
+                                                                    org.id_organisasi
+                                                                }
+                                                            >
+                                                                {
+                                                                    org.nama_organisasi
+                                                                }
+                                                            </option>
+                                                        ),
+                                                    )}
+                                                </select>
+                                            </div>
+
+                                            {/* Filter Kegiatan */}
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Filter Kegiatan
+                                                </label>
+                                                <select
+                                                    value={reportKegiatanId}
+                                                    onChange={(e) =>
+                                                        setReportKegiatanId(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                    <option value="all">
+                                                        Semua Kegiatan
+                                                    </option>
+                                                    {modalActivities.map(
+                                                        (act) => (
+                                                            <option
+                                                                key={
+                                                                    act.id_kegiatan
+                                                                }
+                                                                value={
+                                                                    act.id_kegiatan
+                                                                }
+                                                            >
+                                                                {
+                                                                    act.nama_kegiatan
+                                                                }
+                                                            </option>
+                                                        ),
+                                                    )}
+                                                </select>
+                                            </div>
+
+                                            {/* Jenis Transaksi */}
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Jenis Transaksi
+                                                </label>
+                                                <select
+                                                    value={reportJenis}
+                                                    onChange={(e) =>
+                                                        setReportJenis(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                    <option value="all">
+                                                        Semua Jenis
+                                                    </option>
+                                                    <option value="pemasukan">
+                                                        Pemasukan
+                                                    </option>
+                                                    <option value="pengeluaran">
+                                                        Pengeluaran
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            {/* Urutan Tanggal */}
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Urutan Tanggal
+                                                </label>
+                                                <select
+                                                    value={reportSortBy}
+                                                    onChange={(e) =>
+                                                        setReportSortBy(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                    <option value="newest">
+                                                        Terbaru
+                                                    </option>
+                                                    <option value="oldest">
+                                                        Terlama
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Divider */}
+                                    <div className="border-t border-outline-variant/40" />
+
+                                    {/* ── Rentang Tanggal Section ── */}
+                                    <section>
+                                        <div className="mb-3 flex items-center gap-2">
+                                            <Calendar className="h-4 w-4 text-primary" />
+                                            <span className="font-label-lg font-semibold text-primary">
+                                                Rentang Tanggal
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Tanggal Mulai
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    value={reportTanggalMulai}
+                                                    onChange={(e) =>
+                                                        setReportTanggalMulai(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Tanggal Akhir
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    value={reportTanggalAkhir}
+                                                    onChange={(e) =>
+                                                        setReportTanggalAkhir(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                />
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Divider */}
+                                    <div className="border-t border-outline-variant/40" />
+
+                                    {/* ── Arsip Laporan Section ── */}
+                                    <section>
+                                        <div className="mb-3 flex items-center gap-2">
+                                            <FileText className="h-4 w-4 text-primary" />
+                                            <span className="font-label-lg font-semibold text-primary">
+                                                Arsip Laporan (Simpan ke Sistem)
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            {/* Format */}
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Format Dokumen Laporan
+                                                </label>
+                                                <div className="flex gap-4 py-2">
+                                                    <label className="flex cursor-pointer items-center gap-2 text-sm font-medium font-semibold text-on-surface-variant">
+                                                        <input
+                                                            type="radio"
+                                                            name="reportFormat"
+                                                            checked={
+                                                                reportFormat ===
+                                                                'pdf'
+                                                            }
+                                                            onChange={() =>
+                                                                setReportFormat(
+                                                                    'pdf',
+                                                                )
+                                                            }
+                                                            className="h-4 w-4 accent-primary"
+                                                        />
+                                                        PDF (.pdf)
+                                                    </label>
+                                                    <label className="flex cursor-pointer items-center gap-2 text-sm font-medium font-semibold text-on-surface-variant">
+                                                        <input
+                                                            type="radio"
+                                                            name="reportFormat"
+                                                            checked={
+                                                                reportFormat ===
+                                                                'excel'
+                                                            }
+                                                            onChange={() =>
+                                                                setReportFormat(
+                                                                    'excel',
+                                                                )
+                                                            }
+                                                            className="h-4 w-4 accent-primary"
+                                                        />
+                                                        Excel (.xlsx)
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Destination Organisasi */}
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold tracking-wide text-on-surface-variant uppercase">
+                                                    Simpan Laporan Pada Arsip
+                                                    Laporan *
+                                                </label>
+                                                {reportOrganisasiId !==
+                                                'all' ? (
+                                                    <div className="rounded-lg border border-outline-variant/50 bg-surface-container-low/50 px-3 py-2.5 text-sm font-medium text-on-surface-variant">
+                                                        {
+                                                            organisasiList.find(
+                                                                (o) =>
+                                                                    o.id_organisasi.toString() ===
+                                                                    reportOrganisasiId,
+                                                            )?.nama_organisasi
+                                                        }
+                                                    </div>
+                                                ) : (
+                                                    <select
+                                                        required
+                                                        value={
+                                                            targetOrganisasiId
+                                                        }
+                                                        onChange={(e) =>
+                                                            setTargetOrganisasiId(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                    >
+                                                        <option value="">
+                                                            -- Pilih Organisasi
+                                                            Arsip --
+                                                        </option>
+                                                        {organisasiList.map(
+                                                            (org) => (
+                                                                <option
+                                                                    key={
+                                                                        org.id_organisasi
+                                                                    }
+                                                                    value={org.id_organisasi.toString()}
+                                                                >
+                                                                    {
+                                                                        org.nama_organisasi
+                                                                    }
+                                                                </option>
+                                                            ),
+                                                        )}
+                                                    </select>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* ── Action Buttons ── */}
+                                    <DialogFooter className="mt-6 border-t border-outline-variant/30 pt-4">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() =>
+                                                setIsReportModalOpen(false)
+                                            }
+                                            className="h-auto cursor-pointer py-2.5"
+                                        >
+                                            Tutup
+                                        </Button>
+                                        <button
+                                            type="submit"
+                                            disabled={
+                                                reportOrganisasiId === 'all' &&
+                                                !targetOrganisasiId
+                                            }
+                                            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <FileText className="h-4 w-4" />
+                                            Buat &amp; Simpan Laporan
+                                        </button>
+                                    </DialogFooter>
+                                </form>
                             </div>
                         </div>
-                    </form>
-                </div>
-            )}
+                    );
+                })()}
         </div>
     );
 }

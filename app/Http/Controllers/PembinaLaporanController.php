@@ -119,6 +119,13 @@ class PembinaLaporanController extends Controller
                 });
             }
 
+            if ($request->filled('tanggal_mulai')) {
+                $query->where('tanggal_transaksi', '>=', $request->input('tanggal_mulai'));
+            }
+            if ($request->filled('tanggal_akhir')) {
+                $query->where('tanggal_transaksi', '<=', $request->input('tanggal_akhir'));
+            }
+
             $sortBy = $request->input('sort_by', 'newest');
             if ($sortBy === 'newest') {
                 $query->orderBy('tanggal_transaksi', 'desc')->orderBy('created_at', 'desc');
@@ -137,6 +144,17 @@ class PembinaLaporanController extends Controller
                 'catatan_koreksi' => $t->catatan_koreksi,
             ]);
 
+            $tanggalMulai = $request->input('tanggal_mulai');
+            $tanggalAkhir = $request->input('tanggal_akhir');
+            $periode = 'Semua Periode';
+            if ($tanggalMulai && $tanggalAkhir) {
+                $periode = date('d/m/Y', strtotime($tanggalMulai)) . ' s.d. ' . date('d/m/Y', strtotime($tanggalAkhir));
+            } elseif ($tanggalMulai) {
+                $periode = 'Mulai ' . date('d/m/Y', strtotime($tanggalMulai));
+            } elseif ($tanggalAkhir) {
+                $periode = 's.d. ' . date('d/m/Y', strtotime($tanggalAkhir));
+            }
+
             $ext = $format === 'pdf' ? 'pdf' : 'xlsx';
             $filename = sprintf(
                 'laporan-keuangan-%s-%s.%s',
@@ -150,7 +168,7 @@ class PembinaLaporanController extends Controller
                 $pdfContent = Pdf::loadView('laporan.keuangan-pdf', [
                     'organisasi' => $organisasi,
                     'rows' => $rows,
-                    'periode' => null,
+                    'periode' => $periode,
                     'generated_at' => now()->format('d/m/Y H:i:s'),
                     'is_admin_all' => ($filterOrg === 'all'),
                 ])->setPaper('a4', 'landscape')->output();

@@ -27,21 +27,17 @@ interface Kegiatan {
     id_kegiatan: number;
     id_profil: number;
     nama_kegiatan: string;
-    jenis_kegiatan:
-    | 'Seminar'
-    | 'Pelatihan'
-    | 'Lomba'
-    | 'Pengabdian Masyarakat';
+    jenis_kegiatan: 'Seminar' | 'Pelatihan' | 'Lomba' | 'Pengabdian Masyarakat';
     deskripsi_kegiatan: string;
     biaya_pendaftaran: number;
     tanggal_pelaksanaan: string;
     lokasi_kegiatan: string;
     kuota_peserta: number;
     status_kegiatan:
-    | 'Mendatang'
-    | 'Sedang berlangsung'
-    | 'Selesai'
-    | 'Dibatalkan';
+        | 'Mendatang'
+        | 'Sedang berlangsung'
+        | 'Selesai'
+        | 'Dibatalkan';
     peserta_kegiatan_count: number;
     profil_organisasi: ProfilOrganisasi;
 }
@@ -198,7 +194,7 @@ export default function KegiatanMendatang({
                             Math.round(
                                 (item.peserta_kegiatan_count /
                                     item.kuota_peserta) *
-                                100,
+                                    100,
                             ),
                         );
                         const barColorClass =

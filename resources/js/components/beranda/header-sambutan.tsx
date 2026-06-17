@@ -47,10 +47,11 @@ export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
                 {slides.map((slide, index) => (
                     <div
                         key={index}
-                        className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-in-out ${index === currentSlide
-                            ? 'z-10 opacity-100'
-                            : 'pointer-events-none z-0 opacity-0'
-                            }`}
+                        className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-in-out ${
+                            index === currentSlide
+                                ? 'z-10 opacity-100'
+                                : 'pointer-events-none z-0 opacity-0'
+                        }`}
                     >
                         <img
                             className="h-full w-full object-cover opacity-60"
@@ -83,10 +84,11 @@ export default function HeaderSambutan({ user }: { user: Auth['user'] }) {
                     <button
                         key={index}
                         onClick={() => setCurrentSlide(index)}
-                        className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide
-                            ? 'w-8 bg-on-primary'
-                            : 'w-2 bg-on-primary/50'
-                            }`}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                            index === currentSlide
+                                ? 'w-8 bg-on-primary'
+                                : 'w-2 bg-on-primary/50'
+                        }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />
                 ))}

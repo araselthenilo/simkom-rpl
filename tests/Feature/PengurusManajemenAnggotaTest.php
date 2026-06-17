@@ -214,4 +214,15 @@ test('active pengurus can update member status', function () {
         'status_keanggotaan' => 'Ditolak',
         'alasan_penolakan' => 'Dokumen tidak valid.',
     ]);
+
+    // Deactivate member
+    $response = $this->actingAs($user)->patch("/pengurus/anggota/{$id_keanggotaan}", [
+        'status_keanggotaan' => 'Tidak Aktif',
+    ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('anggota_organisasi', [
+        'id_keanggotaan' => $id_keanggotaan,
+        'status_keanggotaan' => 'Tidak Aktif',
+    ]);
 });

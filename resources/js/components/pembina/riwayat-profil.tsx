@@ -370,8 +370,6 @@ export default function RiwayatProfil({
                     </div>
                 )}
             </div>
-
-
         </main>
     );
 }

@@ -67,6 +67,7 @@ class AdminDashboardController extends Controller
             'kegiatanBulanIni' => $kegiatanBulanIni,
             'perubahanKegiatanBulanLalu' => $perubahanKegiatanBulanLalu,
             'agendaTerdekat' => $agendaTerdekat,
+            'organisasiList' => Organisasi::select('id_organisasi', 'nama_organisasi')->get(),
         ]);
     }
 }

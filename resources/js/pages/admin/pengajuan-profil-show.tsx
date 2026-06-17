@@ -68,8 +68,8 @@ export default function PengajuanProfilShow({
     // Derive academic year (angkatan) from NIM
     const getStaffYear = (nim?: string) => {
         if (!nim || nim === '-') {
-return '-';
-}
+            return '-';
+        }
 
         const prefix = nim.substring(0, 2);
 
@@ -149,8 +149,8 @@ return '-';
 
     const formatLogoUrl = (logo: string) => {
         if (!logo) {
-return null;
-}
+            return null;
+        }
 
         return logo.startsWith('http') || logo.startsWith('data:')
             ? logo

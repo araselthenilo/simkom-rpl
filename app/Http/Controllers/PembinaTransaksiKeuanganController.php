@@ -79,10 +79,12 @@ class PembinaTransaksiKeuanganController extends Controller
         $activities = Kegiatan::whereHas('profilOrganisasi', function ($q) use ($managedOrgIds) {
             $q->whereIn('id_organisasi', $managedOrgIds);
         })
+            ->with('profilOrganisasi')
             ->get()
             ->map(fn (Kegiatan $k) => [
                 'id_kegiatan' => $k->id_kegiatan,
                 'nama_kegiatan' => $k->nama_kegiatan,
+                'id_organisasi' => $k->profilOrganisasi?->id_organisasi,
             ]);
 
         // Managed active organisations only
