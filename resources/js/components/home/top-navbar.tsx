@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Bell, LogOut, Menu, Settings } from 'lucide-react';
+import { Bell, LogOut, Menu, Settings, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import {
     DropdownMenu,
@@ -25,8 +25,13 @@ export default function TopNavbar({
     const getInitials = useInitials();
     const cleanup = useMobileNavigation();
     const [isHidden, setIsHidden] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const lastScrollY = useRef(0);
     const count = notificationsCount;
+
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [url]);
 
     const handleLogout = () => {
         cleanup();
@@ -165,12 +170,73 @@ export default function TopNavbar({
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <button className="text-primary md:hidden">
-                            <Menu />
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="text-primary md:hidden p-1.5 rounded-lg hover:bg-surface-container-low"
+                            aria-label="Open menu"
+                        >
+                            <Menu className="h-6 w-6" />
                         </button>
                     </div>
                 </div>
             </header>
+
+            {/* Mobile Menu Backdrop */}
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-300 md:hidden"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Mobile Menu Drawer */}
+            <div
+                className={`fixed top-0 right-0 z-50 flex h-full w-64 flex-col bg-surface p-unit-md text-on-surface shadow-lg dark:bg-surface-container transition-transform duration-300 ease-in-out md:hidden ${
+                    isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                }`}
+            >
+                <div className="relative mb-unit-xl flex items-center justify-between px-4 py-2 border-b border-outline-variant">
+                    <span className="font-headline-sm text-title-medium font-bold text-primary">
+                        Menu
+                    </span>
+                    <button
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="rounded-md p-1.5 text-on-surface-variant hover:bg-surface-container-low"
+                        aria-label="Close menu"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
+                </div>
+                <nav className="flex flex-col space-y-4 px-4">
+                    <Link
+                        className={`font-body-md text-body-md font-semibold transition-colors duration-200 ${
+                            isHome ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                        }`}
+                        href={home()}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        Beranda
+                    </Link>
+                    <Link
+                        className={`font-body-md text-body-md font-semibold transition-colors duration-200 ${
+                            isKegiatan ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                        }`}
+                        href={kegiatanIndex()}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        Kegiatan
+                    </Link>
+                    <Link
+                        className={`font-body-md text-body-md font-semibold transition-colors duration-200 ${
+                            isOrganisasi ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                        }`}
+                        href={organisasiIndex()}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        Organisasi
+                    </Link>
+                </nav>
+            </div>
         </>
     );
 }

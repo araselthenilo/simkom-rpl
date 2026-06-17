@@ -9,6 +9,7 @@ import {
     LogOut,
     ArrowLeft,
     User,
+    X,
 } from 'lucide-react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { toUrl } from '@/lib/utils';
@@ -23,7 +24,7 @@ interface NavItem {
     icon: LucideIcon;
 }
 
-export default function Sidepanel() {
+export default function Sidepanel({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
     const { isCurrentUrl } = useCurrentUrl();
 
     const menuItems: NavItem[] = [
@@ -44,8 +45,15 @@ export default function Sidepanel() {
     ];
 
     return (
-        <aside className="fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-primary p-unit-md text-on-primary shadow-lg dark:bg-primary-container">
-            <div className="mb-unit-xl px-4 py-2">
+        <aside className={`fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-primary p-unit-md text-on-primary shadow-lg dark:bg-primary-container transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className="relative mb-unit-xl px-4 py-2">
+                <button
+                    onClick={onClose}
+                    className="absolute top-0 right-0 rounded-md p-1.5 text-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary md:hidden"
+                    aria-label="Close menu"
+                >
+                    <X className="h-5 w-5" />
+                </button>
                 <h1 className="font-headline-sm text-headline-sm font-bold text-on-primary">
                     Staff Panel
                 </h1>

@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { Bell, LogOut, Settings, ChevronDown, Check } from 'lucide-react';
+import { Bell, LogOut, Settings, ChevronDown, Check, Menu } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +13,7 @@ import { logout } from '@/routes';
 import { switchOrganisasi, profil } from '@/routes/pengurus';
 import { edit } from '@/routes/profile';
 
-export default function TopNavBar() {
+export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void }) {
     const { auth, active_organization, staff_organizations } =
         usePage<any>().props;
     const getInitials = useInitials();
@@ -30,10 +30,17 @@ export default function TopNavBar() {
     return (
         <header className="sticky top-0 z-40 flex h-16 items-center border-b border-outline-variant bg-surface shadow-sm dark:bg-surface-dim">
             <div className="flex w-full items-center justify-between px-margin-mobile md:px-margin-desktop">
-                <div className="flex items-center gap-unit-md">
+                <div className="flex items-center gap-unit-md overflow-hidden">
+                    <button
+                        onClick={onMenuClick}
+                        className="mr-1 rounded-lg p-1.5 text-on-surface hover:bg-surface-container-low md:hidden"
+                        aria-label="Toggle Menu"
+                    >
+                        <Menu className="h-5 w-5 flex-shrink-0" />
+                    </button>
                     {active_organization ? (
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border border-outline-variant/50 bg-surface-container-high">
+                        <div className="flex items-center gap-2 overflow-hidden sm:gap-3">
+                            <div className="flex h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-outline-variant/50 bg-surface-container-high">
                                 {active_organization.logo_organisasi ? (
                                     <img
                                         src={`/storage/${active_organization.logo_organisasi}`}
@@ -41,19 +48,19 @@ export default function TopNavBar() {
                                         className="h-full w-full object-cover"
                                     />
                                 ) : (
-                                    <span className="text-sm font-bold text-primary">
+                                    <span className="text-xs sm:text-sm font-bold text-primary">
                                         {active_organization.nama_organisasi
                                             .substring(0, 2)
                                             .toUpperCase()}
                                     </span>
                                 )}
                             </div>
-                            <span className="font-headline-md text-headline-md font-bold text-primary">
+                            <span className="truncate font-headline-md text-headline-sm md:text-headline-md font-bold text-primary">
                                 {active_organization.nama_organisasi}
                             </span>
                         </div>
                     ) : (
-                        <span className="font-headline-md text-headline-md font-bold text-primary">
+                        <span className="truncate font-headline-md text-headline-sm md:text-headline-md font-bold text-primary">
                             SIMKOM STIKOM Bali
                         </span>
                     )}

@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { Bell, LogOut, Settings } from 'lucide-react';
+import { Bell, LogOut, Settings, Menu } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +12,7 @@ import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 
-export default function TopNavBar() {
+export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void }) {
     const { auth } = usePage().props;
     const getInitials = useInitials();
     const cleanup = useMobileNavigation();
@@ -27,8 +27,15 @@ export default function TopNavBar() {
     return (
         <header className="sticky top-0 z-40 flex h-16 items-center border-b border-outline-variant bg-surface shadow-sm dark:bg-surface-dim">
             <div className="flex w-full items-center justify-between px-margin-mobile md:px-margin-desktop">
-                <div className="flex items-center gap-unit-md">
-                    <span className="font-headline-md text-headline-md font-bold text-primary">
+                <div className="flex items-center gap-unit-md overflow-hidden">
+                    <button
+                        onClick={onMenuClick}
+                        className="mr-1 rounded-lg p-1.5 text-on-surface hover:bg-surface-container-low md:hidden"
+                        aria-label="Toggle Menu"
+                    >
+                        <Menu className="h-5 w-5" />
+                    </button>
+                    <span className="truncate font-headline-md text-headline-sm md:text-headline-md font-bold text-primary">
                         SIMKOM ITB STIKOM Bali
                     </span>
                 </div>
