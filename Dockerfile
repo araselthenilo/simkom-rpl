@@ -32,8 +32,15 @@ RUN npm install && npm run build
 # Setup permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Create backup of initial app storage (to keep default_logo.png safe)
+RUN cp -R /var/www/html/storage/app /var/www/html/storage_backup
+
+# Copy and prepare entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Expose port
 EXPOSE 8080
 
-# Start dengan script bawaan untuk jalankan web server
-CMD ["sh", "-c", "php artisan storage:link --force && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080"]
+# Use the entrypoint script
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
