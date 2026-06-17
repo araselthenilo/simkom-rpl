@@ -82,6 +82,11 @@ class DashboardTestDataSeeder extends Seeder
                 ->exists();
 
             if (! $exists) {
+                \Illuminate\Support\Facades\Storage::disk('local')->makeDirectory('foto_ktm');
+                if (file_exists(public_path('dummy_ktm.png'))) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->put('foto_ktm/dummy.png', file_get_contents(public_path('dummy_ktm.png')));
+                }
+
                 DB::table('anggota_organisasi')->insert([
                     'id_organisasi' => $idOrganisasi,
                     'nim' => $s['nim'],
@@ -142,6 +147,11 @@ class DashboardTestDataSeeder extends Seeder
                 ]);
 
                 // Add financial transactions
+                \Illuminate\Support\Facades\Storage::disk('local')->makeDirectory('transaksi_keuangan/bukti');
+                if (file_exists(public_path('dummy_transaksi.png'))) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->put('transaksi_keuangan/bukti/dummy.png', file_get_contents(public_path('dummy_transaksi.png')));
+                }
+
                 if ($act['nama_kegiatan'] === 'Lomba Musik Akustik') {
                     DB::table('transaksi_keuangan')->insert([
                         'id_kegiatan' => $idKegiatan,

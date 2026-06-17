@@ -433,6 +433,13 @@ class DummyOrganisasiSeeder extends Seeder
 
             // Create Dummy Transaksi Keuangan
             if ($idMusikKegiatan) {
+                Storage::disk('local')->makeDirectory('transaksi_keuangan/bukti');
+                if (file_exists(public_path('dummy_transaksi.png'))) {
+                    $dummyTx = file_get_contents(public_path('dummy_transaksi.png'));
+                    Storage::disk('local')->put('transaksi_keuangan/bukti/dummy_invoice.png', $dummyTx);
+                    Storage::disk('local')->put('transaksi_keuangan/bukti/dummy_nota.png', $dummyTx);
+                }
+
                 DB::table('transaksi_keuangan')->insert([
                     [
                         'id_kegiatan' => $idMusikKegiatan,
@@ -460,6 +467,13 @@ class DummyOrganisasiSeeder extends Seeder
             }
 
             if ($idRobotikaKegiatan) {
+                Storage::disk('local')->makeDirectory('transaksi_keuangan/bukti');
+                if (file_exists(public_path('dummy_transaksi.png'))) {
+                    $dummyTx = file_get_contents(public_path('dummy_transaksi.png'));
+                    Storage::disk('local')->put('transaksi_keuangan/bukti/dummy_receipt.png', $dummyTx);
+                    Storage::disk('local')->put('transaksi_keuangan/bukti/dummy_invoice2.png', $dummyTx);
+                }
+
                 DB::table('transaksi_keuangan')->insert([
                     [
                         'id_kegiatan' => $idRobotikaKegiatan,
@@ -487,6 +501,12 @@ class DummyOrganisasiSeeder extends Seeder
             }
 
             if ($idOlahragaKegiatan) {
+                Storage::disk('local')->makeDirectory('transaksi_keuangan/bukti');
+                if (file_exists(public_path('dummy_transaksi.png'))) {
+                    $dummyTx = file_get_contents(public_path('dummy_transaksi.png'));
+                    Storage::disk('local')->put('transaksi_keuangan/bukti/dummy_transfer.png', $dummyTx);
+                }
+
                 DB::table('transaksi_keuangan')->insert([
                     [
                         'id_kegiatan' => $idOlahragaKegiatan,
