@@ -459,14 +459,15 @@ export default function Dashboard({
                                         Ekspor Log Aktivitas Sistem
                                     </h3>
                                     <p className="text-xs text-on-surface-variant">
-                                        Pilih kriteria filter untuk log aktivitas sistem yang ingin Anda unduh
+                                        Pilih kriteria filter untuk log
+                                        aktivitas sistem yang ingin Anda unduh
                                     </p>
                                 </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setIsLogModalOpen(false)}
-                                className="cursor-pointer rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary border-none bg-transparent"
+                                className="cursor-pointer rounded-lg border-none bg-transparent p-2 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -481,12 +482,19 @@ export default function Dashboard({
                                     </label>
                                     <select
                                         value={filterOrg}
-                                        onChange={(e) => setFilterOrg(e.target.value)}
-                                        className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                        onChange={(e) =>
+                                            setFilterOrg(e.target.value)
+                                        }
+                                        className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     >
-                                        <option value="all">Semua Organisasi</option>
+                                        <option value="all">
+                                            Semua Organisasi
+                                        </option>
                                         {organisasiList.map((org) => (
-                                            <option key={org.id_organisasi} value={org.id_organisasi}>
+                                            <option
+                                                key={org.id_organisasi}
+                                                value={org.id_organisasi}
+                                            >
                                                 {org.nama_organisasi}
                                             </option>
                                         ))}
@@ -499,14 +507,26 @@ export default function Dashboard({
                                     </label>
                                     <select
                                         value={filterKat}
-                                        onChange={(e) => setFilterKat(e.target.value)}
-                                        className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                        onChange={(e) =>
+                                            setFilterKat(e.target.value)
+                                        }
+                                        className="w-full cursor-pointer appearance-none rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                     >
-                                        <option value="all">Semua Kategori</option>
-                                        <option value="Autentikasi">Autentikasi (Login/Logout)</option>
-                                        <option value="Profil">Manajemen Profil</option>
-                                        <option value="Kegiatan">Kegiatan & Dokumentasi</option>
-                                        <option value="Keuangan">Keuangan UKM</option>
+                                        <option value="all">
+                                            Semua Kategori
+                                        </option>
+                                        <option value="Autentikasi">
+                                            Autentikasi (Login/Logout)
+                                        </option>
+                                        <option value="Profil">
+                                            Manajemen Profil
+                                        </option>
+                                        <option value="Kegiatan">
+                                            Kegiatan & Dokumentasi
+                                        </option>
+                                        <option value="Keuangan">
+                                            Keuangan UKM
+                                        </option>
                                     </select>
                                 </div>
 
@@ -518,8 +538,10 @@ export default function Dashboard({
                                         <input
                                             type="date"
                                             value={tanggalMulai}
-                                            onChange={(e) => setTanggalMulai(e.target.value)}
-                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                            onChange={(e) =>
+                                                setTanggalMulai(e.target.value)
+                                            }
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         />
                                     </div>
                                     <div className="flex flex-col gap-1.5">
@@ -529,8 +551,10 @@ export default function Dashboard({
                                         <input
                                             type="date"
                                             value={tanggalAkhir}
-                                            onChange={(e) => setTanggalAkhir(e.target.value)}
-                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-background"
+                                            onChange={(e) =>
+                                                setTanggalAkhir(e.target.value)
+                                            }
+                                            className="w-full cursor-pointer rounded-lg border border-outline-variant bg-background px-3 py-2 text-sm text-on-background transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                         />
                                     </div>
                                 </div>
@@ -540,34 +564,42 @@ export default function Dashboard({
                                         Format Dokumen
                                     </label>
                                     <div className="flex gap-4">
-                                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-background px-4 py-2 hover:bg-secondary-fixed/10 flex-1 justify-center">
+                                        <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-outline-variant bg-background px-4 py-2 hover:bg-secondary-fixed/10">
                                             <input
                                                 type="radio"
                                                 name="format"
                                                 value="pdf"
                                                 checked={format === 'pdf'}
-                                                onChange={() => setFormat('pdf')}
+                                                onChange={() =>
+                                                    setFormat('pdf')
+                                                }
                                                 className="text-primary"
                                             />
-                                            <span className="font-label-lg text-label-lg text-on-surface">PDF (.pdf)</span>
+                                            <span className="font-label-lg text-label-lg text-on-surface">
+                                                PDF (.pdf)
+                                            </span>
                                         </label>
-                                        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-background px-4 py-2 hover:bg-secondary-fixed/10 flex-1 justify-center">
+                                        <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-outline-variant bg-background px-4 py-2 hover:bg-secondary-fixed/10">
                                             <input
                                                 type="radio"
                                                 name="format"
                                                 value="excel"
                                                 checked={format === 'excel'}
-                                                onChange={() => setFormat('excel')}
+                                                onChange={() =>
+                                                    setFormat('excel')
+                                                }
                                                 className="text-primary"
                                             />
-                                            <span className="font-label-lg text-label-lg text-on-surface">Excel (.xlsx)</span>
+                                            <span className="font-label-lg text-label-lg text-on-surface">
+                                                Excel (.xlsx)
+                                            </span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Modal Footer */}
-                            <DialogFooter className='border-t border-outline-variant/60 p-6 pt-4'>
+                            <DialogFooter className="border-t border-outline-variant/60 p-6 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -578,7 +610,7 @@ export default function Dashboard({
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="cursor-pointer bg-primary text-on-primary hover:opacity-90 flex items-center gap-2"
+                                    className="flex cursor-pointer items-center gap-2 bg-primary text-on-primary hover:opacity-90"
                                 >
                                     <Download className="h-4 w-4" />
                                     Unduh Log

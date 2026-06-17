@@ -172,7 +172,7 @@ export default function TopNavbar({
                         </DropdownMenu>
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="text-primary md:hidden p-1.5 rounded-lg hover:bg-surface-container-low"
+                            className="rounded-lg p-1.5 text-primary hover:bg-surface-container-low md:hidden"
                             aria-label="Open menu"
                         >
                             <Menu className="h-6 w-6" />
@@ -191,12 +191,12 @@ export default function TopNavbar({
 
             {/* Mobile Menu Drawer */}
             <div
-                className={`fixed top-0 right-0 z-50 flex h-full w-64 flex-col bg-surface p-unit-md text-on-surface shadow-lg dark:bg-surface-container transition-transform duration-300 ease-in-out md:hidden ${
+                className={`fixed top-0 right-0 z-50 flex h-full w-64 flex-col bg-surface p-unit-md text-on-surface shadow-lg transition-transform duration-300 ease-in-out md:hidden dark:bg-surface-container ${
                     isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
-                <div className="relative mb-unit-xl flex items-center justify-between px-4 py-2 border-b border-outline-variant">
-                    <span className="font-headline-sm text-title-medium font-bold text-primary">
+                <div className="relative mb-unit-xl flex items-center justify-between border-b border-outline-variant px-4 py-2">
+                    <span className="text-title-medium font-headline-sm font-bold text-primary">
                         Menu
                     </span>
                     <button
@@ -210,7 +210,9 @@ export default function TopNavbar({
                 <nav className="flex flex-col space-y-4 px-4">
                     <Link
                         className={`font-body-md text-body-md font-semibold transition-colors duration-200 ${
-                            isHome ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                            isHome
+                                ? 'text-primary'
+                                : 'text-on-surface-variant hover:text-primary'
                         }`}
                         href={home()}
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -219,7 +221,9 @@ export default function TopNavbar({
                     </Link>
                     <Link
                         className={`font-body-md text-body-md font-semibold transition-colors duration-200 ${
-                            isKegiatan ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                            isKegiatan
+                                ? 'text-primary'
+                                : 'text-on-surface-variant hover:text-primary'
                         }`}
                         href={kegiatanIndex()}
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -228,7 +232,9 @@ export default function TopNavbar({
                     </Link>
                     <Link
                         className={`font-body-md text-body-md font-semibold transition-colors duration-200 ${
-                            isOrganisasi ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                            isOrganisasi
+                                ? 'text-primary'
+                                : 'text-on-surface-variant hover:text-primary'
                         }`}
                         href={organisasiIndex()}
                         onClick={() => setIsMobileMenuOpen(false)}

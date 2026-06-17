@@ -26,7 +26,13 @@ interface NavItem {
     icon: LucideIcon;
 }
 
-export default function Sidepanel({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
+export default function Sidepanel({
+    isOpen,
+    onClose,
+}: {
+    isOpen?: boolean;
+    onClose?: () => void;
+}) {
     const { isCurrentUrl } = useCurrentUrl();
 
     const menuItems: NavItem[] = [
@@ -57,7 +63,9 @@ export default function Sidepanel({ isOpen, onClose }: { isOpen?: boolean; onClo
     ];
 
     return (
-        <aside className={`fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-primary p-unit-md text-on-primary shadow-lg dark:bg-primary-container transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <aside
+            className={`fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-primary p-unit-md text-on-primary shadow-lg transition-transform duration-300 ease-in-out md:translate-x-0 dark:bg-primary-container ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        >
             <div className="relative mb-unit-xl px-4 py-2">
                 <button
                     onClick={onClose}

@@ -27,9 +27,14 @@ export default function PembinaLayout({
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
-            <Sidepanel isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <div className="flex flex-1 flex-col pl-0 md:pl-64 transition-all duration-300 ease-in-out">
-                <TopNavBar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+            <Sidepanel
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
+            <div className="flex flex-1 flex-col pl-0 transition-all duration-300 ease-in-out md:pl-64">
+                <TopNavBar
+                    onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                />
                 <main className="custom-scrollbar flex flex-1 flex-col overflow-y-auto">
                     <div className="flex-grow">{children}</div>
                     <div className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
@@ -40,4 +45,3 @@ export default function PembinaLayout({
         </div>
     );
 }
-

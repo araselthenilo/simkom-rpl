@@ -350,3 +350,45 @@
 .dark .glass-card {
     background: rgba(33, 36, 38, 0.85);
 }
+
+@media (max-width: 1024px) {
+    :root,
+    :host {
+        --text-headline-lg: 28px;
+        --text-headline-lg--line-height: 36px;
+        --text-headline-md: 22px;
+        --text-headline-md--line-height: 30px;
+        --text-headline-sm: 19px;
+        --text-headline-sm--line-height: 26px;
+        --text-body-lg: 17px;
+        --text-body-lg--line-height: 26px;
+        --text-body-md: 15px;
+        --text-body-md--line-height: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root,
+    :host {
+        --text-headline-lg: 24px;
+        --text-headline-lg--line-height: 32px;
+        --text-headline-md: 20px;
+        --text-headline-md--line-height: 28px;
+        --text-headline-sm: 18px;
+        --text-headline-sm--line-height: 24px;
+        --text-body-lg: 16px;
+        --text-body-lg--line-height: 22px;
+        --text-body-md: 14px;
+        --text-body-md--line-height: 20px;
+        --text-body-sm: 13px;
+        --text-body-sm--line-height: 18px;
+        --text-label-lg: 13px;
+        --text-label-lg--line-height: 18px;
+        --text-label-md: 11px;
+        --text-label-md--line-height: 14px;
+    }
+
+    html {
+        font-size: 14px;
+    }
+}

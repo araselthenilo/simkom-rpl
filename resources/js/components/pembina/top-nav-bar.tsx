@@ -12,7 +12,11 @@ import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 
-export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void }) {
+export default function TopNavBar({
+    onMenuClick,
+}: {
+    onMenuClick?: () => void;
+}) {
     const { auth } = usePage().props;
     const getInitials = useInitials();
     const cleanup = useMobileNavigation();
@@ -35,7 +39,7 @@ export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void })
                     >
                         <Menu className="h-5 w-5" />
                     </button>
-                    <span className="truncate font-headline-md text-headline-sm md:text-headline-md font-bold text-primary">
+                    <span className="truncate font-headline-md text-headline-sm font-bold text-primary md:text-headline-md">
                         SIMKOM ITB STIKOM Bali
                     </span>
                 </div>

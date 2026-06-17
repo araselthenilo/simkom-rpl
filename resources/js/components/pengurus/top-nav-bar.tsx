@@ -13,7 +13,11 @@ import { logout } from '@/routes';
 import { switchOrganisasi, profil } from '@/routes/pengurus';
 import { edit } from '@/routes/profile';
 
-export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void }) {
+export default function TopNavBar({
+    onMenuClick,
+}: {
+    onMenuClick?: () => void;
+}) {
     const { auth, active_organization, staff_organizations } =
         usePage<any>().props;
     const getInitials = useInitials();
@@ -40,7 +44,7 @@ export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void })
                     </button>
                     {active_organization ? (
                         <div className="flex items-center gap-2 overflow-hidden sm:gap-3">
-                            <div className="flex h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-outline-variant/50 bg-surface-container-high">
+                            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-outline-variant/50 bg-surface-container-high sm:h-10 sm:w-10">
                                 {active_organization.logo_organisasi ? (
                                     <img
                                         src={`/storage/${active_organization.logo_organisasi}`}
@@ -48,19 +52,19 @@ export default function TopNavBar({ onMenuClick }: { onMenuClick?: () => void })
                                         className="h-full w-full object-cover"
                                     />
                                 ) : (
-                                    <span className="text-xs sm:text-sm font-bold text-primary">
+                                    <span className="text-xs font-bold text-primary sm:text-sm">
                                         {active_organization.nama_organisasi
                                             .substring(0, 2)
                                             .toUpperCase()}
                                     </span>
                                 )}
                             </div>
-                            <span className="truncate font-headline-md text-headline-sm md:text-headline-md font-bold text-primary">
+                            <span className="truncate font-headline-md text-headline-sm font-bold text-primary md:text-headline-md">
                                 {active_organization.nama_organisasi}
                             </span>
                         </div>
                     ) : (
-                        <span className="truncate font-headline-md text-headline-sm md:text-headline-md font-bold text-primary">
+                        <span className="truncate font-headline-md text-headline-sm font-bold text-primary md:text-headline-md">
                             SIMKOM STIKOM Bali
                         </span>
                     )}

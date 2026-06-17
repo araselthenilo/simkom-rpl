@@ -9,7 +9,8 @@ export default function Footer() {
                         SIMKOM ITB STIKOM Bali
                     </span>
                     <p className="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface">
-                        © 2026 SIMKOM ITB STIKOM Bali. All Rights Reserved.
+                        © 2026 SIMKOM ITB STIKOM Bali.{'\n'}
+                        All Rights Reserved.
                     </p>
                 </div>
                 <div className="flex gap-unit-lg">

@@ -127,7 +127,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                         {/* Left Column: Brand Name */}
                         <div className="w-full md:text-right">
                             <span className="font-label-lg text-label-lg font-bold text-primary">
-                                SIMKOM STIKOM Bali
+                                SIMKOM ITB STIKOM Bali
                             </span>
                         </div>
 
